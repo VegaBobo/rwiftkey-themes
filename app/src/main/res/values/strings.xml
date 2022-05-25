@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name" translatable="false">Rwiftkey Themes</string>
+
+    <!-- Main Activity -->
+    <string name="theme_installed">Theme installed</string>
+    <string name="error_theme">Error installing theme, you can try installing again, if the error persists, the theme may be invalid</string>
+    <string name="open_theme_section">Open themes section</string>
+    <string name="select_theme">Select theme</string>
+    <string name="add_theme">Add theme</string>
+
+    <!-- Dialog when there is no SwiftKey app installed -->
+    <string name="dialog_no_available_keyboard_title">No available keyboards</string>
+    <string name="dialog_no_available_keyboard_desc">No SwiftKey app detected, please install before use this application</string>
+    <string name="dialog_close">Close app</string>
+
+    <!-- Preferences Activity -->
+    <string name="title_activity_preferences">Preferences</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="cleaned_installed_themes">Installed themes have been cleaned!</string>
+    <string name="target_keyboard">Target keyboard</string>
+    <string name="clear_themes">Clear themes</string>
+    <string name="clean_installed_themes">Clean all installed themes</string>
+    <string name="select_keyboard">Select a keyboard</string>
+
+    <!-- About Activity -->
+    <string name="about">About</string>
+    <string name="about_app">Credits, libraries and more…</string>
+    <string name="application">Application</string>
+    <string name="repository">Repository</string>
+    <string name="view_source">View source on GitHub</string>
+    <string name="libraries">Libraries</string>
+    <string name="used_libs">View used libraries in this app</string>
+    <string name="authors">Authors</string>
+    <string name="view_on_twitter">View profile on Twitter</string>
+    <string name="view_on_github">View profile on GitHub</string>
+    <string name="libraries_list">Libraries list</string>
+    <string name="library_info">some libraries may contains dependencies that aren\'t listed here</string>
+    <string name="close">Close</string>
+</resources>

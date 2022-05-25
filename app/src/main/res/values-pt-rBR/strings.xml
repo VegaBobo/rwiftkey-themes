@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rwiftkey Themes</string>
+    <string name="dialog_no_available_keyboard_title">Sem teclados disponíveis</string>
+    <string name="please_wait">Aguarde…</string>
+    <string name="cleaned_installed_themes">Temas instalados foram removidos</string>
+    <string name="target_keyboard">Teclado selecionado</string>
+    <string name="clear_themes">Limpar temas</string>
+    <string name="clean_installed_themes">Remove todos os temas instalados</string>
+    <string name="select_keyboard">Selecionar um teclado</string>
+    <string name="dialog_no_available_keyboard_desc">Não foi detectado nenhum app do SwiftKey, por favor instale-o antes de usar o aplicativo</string>
+    <string name="dialog_close">Fechar app</string>
+    <string name="theme_installed">Tema instalado</string>
+    <string name="open_theme_section">Abrir seção de temas</string>
+    <string name="select_theme">Selecionar tema</string>
+    <string name="add_theme">Adicionar tema</string>
+    <string name="title_activity_preferences">Preferências</string>
+    <string name="error_theme">Erro na instalação do tema, tente instalar novamente, caso o erro persista, o tema pode ser invalido</string>
+    <string name="about">Sobre</string>
+    <string name="about_app">Créditos, bibliotecas e mais…</string>
+    <string name="application">Aplicação</string>
+    <string name="repository">Repositório</string>
+    <string name="view_source">Ver código no GitHub</string>
+    <string name="libraries">Bibliotecas</string>
+    <string name="used_libs">Ver bibliotecas usadas nesse app</string>
+    <string name="authors">Autores</string>
+    <string name="view_on_twitter">Ver perfil no Twitter</string>
+    <string name="view_on_github">Ver perfil no GitHub</string>
+    <string name="libraries_list">Lista de bibliotecas</string>
+    <string name="library_info">Algumas bibliotecas podem conter dependências que não estão listadas aqui</string>
+    <string name="close">Fechar</string>
+</resources>

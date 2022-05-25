@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/java/test/teste/sapo/MainActivity.kt" value="1.0851851851851853" />
+        <entry key="app/src/main/java/test/teste/sapo/Preferences.kt" value="2.0" />
+        <entry key="app/src/main/java/test/teste/sapo/Settings.kt" value="2.0" />
+        <entry key="app/src/main/java/vegadata/teste/sapo/MainActivity.kt" value="0.9" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/accountcircle.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/add.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/code.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/delete.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.537" />
+        <entry key="app/src/main/res/drawable/info.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/keyboard.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/palette.xml" value="0.37" />
+        <entry key="app/src/main/res/drawable/settings.xml" value="0.37" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3905" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3905" />
+        <entry key="app/src/main/res/xml/preferences.xml" value="0.896875" />
+        <entry key="app/src/main/res/xml/setting.xml" value="0.5380208333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
+</project>
