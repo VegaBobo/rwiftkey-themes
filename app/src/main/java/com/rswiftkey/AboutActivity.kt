@@ -65,7 +65,7 @@ class AboutActivity : ComponentActivity() {
                                     title = getString(R.string.repository),
                                     desc = getString(R.string.view_source),
                                     icon = ImageVector.vectorResource(id = R.drawable.code)
-                                ) { openUrl("https://github.com/VegaBobo/rwiftkeythemes") }
+                                ) { openUrl("https://github.com/VegaBobo/rwiftkey-themes") }
                                 Preference(
                                     title = getString(R.string.libraries),
                                     desc = getString(R.string.used_libs),
