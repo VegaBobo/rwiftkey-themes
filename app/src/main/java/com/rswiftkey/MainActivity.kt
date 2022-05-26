@@ -32,7 +32,6 @@ import com.rswiftkey.ui.theme.SapoTheme
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
     private var loadingBarVisible: MutableState<Boolean> = mutableStateOf(false)
     private val showErrorDialog = mutableStateOf(false)
+    private val isRooted = mutableStateOf(true)
 
     private fun applicationCheck() {
         lifecycleScope.launch {
@@ -74,6 +74,21 @@ class MainActivity : ComponentActivity() {
             onDismissRequest = { finish() },
             title = { Text(text = getString(R.string.dialog_no_available_keyboard_title)) },
             text = { Text(text = getString(R.string.dialog_no_available_keyboard_desc)) },
+            confirmButton = {
+                Text(
+                    text = getString(R.string.dialog_close),
+                    Modifier.clickable { finish() })
+            }
+        )
+    }
+
+    @Composable
+    fun NoRootDialog() {
+        AlertDialog(
+            modifier = Modifier.fillMaxWidth(),
+            onDismissRequest = { finish() },
+            title = { Text(text = getString(R.string.dialog_no_root_title)) },
+            text = { Text(text = getString(R.string.dialog_no_root_desc)) },
             confirmButton = {
                 Text(
                     text = getString(R.string.dialog_close),
@@ -122,7 +137,11 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Shell.getShell {}
+        Shell.getShell {
+            val p = Shell.cmd("whoami").exec()
+            if (!p.out.toString().contains("root"))
+                isRooted.value = false
+        }
         var fileSelection: ActivityResultLauncher<Intent>? = null
         setContent {
             SapoTheme {
@@ -138,6 +157,8 @@ class MainActivity : ComponentActivity() {
 
                     if (showErrorDialog.value)
                         Dialog()
+                    if (!isRooted.value)
+                        NoRootDialog()
 
                 }
             }

@@ -11,6 +11,11 @@
     <!-- Dialog when there is no SwiftKey app installed -->
     <string name="dialog_no_available_keyboard_title">No available keyboards</string>
     <string name="dialog_no_available_keyboard_desc">No SwiftKey app detected, please install before use this application</string>
+
+    <!-- Dialog when user is running app without root -->
+    <string name="dialog_no_root_title">Root unavailable</string>
+    <string name="dialog_no_root_desc">This app requires root to work</string>
+
     <string name="dialog_close">Close app</string>
 
     <!-- Preferences Activity -->

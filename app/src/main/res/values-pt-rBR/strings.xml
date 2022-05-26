@@ -29,4 +29,6 @@
     <string name="libraries_list">Lista de bibliotecas</string>
     <string name="library_info">Algumas bibliotecas podem conter dependências que não estão listadas aqui</string>
     <string name="close">Fechar</string>
+    <string name="dialog_no_root_title">Root indisponível</string>
+    <string name="dialog_no_root_desc">Esse aplicativo requer root para funcionar</string>
 </resources>
