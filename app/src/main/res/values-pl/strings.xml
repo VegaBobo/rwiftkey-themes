@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name" translatable="false">Rwiftkey Themes</string>
+
+    <!-- Main Activity -->
+    <string name="theme_installed">Motyw zainstalowany</string>
+    <string name="error_theme">Błąd podczas instalacji motywu, spróboj zainstalować ponownie, jeśli błąd dalej występuje motyw jest nieprawidłowy</string>
+    <string name="open_theme_section">Otwórz sekcje z motywami</string>
+    <string name="select_theme">Wybierz motyw</string>
+    <string name="add_theme">Dodaj motyw</string>
+
+    <!-- Dialog when there is no SwiftKey app installed -->
+    <string name="dialog_no_available_keyboard_title">Brak dostępnych klawiatur</string>
+    <string name="dialog_no_available_keyboard_desc">Brak zainstalowanego Swiftkey, prosze zainstaluj go zanim użyjesz tej aplikacji</string>
+
+    <!-- Dialog when user is running app without root -->
+    <string name="dialog_no_root_title">Nie wykryto ROOT</string>
+    <string name="dialog_no_root_desc">Aplikacja wymaga uprawnień ROOT</string>
+
+    <string name="dialog_close">Zamknij aplikacje</string>
+
+    <!-- Preferences Activity -->
+    <string name="title_activity_preferences">Preferencje</string>
+    <string name="please_wait">Prosze zaczekać</string>
+    <string name="cleaned_installed_themes">Zainstalowane motywy zostały wyczyszczone!</string>
+    <string name="target_keyboard">Wybrana klawiatura</string>
+    <string name="clear_themes">Wyczyść motywy</string>
+    <string name="clean_installed_themes">Wyczyść wszystkie zainstalowane motywy</string>
+    <string name="select_keyboard">Wybierz klawiaturę</string>
+
+    <!-- About Activity -->
+    <string name="about">O aplikacji</string>
+    <string name="about_app">Autorzy, biblioteki i więcej…</string>
+    <string name="application">Aplikacja</string>
+    <string name="repository">Repozytorium</string>
+    <string name="view_source">Kod źródłowy na GitHub</string>
+    <string name="libraries">Biblioteki</string>
+    <string name="used_libs">Zobacz użyte biblioteki w tej aplikacji</string>
+    <string name="authors">Autorzy</string>
+    <string name="view_on_twitter">Zobacz profil na Twitterze</string>
+    <string name="view_on_github">Zobacz profil na GitHub</string>
+    <string name="libraries_list">Lista bibliotek</string>
+    <string name="library_info">Niektróre biblioteki mają zależności które nie są w tej liście</string>
+    <string name="close">Zamknij</string>
+</resources>
