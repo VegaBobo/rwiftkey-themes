@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="icon_color">#FF000000</color>
+    <color name="box_bg">#10BB86FC</color>
 </resources>

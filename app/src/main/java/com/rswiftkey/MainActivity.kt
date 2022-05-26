@@ -10,9 +10,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -186,23 +188,38 @@ class MainActivity : ComponentActivity() {
     fun MainContent() {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    if (!loadingBarVisible.value)
-                        lifecycleScope.launch {
-                            val application = Data.readTargetKeyboard(applicationContext)
-                            Util.startSKActivity(application.packageName)
-                        }
-                },
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.palette),
-                contentDescription = "Palette icon",
-                modifier = Modifier.size(96.dp)
-            )
-            Text(text = getString(R.string.open_theme_section))
+            Box(
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .clickable {
+                        if (!loadingBarVisible.value)
+                            lifecycleScope.launch {
+                                val application = Data.readTargetKeyboard(applicationContext)
+                                Util.startSKActivity(application.packageName)
+                            }
+                    },
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(50.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.palette),
+                        contentDescription = "Palette icon",
+                        modifier = Modifier.size(96.dp)
+                    )
+                    Text(text = getString(R.string.open_theme_section))
+                }
+            }
             if (loadingBarVisible.value) {
                 CircularProgressIndicator(modifier = Modifier.padding(20.dp))
             }
@@ -224,7 +241,8 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(20.dp),
-                shape = CircleShape
+                shape = CircleShape,
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.add),
