@@ -216,7 +216,7 @@ class MainActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
+                        MaterialTheme.colorScheme.onSecondary,
                         shape = RoundedCornerShape(36.dp)
                     )
                     .clickable {
@@ -263,7 +263,7 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.BottomCenter)
                     .padding(20.dp),
                 shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.add),
