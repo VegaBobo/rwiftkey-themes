@@ -10,7 +10,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +20,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -213,19 +213,20 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
+            Surface(
+                color = MaterialTheme.colorScheme.onSecondary,
+                shape = RoundedCornerShape(36.dp),
                 modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.onSecondary,
-                        shape = RoundedCornerShape(36.dp)
-                    )
-                    .clickable {
+                    .clip(RoundedCornerShape(36.dp))
+                    .clickable(
+                    onClick = {
                         if (!loadingBarVisible.value)
                             lifecycleScope.launch {
                                 val application = Data.readTargetKeyboard(applicationContext)
                                 Util.startSKActivity(application.packageName)
                             }
-                    },
+                    }
+                ),
             ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
