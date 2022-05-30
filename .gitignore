@@ -1,17 +1,22 @@
-*.iml
+# Gradle files
 .gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
 local.properties
+
+# IDEA/Android Studio project files
+*.iml
+.idea/*
+!.idea/copyright
+
+# Windows thumbnail db
+.DS_Store
+
+# Android Studio captures
+captures/
+
+# Custom
 /app/src/test/*
 /app/src/androidTest/*
