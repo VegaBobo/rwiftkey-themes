@@ -18,7 +18,8 @@ import com.rswiftkey.ui.components.RwiftkeyPaletteButton
 
 @Composable
 fun HomepageScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSettingsClick: () -> Unit
 ) {
     val insets = WindowInsets
         .systemBars
@@ -31,7 +32,11 @@ fun HomepageScreen(
             .padding(insets)
     ) {
 
-        RwiftkeyAppBar(modifier = Modifier.align(Alignment.TopStart), showSettings = true)
+        RwiftkeyAppBar(
+            modifier = Modifier.align(Alignment.TopStart),
+            showSettings = true,
+            onSettingsClick = onSettingsClick
+        )
 
         RwiftkeyPaletteButton(
             modifier = Modifier.align(Alignment.Center)
