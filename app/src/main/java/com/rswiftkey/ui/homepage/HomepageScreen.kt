@@ -17,7 +17,7 @@ import com.rswiftkey.ui.components.RwiftkeyMainFAB
 import com.rswiftkey.ui.components.RwiftkeyPaletteButton
 
 @Composable
-fun Homepage(
+fun HomepageScreen(
     modifier: Modifier = Modifier
 ) {
     val insets = WindowInsets
