@@ -23,12 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.rswiftkey.ui.theme.SapoTheme
+import com.rswiftkey.util.KeyboardUtils
 import kotlinx.coroutines.launch
 
 class PreferencesActivity : ComponentActivity() {
 
     private val openDialog = mutableStateOf(false)
     private val targetKeyboard = mutableStateOf("")
+    private var sKeyboard = SKeyboard()
 
     private fun deleteThemes() {
         Toast.makeText(
@@ -37,11 +39,11 @@ class PreferencesActivity : ComponentActivity() {
             Toast.LENGTH_SHORT
         ).show()
         lifecycleScope.launch {
-            val app = Data.readTargetKeyboard(applicationContext)
+            //val app = Data.readTargetKeyboard(applicationContext)
             ThemesOp(
                 this@PreferencesActivity,
                 null,
-                app.packageName
+                sKeyboard.getPackage(applicationContext)
             ).clearThemes()
             Toast.makeText(
                 this@PreferencesActivity,
@@ -111,8 +113,9 @@ class PreferencesActivity : ComponentActivity() {
                 }
             }
         }
+        sKeyboard = KeyboardUtils.obtainKeyboards(applicationContext)
         lifecycleScope.launch {
-            targetKeyboard.value = Data.readTargetKeyboard(applicationContext).applicationName
+            targetKeyboard.value = sKeyboard.getName(applicationContext)
         }
     }
 
@@ -168,7 +171,7 @@ class PreferencesActivity : ComponentActivity() {
                     Text(text = getString(R.string.select_keyboard))
                 },
                 confirmButton = {
-                    val possibleTargets = Util.obtainInstalledKeyboard(this)
+                    val possibleTargets = sKeyboard.keyboards
                     Column {
                         for (t in possibleTargets) {
                             Preference(
@@ -186,10 +189,10 @@ class PreferencesActivity : ComponentActivity() {
         }
     }
 
-    private fun selectTargetKeyboard(c: Context, ka: KeyboardApplication) {
+    private fun selectTargetKeyboard(c: Context, sa: SimpleApplication) {
         lifecycleScope.launch {
-            Data.setTargetKeyboard(c, ka)
-            targetKeyboard.value = Data.readTargetKeyboard(applicationContext).applicationName
+            sKeyboard.setTargetKeyboard(c, sa)
+            targetKeyboard.value = sKeyboard.getName(c)
         }
     }
 

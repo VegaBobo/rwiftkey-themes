@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.rswiftkey.ui.theme.SapoTheme
+import com.rswiftkey.util.KeyboardUtils
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,19 +52,12 @@ class MainActivity : ComponentActivity() {
     private var loadingBarVisible: MutableState<Boolean> = mutableStateOf(false)
     private val showErrorDialog = mutableStateOf(false)
     private val isRooted = mutableStateOf(true)
+    private var sKeyboard = SKeyboard()
 
     private fun applicationCheck() {
         lifecycleScope.launch {
-            val installedKeyboards = Util.obtainInstalledKeyboard(applicationContext)
-            if (installedKeyboards.size == 1) {
-                Data.setTargetKeyboard(applicationContext, installedKeyboards[0])
-            } else if (installedKeyboards.size > 1) {
-                val kb = Data.readTargetKeyboard(applicationContext)
-                if (kb.applicationName == Data.UNKNOWN || kb.packageName == Data.UNKNOWN)
-                    Data.setTargetKeyboard(applicationContext, installedKeyboards[0])
-            } else {
-                showErrorDialog.value = true
-            }
+            sKeyboard = KeyboardUtils.obtainKeyboards(applicationContext)
+            showErrorDialog.value = sKeyboard.hasNoKeyboardsAvailable()
         }
     }
 
@@ -100,13 +94,12 @@ class MainActivity : ComponentActivity() {
     private fun installTheme(uri: Uri) {
         loadingBarVisible.value = true
         lifecycleScope.launch {
-            val application = Data.readTargetKeyboard(applicationContext)
             launch(Dispatchers.IO) {
                 try {
                     ThemesOp(
                         applicationContext,
                         uri,
-                        application.packageName
+                        sKeyboard.getPackage(applicationContext)
                     ).install()
                     runOnUiThread {
                         Toast.makeText(
@@ -153,7 +146,6 @@ class MainActivity : ComponentActivity() {
                     Scaffold(topBar = { TopContent() },
                         content = { MainContent() },
                         bottomBar = { BottomContent(fileSelection!!) })
-                    Util.obtainInstalledKeyboard(this)
 
                     if (showErrorDialog.value)
                         Dialog()
@@ -219,14 +211,17 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .clip(RoundedCornerShape(36.dp))
                     .clickable(
-                    onClick = {
-                        if (!loadingBarVisible.value)
-                            lifecycleScope.launch {
-                                val application = Data.readTargetKeyboard(applicationContext)
-                                Util.startSKActivity(application.packageName)
-                            }
-                    }
-                ),
+                        onClick = {
+                            if (!loadingBarVisible.value)
+                                lifecycleScope.launch {
+                                    Util.startSKActivity(
+                                        sKeyboard.getPackage(
+                                            applicationContext
+                                        )
+                                    )
+                                }
+                        }
+                    ),
             ) {
                 Column(
                     verticalArrangement = Arrangement.Center,

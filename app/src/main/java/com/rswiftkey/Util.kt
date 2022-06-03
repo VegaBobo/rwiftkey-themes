@@ -91,23 +91,6 @@ class Util {
             return themeArray
         }
 
-        fun obtainInstalledKeyboard(c: Context): ArrayList<KeyboardApplication> {
-            val pm: PackageManager = c.packageManager
-            val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
-            val targetPackages: ArrayList<KeyboardApplication> = ArrayList()
-
-            for (packageInfo in packages)
-                if (packageInfo.packageName.contains("touchtype.swiftkey"))
-                    targetPackages.add(
-                        KeyboardApplication(
-                            pm.getApplicationLabel(packageInfo).toString(),
-                            packageInfo.packageName
-                        )
-                    )
-
-            return targetPackages
-        }
-
         fun startSKActivity(targetPackage: String) {
             Shell
                 .cmd("am start $targetPackage/com.touchtype.materialsettings.themessettings.ThemeSettingsActivity")
