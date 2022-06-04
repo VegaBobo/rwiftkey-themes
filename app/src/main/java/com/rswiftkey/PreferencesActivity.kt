@@ -113,7 +113,7 @@ class PreferencesActivity : ComponentActivity() {
                 }
             }
         }
-        sKeyboard = KeyboardUtils.obtainKeyboards(applicationContext)
+        sKeyboard = KeyboardUtils.obtainSKeyboard(applicationContext)
         lifecycleScope.launch {
             targetKeyboard.value = sKeyboard.getName(applicationContext)
         }

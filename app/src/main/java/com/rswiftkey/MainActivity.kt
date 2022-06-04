@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 
     private fun applicationCheck() {
         lifecycleScope.launch {
-            sKeyboard = KeyboardUtils.obtainKeyboards(applicationContext)
+            sKeyboard = KeyboardUtils.obtainSKeyboard(applicationContext)
             showErrorDialog.value = sKeyboard.hasNoKeyboardsAvailable()
         }
     }

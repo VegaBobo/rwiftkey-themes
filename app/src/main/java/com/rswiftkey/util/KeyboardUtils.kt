@@ -30,6 +30,10 @@ class KeyboardUtils {
             return SKeyboard(availableKeyboards)
         }
 
+        fun obtainKeyboards(c: Context): List<SimpleApplication> {
+            return obtainSKeyboard(c).keyboards
+        }
+
     }
 
 }
