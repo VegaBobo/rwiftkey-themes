@@ -15,7 +15,7 @@ class KeyboardUtils {
             SimpleApplication("Swiftkey Beta", "com.touchtype.swiftkey.beta"),
         )
 
-        fun obtainKeyboards(c: Context): SKeyboard {
+        fun obtainSKeyboard(c: Context): SKeyboard {
             val availableKeyboards = arrayListOf<SimpleApplication>()
             for (tp in targetPackages) {
                 try {
