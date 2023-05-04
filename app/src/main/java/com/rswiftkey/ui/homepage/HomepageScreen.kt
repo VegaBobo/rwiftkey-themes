@@ -17,7 +17,7 @@ import com.rswiftkey.vm.HomepageVM
 @Composable
 fun HomepageScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
+    onClickSettings: () -> Unit,
     homeVm: HomepageVM = viewModel()
 ) {
     val insets = WindowInsets
@@ -36,7 +36,7 @@ fun HomepageScreen(
         RwiftkeyAppBar(
             modifier = Modifier.align(Alignment.TopStart),
             showSettings = true,
-            onSettingsClick = { homeVm.openSettings(navController) }
+            onSettingsClick = { onClickSettings() }
         )
 
         RwiftkeyPaletteButton(

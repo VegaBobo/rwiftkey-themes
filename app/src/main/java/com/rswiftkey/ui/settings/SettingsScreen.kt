@@ -64,7 +64,9 @@ fun SettingsScreen(
             title = stringResource(id = R.string.clear_themes),
             description = stringResource(id = R.string.clean_installed_themes),
             icon = ImageVector.vectorResource(id = R.drawable.delete),
-            onClick = { Util.deleteThemes(sk, scope, c) }
+            onClick = {
+                //Util.deleteThemes(sk, scope, c)
+            }
         )
 
         PreferenceItem(

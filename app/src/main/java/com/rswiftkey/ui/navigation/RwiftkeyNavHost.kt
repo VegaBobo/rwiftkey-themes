@@ -12,6 +12,7 @@ import com.rswiftkey.ui.settings.SettingsScreen
 object Destinations {
     const val Homepage = "/"
     const val Settings = "settings"
+    const val About = "about"
 }
 
 @Composable
@@ -26,13 +27,14 @@ fun RwiftkeyNavHost(
         modifier = modifier
     ) {
         composable(Destinations.Homepage) {
-            HomepageScreen {
-                navController.navigate(Destinations.Settings)
-            }
+            HomepageScreen(
+                onClickSettings = { navController.navigate(Destinations.Settings) }
+            )
         }
-
         composable(Destinations.Settings) {
-            SettingsScreen()
+            SettingsScreen(
+                onAboutClick = { navController.navigate(Destinations.About) }
+            )
         }
     }
 }

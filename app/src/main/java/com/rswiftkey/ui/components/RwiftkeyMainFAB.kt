@@ -1,6 +1,7 @@
 package com.rswiftkey.ui.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Add
@@ -18,7 +19,7 @@ fun RwiftkeyMainFAB(
 ) = LargeFloatingActionButton(
     modifier = modifier,
     onClick = onClick,
-    shape = Shapes.Full,
+    shape = CircleShape,
     elevation = FloatingActionButtonDefaults.loweredElevation()
 ) {
     Icon(
