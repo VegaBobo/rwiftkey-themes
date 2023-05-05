@@ -11,11 +11,11 @@ plugins {
 
 
 android {
-    namespace = "com.rswiftkey"
+    namespace = "rwiftkey.themes"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.rswiftkey"
+        applicationId = "rwiftkey.themes"
         minSdk = 23
         targetSdk = 33
         versionCode = 1
