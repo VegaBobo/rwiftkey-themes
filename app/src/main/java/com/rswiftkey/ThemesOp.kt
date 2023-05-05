@@ -5,8 +5,8 @@ import android.net.Uri
 import android.util.Log
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
-import com.rswiftkey.sk.Theme
-import com.rswiftkey.sk.Themes
+import com.rswiftkey.model.Theme
+import com.rswiftkey.model.Themes
 import java.io.BufferedReader
 import java.io.File
 

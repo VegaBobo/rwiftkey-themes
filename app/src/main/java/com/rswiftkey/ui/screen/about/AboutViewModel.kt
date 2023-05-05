@@ -6,16 +6,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class AboutVM : ViewModel() {
+class AboutViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(AboutUIState())
     val uiState: StateFlow<AboutUIState> = _uiState.asStateFlow()
 
-    var easterEggCounter = 0
+    private var easterEggCounter = 0
 
     fun increaseEasterEggCounter() {
         easterEggCounter++
-        if(easterEggCounter >= 8)
+        if (easterEggCounter >= 8)
             _uiState.update { it.copy(isEasterEggVisible = true) }
     }
 

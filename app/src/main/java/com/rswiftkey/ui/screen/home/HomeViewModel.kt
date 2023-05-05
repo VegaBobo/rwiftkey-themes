@@ -1,4 +1,4 @@
-package com.rswiftkey.ui.screen.homepage
+package com.rswiftkey.ui.screen.home
 
 import android.app.Application
 import android.net.Uri
@@ -18,13 +18,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-open class HomepageVM @Inject constructor(
+open class HomeViewModel @Inject constructor(
     val app: Application,
     val sKeyboardManager: SKeyboardManager,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomepageUIState())
-    val uiState: StateFlow<HomepageUIState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(HomeUIState())
+    val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
     fun onClickOpenTheme() {
         viewModelScope.launch { sKeyboardManager.startSKThemeAc() }
@@ -36,20 +36,20 @@ open class HomepageVM @Inject constructor(
             val targetPackage = sKeyboardManager.getPackage()
             try {
                 ThemesOp(app, uri, targetPackage).install()
-                setToastState(HomepageToast.INSTALLATION_FINISHED)
+                setToastState(HomeToast.INSTALLATION_FINISHED)
             } catch (e: Exception) {
                 Log.e(
                     BuildConfig.APPLICATION_ID,
                     "Error trying to install theme: \n" + e.stackTraceToString()
                 )
-                setToastState(HomepageToast.INSTALLATION_FAILED)
+                setToastState(HomeToast.INSTALLATION_FAILED)
             }
             _uiState.update { it.copy(isLoadingVisible = false) }
         }
     }
 
-    fun setToastState(toast: HomepageToast) {
-        _uiState.update { it.copy(homepageToast = toast) }
+    fun setToastState(toast: HomeToast) {
+        _uiState.update { it.copy(homeToast = toast) }
     }
 
 }

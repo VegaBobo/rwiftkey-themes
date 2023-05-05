@@ -1,12 +1,11 @@
 package com.rswiftkey
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.beust.klaxon.Klaxon
-import com.rswiftkey.sk.Theme
-import com.rswiftkey.sk.Themes
+import com.rswiftkey.model.Theme
+import com.rswiftkey.model.Themes
 import com.topjohnwu.superuser.Shell
 import java.io.*
 import java.util.zip.ZipEntry

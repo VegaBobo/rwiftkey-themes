@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.rswiftkey.SKeyboardManager
 import com.rswiftkey.SimpleApplication
 import com.rswiftkey.ThemesOp
-import com.rswiftkey.ui.screen.settings.SettingsUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-open class SettingsVM @Inject constructor(
+open class SettingsViewModel @Inject constructor(
     val app: Application,
     private val sKeyboardManager: SKeyboardManager,
 ) : ViewModel() {
@@ -24,7 +23,7 @@ open class SettingsVM @Inject constructor(
     private val _uiState = MutableStateFlow(SettingsUIState())
     val uiState: StateFlow<SettingsUIState> = _uiState.asStateFlow()
 
-    fun setupInitialUiState() {
+    private fun setupInitialUiState() {
         viewModelScope.launch {
             _uiState.update { it.copy(selectedKeyboard = sKeyboardManager.obtainTargetKeyboard()) }
             _uiState.update { it.copy(availableKeyboards = sKeyboardManager.availKeyboards) }
@@ -48,16 +47,17 @@ open class SettingsVM @Inject constructor(
         onToggleDialog()
     }
 
-    fun onClickClean(
-        onBeforeClean: () -> Unit = {},
-        onAfterClean: () -> Unit = {}
-    ) {
-        onBeforeClean()
+    fun onClickClean() {
+        _uiState.update { it.copy(settingToast = SettingToast.PLEASE_WAIT) }
         viewModelScope.launch {
             val targetKeyboard = sKeyboardManager.getPackage()
             ThemesOp(app, null, targetKeyboard).clearThemes()
-            onAfterClean()
+            _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
         }
+    }
+
+    fun setToastState(settingToast: SettingToast) {
+        _uiState.update { it.copy(settingToast = settingToast) }
     }
 
 }

@@ -1,8 +1,7 @@
-package com.rswiftkey.ui.screen.homepage
+package com.rswiftkey.ui.screen.home
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
@@ -17,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rswiftkey.MainActivityV2
 import com.rswiftkey.R
 import com.rswiftkey.ui.components.RwiftkeyAppBar
 import com.rswiftkey.ui.components.RwiftkeyMainFAB
@@ -29,7 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun HomepageScreen(
     modifier: Modifier = Modifier,
     onClickSettings: () -> Unit,
-    homeVm: HomepageVM = hiltViewModel()
+    homeVm: HomeViewModel = hiltViewModel()
 ) {
     val insets = WindowInsets
         .systemBars
@@ -50,19 +48,19 @@ fun HomepageScreen(
     }
 
     LaunchedEffect(Unit) {
-        snapshotFlow { uiState.homepageToast }.collectLatest {
+        snapshotFlow { uiState.homeToast }.collectLatest {
             when (it) {
-                HomepageToast.INSTALLATION_FAILED ->
+                HomeToast.INSTALLATION_FAILED ->
                     Toast.makeText(ctx, ctx.getString(R.string.error_theme), Toast.LENGTH_LONG)
                         .show()
 
-                HomepageToast.INSTALLATION_FINISHED ->
+                HomeToast.INSTALLATION_FINISHED ->
                     Toast.makeText(ctx, ctx.getString(R.string.theme_installed), Toast.LENGTH_LONG)
                         .show()
 
                 else -> {}
             }
-            homeVm.setToastState(HomepageToast.NONE)
+            homeVm.setToastState(HomeToast.NONE)
         }
     }
 

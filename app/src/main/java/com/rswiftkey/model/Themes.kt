@@ -1,10 +1,10 @@
-package com.rswiftkey.sk
+package com.rswiftkey.model
 
-class Themes(
+data class Themes(
     val themes: List<Theme>
 )
 
-class Theme(
+data class Theme(
     val id: String = "",
     val name: String = "",
     val formatVersion: Int = 0,

@@ -1,4 +1,4 @@
-package com.rswiftkey.ui.navigation
+package com.rswiftkey.ui.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rswiftkey.ui.screen.about.AboutScreen
-import com.rswiftkey.ui.screen.homepage.HomepageScreen
+import com.rswiftkey.ui.screen.home.HomepageScreen
 import com.rswiftkey.ui.screen.settings.SettingsScreen
 
 object Destinations {
