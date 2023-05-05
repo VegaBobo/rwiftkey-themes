@@ -1,8 +1,10 @@
 package com.rswiftkey.vm
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rswiftkey.R
 import com.rswiftkey.SKeyboardManager
 import com.rswiftkey.SimpleApplication
 import com.rswiftkey.ThemesOp
@@ -48,10 +50,15 @@ open class SettingsVM @Inject constructor(
         onToggleDialog()
     }
 
-    fun onClickClean() {
+    fun onClickClean(
+        onBeforeClean: () -> Unit = {},
+        onAfterClean: () -> Unit = {}
+    ) {
+        onBeforeClean()
         viewModelScope.launch {
             val targetKeyboard = sKeyboardManager.getPackage()
             ThemesOp(app, null, targetKeyboard).clearThemes()
+            onAfterClean()
         }
     }
 
