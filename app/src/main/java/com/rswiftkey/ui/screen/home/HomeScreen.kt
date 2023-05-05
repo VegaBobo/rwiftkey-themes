@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,33 +70,45 @@ fun HomepageScreen(
             .fillMaxSize()
             .padding(insets)
     ) {
+        if (uiState.isCompatible) {
+            RwiftkeyAppBar(
+                modifier = Modifier.align(Alignment.TopStart),
+                showSettings = true,
+                onSettingsClick = { onClickSettings() }
+            )
 
-        RwiftkeyAppBar(
-            modifier = Modifier.align(Alignment.TopStart),
-            showSettings = true,
-            onSettingsClick = { onClickSettings() }
-        )
+            RwiftkeyPaletteButton(
+                modifier = Modifier.align(Alignment.Center),
+                onClick = { homeVm.onClickOpenTheme() }
+            )
 
-        RwiftkeyPaletteButton(
-            modifier = Modifier.align(Alignment.Center),
-            onClick = { homeVm.onClickOpenTheme() }
-        )
-
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter).animateContentSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (uiState.isLoadingVisible)
-                CircularProgressIndicator(modifier = Modifier.padding(48.dp))
-            else
-                RwiftkeyMainFAB(
-                    modifier = Modifier
-                        .padding(bottom = 16.dp),
-                    onClick = {
-                        launcherSelectFile.launch(chooseFile)
-                    }
-                )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (uiState.isLoadingVisible)
+                    CircularProgressIndicator(modifier = Modifier.padding(48.dp))
+                else
+                    RwiftkeyMainFAB(
+                        modifier = Modifier
+                            .padding(bottom = 16.dp),
+                        onClick = {
+                            launcherSelectFile.launch(chooseFile)
+                        }
+                    )
+            }
+        } else {
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(id = R.string.dialog_no_root_title))
+                Text(text = stringResource(id = R.string.dialog_no_root_desc))
+            }
         }
+
     }
 
 }

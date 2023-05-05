@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.rswiftkey.BuildConfig
 import com.rswiftkey.core.SKeyboardManager
 import com.rswiftkey.installation.root.ThemesOp
+import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,11 @@ open class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
+
+    init {
+        if(!Shell.getShell().isRoot)
+            _uiState.update { it.copy(isCompatible = false) }
+    }
 
     fun onClickOpenTheme() {
         viewModelScope.launch { sKeyboardManager.startSKThemeAc() }

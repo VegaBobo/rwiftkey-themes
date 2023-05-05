@@ -7,6 +7,7 @@ enum class HomeToast {
 }
 
 data class HomeUIState(
+    val isCompatible: Boolean = true,
     val homeToast: HomeToast = HomeToast.NONE,
     val isLoadingVisible: Boolean = false
 )
