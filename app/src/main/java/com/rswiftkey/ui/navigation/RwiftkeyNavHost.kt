@@ -6,8 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rswiftkey.ui.homepage.HomepageScreen
-import com.rswiftkey.ui.settings.SettingsScreen
+import com.rswiftkey.ui.screen.about.AboutScreen
+import com.rswiftkey.ui.screen.homepage.HomepageScreen
+import com.rswiftkey.ui.screen.settings.SettingsScreen
 
 object Destinations {
     const val Homepage = "/"
@@ -35,6 +36,9 @@ fun RwiftkeyNavHost(
             SettingsScreen(
                 onAboutClick = { navController.navigate(Destinations.About) }
             )
+        }
+        composable(Destinations.About) {
+            AboutScreen()
         }
     }
 }

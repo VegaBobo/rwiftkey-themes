@@ -1,14 +1,12 @@
-package com.rswiftkey.vm
+package com.rswiftkey.ui.screen.settings
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rswiftkey.R
 import com.rswiftkey.SKeyboardManager
 import com.rswiftkey.SimpleApplication
 import com.rswiftkey.ThemesOp
-import com.rswiftkey.ui.settings.SettingsUIState
+import com.rswiftkey.ui.screen.settings.SettingsUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package com.rswiftkey.vm
+package com.rswiftkey.ui.screen.homepage
 
 import android.app.Application
 import android.net.Uri

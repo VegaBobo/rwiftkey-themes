@@ -1,4 +1,4 @@
-package com.rswiftkey.ui.settings
+package com.rswiftkey.ui.screen.settings
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,6 @@ import com.rswiftkey.R
 import com.rswiftkey.ui.components.DialogKeyboardSelection
 import com.rswiftkey.ui.components.PreferenceItem
 import com.rswiftkey.ui.components.RwiftkeyAppBar
-import com.rswiftkey.vm.SettingsVM
 
 @Composable
 fun SettingsScreen(

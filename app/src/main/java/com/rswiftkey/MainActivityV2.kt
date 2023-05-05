@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.rswiftkey.ui.RwiftkeyApp
-import com.rswiftkey.vm.HomepageVM
+import com.rswiftkey.ui.screen.homepage.HomepageVM
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

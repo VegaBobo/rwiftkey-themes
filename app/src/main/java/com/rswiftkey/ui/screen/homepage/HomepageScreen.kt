@@ -1,4 +1,4 @@
-package com.rswiftkey.ui.homepage
+package com.rswiftkey.ui.screen.homepage
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -7,13 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.rswiftkey.MainActivityV2
 import com.rswiftkey.ui.components.RwiftkeyAppBar
 import com.rswiftkey.ui.components.RwiftkeyMainFAB
 import com.rswiftkey.ui.components.RwiftkeyPaletteButton
-import com.rswiftkey.vm.HomepageVM
 
 @Composable
 fun HomepageScreen(

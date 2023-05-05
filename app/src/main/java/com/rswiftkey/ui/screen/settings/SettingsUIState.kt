@@ -1,4 +1,4 @@
-package com.rswiftkey.ui.settings
+package com.rswiftkey.ui.screen.settings
 
 import androidx.compose.runtime.mutableStateListOf
 import com.rswiftkey.SimpleApplication
