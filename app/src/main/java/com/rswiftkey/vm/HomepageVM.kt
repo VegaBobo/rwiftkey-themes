@@ -26,7 +26,7 @@ open class HomepageVM @Inject constructor(
     }
 
     fun openThemeSection() {
-        //Util.startSKActivity()
+        viewModelScope.launch { sKeyboardManager.startSKThemeAc() }
     }
 
     fun openSettings(navController: NavHostController) {

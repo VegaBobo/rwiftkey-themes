@@ -29,6 +29,10 @@ class SKeyboardManager(
         loadAvailableKeyboards()
     }
 
+    suspend fun startSKThemeAc(){
+        Util.startSKActivity(getPackage())
+    }
+
     fun hasKeyboardsAvailable(): Boolean {
         return keyboards.isNotEmpty()
     }
