@@ -2,11 +2,16 @@ package com.rswiftkey
 
 import android.content.Context
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 
 class SKeyboardManager(
     private val ctx: Context,
-    val keyboards: ArrayList<SimpleApplication> = arrayListOf()
-) : SKeyboardPrefUtils() {
+    dataStore: DataStore<Preferences>
+) : AppPreferences(dataStore) {
+
+    // SKeyboard apps installed on phone
+    val availKeyboards: ArrayList<SimpleApplication> = arrayListOf()
 
     private val targetPackages = arrayListOf(
         SimpleApplication("Swiftkey", "com.touchtype.swiftkey"),
@@ -17,7 +22,7 @@ class SKeyboardManager(
         for (tp in targetPackages) {
             try {
                 ctx.packageManager.getPackageInfo(tp.packageName, 0)
-                keyboards.add(tp)
+                availKeyboards.add(tp)
                 if (BuildConfig.DEBUG)
                     Log.i("obtainSwiftKeyInstallation", tp.packageName)
             } catch (_: Exception) {
@@ -29,29 +34,29 @@ class SKeyboardManager(
         loadAvailableKeyboards()
     }
 
-    suspend fun startSKThemeAc(){
+    suspend fun startSKThemeAc() {
         Util.startSKActivity(getPackage())
     }
 
     fun hasKeyboardsAvailable(): Boolean {
-        return keyboards.isNotEmpty()
+        return availKeyboards.isNotEmpty()
     }
 
     fun hasNoKeyboardsAvailable(): Boolean {
-        return keyboards.isEmpty()
+        return availKeyboards.isEmpty()
     }
 
     suspend fun getPackage(): String {
-        val app = obtainTargetKeyboard(ctx)
+        val app = obtainTargetKeyboard()
         return app.packageName
     }
 
     suspend fun getName(): String {
-        val app = obtainTargetKeyboard(ctx)
+        val app = obtainTargetKeyboard()
         return app.applicationName
     }
 
-    suspend fun obtainTargetKeyboard(c: Context): SimpleApplication {
+    suspend fun obtainTargetKeyboard(): SimpleApplication {
 
         // if user has no available keyboards, return empty SimpleApplication
         if (hasNoKeyboardsAvailable()) return SimpleApplication()
@@ -59,8 +64,8 @@ class SKeyboardManager(
         // try to match same keyboard information stored in DataStore
         // with the same one within this object, if they match, return it
         // we do that, to make sure that Swiftkey app stored in DataStore is installed on device
-        val target = readTargetKeyboard(c)
-        for (keyboard in keyboards)
+        val target = readTargetKeyboard()
+        for (keyboard in availKeyboards)
             if (target.packageName == keyboard.packageName)
                 return target
 
@@ -69,10 +74,10 @@ class SKeyboardManager(
         // maybe user has uninstalled app, so, we will retarget available app
         // and return it, since it is available
         val targetKeyboard = SimpleApplication(
-            keyboards.first().applicationName,
-            keyboards.first().packageName,
+            availKeyboards.first().applicationName,
+            availKeyboards.first().packageName,
         )
-        setTargetKeyboard(c, targetKeyboard)
+        setTargetKeyboard(targetKeyboard)
         return targetKeyboard
     }
 

@@ -7,35 +7,28 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.rswiftkey.R
 import com.rswiftkey.ui.components.DialogKeyboardSelection
 import com.rswiftkey.ui.components.PreferenceItem
 import com.rswiftkey.ui.components.RwiftkeyAppBar
+import com.rswiftkey.vm.SettingsVM
 import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
-    onAboutClick: () -> Unit
+    onAboutClick: () -> Unit,
+    settingsVM: SettingsVM = hiltViewModel()
 ) {
-
+    val uiState by settingsVM.uiState.collectAsState()
     val insets = WindowInsets.systemBars.only(WindowInsetsSides.Vertical).asPaddingValues()
 
-    var showDialog by remember { mutableStateOf(false) }
-    var currentKeyboard by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
-    val c = LocalContext.current
-
-//    if (showDialog) DialogKeyboardSelection(
-//        availKeyboards = sk.keyboards,
-//        onDismissRequest = { showDialog = !showDialog },
-//        onClick = {
-//            scope.launch {
-//                sk.setTargetKeyboard(c, it)
-//                currentKeyboard = it.applicationName
-//            }
-//            showDialog = !showDialog
-//        },
-//    )
+    if (uiState.isDialogVisible)
+        DialogKeyboardSelection(
+            availKeyboards = uiState.availableKeyboards,
+            onDismissRequest = { settingsVM.onToggleDialog() },
+            onClick = { settingsVM.onClickKeyboardSelection(it) },
+        )
 
     Column(
         modifier = Modifier
@@ -47,22 +40,17 @@ fun SettingsScreen(
             showSettings = false, title = stringResource(id = R.string.title_activity_preferences)
         )
 
-//        LaunchedEffect(key1 = Unit) {
-//            currentKeyboard = sk.getName(c)
-//        }
-
-        PreferenceItem(title = stringResource(id = R.string.target_keyboard),
-            description = currentKeyboard,
+        PreferenceItem(
+            title = stringResource(id = R.string.target_keyboard),
+            description = uiState.selectedKeyboard.applicationName,
             icon = ImageVector.vectorResource(id = R.drawable.keyboard),
-            onClick = { showDialog = !showDialog })
+            onClick = { settingsVM.onToggleDialog() })
 
         PreferenceItem(
             title = stringResource(id = R.string.clear_themes),
             description = stringResource(id = R.string.clean_installed_themes),
             icon = ImageVector.vectorResource(id = R.drawable.delete),
-            onClick = {
-                //Util.deleteThemes(sk, scope, c)
-            }
+            onClick = { settingsVM.onClickClean() }
         )
 
         PreferenceItem(

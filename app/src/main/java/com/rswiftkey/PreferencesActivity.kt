@@ -174,7 +174,7 @@ class PreferencesActivity : ComponentActivity() {
                     Text(text = getString(R.string.select_keyboard))
                 },
                 confirmButton = {
-                    val possibleTargets = sKeyboardManager.keyboards
+                    val possibleTargets = sKeyboardManager.availKeyboards
                     Column {
                         for (t in possibleTargets) {
                             Preference(
@@ -194,7 +194,7 @@ class PreferencesActivity : ComponentActivity() {
 
     private fun selectTargetKeyboard(c: Context, sa: SimpleApplication) {
         lifecycleScope.launch {
-            sKeyboardManager.setTargetKeyboard(c, sa)
+            //sKeyboardManager.setTargetKeyboard(c, sa)
             targetKeyboard.value = sKeyboardManager.getName()
         }
     }
