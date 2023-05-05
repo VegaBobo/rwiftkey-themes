@@ -23,7 +23,7 @@ class SKeyboardManager(
     private fun loadAvailableKeyboards() {
         for (tp in targetPackages) {
             try {
-                ctx.packageManager.getPackageInfo(tp.packageName, 0)
+                ctx.packageManager.getPackageInfoCompat(tp.packageName, 0)
                 availKeyboards.add(tp)
                 if (BuildConfig.DEBUG)
                     Log.i("obtainSwiftKeyInstallation", tp.packageName)

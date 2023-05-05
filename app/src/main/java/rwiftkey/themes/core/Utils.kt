@@ -1,7 +1,10 @@
 package rwiftkey.themes.core
 
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
@@ -99,3 +102,10 @@ class Utils {
     }
 
 }
+
+fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
+    } else {
+        @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+    }
