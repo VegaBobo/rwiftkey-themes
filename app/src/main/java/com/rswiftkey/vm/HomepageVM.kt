@@ -3,6 +3,7 @@ package com.rswiftkey.vm
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.rswiftkey.SKeyboardManager
@@ -16,7 +17,7 @@ import javax.inject.Inject
 open class HomepageVM @Inject constructor(
     val app: Application,
     val sKeyboardManager: SKeyboardManager,
-) : AndroidViewModel(app) {
+) : ViewModel() {
 
     fun addTheme(uri: Uri, sKeyboardManager: SKeyboardManager) {
         viewModelScope.launch {
