@@ -30,6 +30,7 @@ class ThemesOp(
 
     @Throws(Exception::class)
     fun install() {
+        println("install call")
         //File(temporaryWorkFolder).deleteRecursively()
         File(temporaryWorkFolder).mkdir()
 
@@ -50,7 +51,7 @@ class ThemesOp(
 
         themes.addAll(Util.jsonToThemeObject(skInstalledThemes))
 
-        val skUid = Shell.cmd("dumpsys package $packageNameFromSKApp | grep userId")
+        val skUid = Shell.cmd("dumpsys package $packageNameFromSKApp | grep -E \"appId=|userId=\"")
             .exec().out[0].trim().split("=")[1]
 
         val finalJson = Klaxon().toJsonString(Themes(themes.distinctBy { it.id }))
