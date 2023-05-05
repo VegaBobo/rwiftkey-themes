@@ -1,4 +1,4 @@
-package com.rswiftkey
+package com.rswiftkey.model
 
 class SimpleApplication(
     val applicationName: String = "",

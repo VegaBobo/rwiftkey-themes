@@ -1,4 +1,4 @@
-package com.rswiftkey
+package com.rswiftkey.core
 
 import android.content.Context
 import android.net.Uri
@@ -12,7 +12,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 
-class Util {
+class Utils {
 
     companion object {
 

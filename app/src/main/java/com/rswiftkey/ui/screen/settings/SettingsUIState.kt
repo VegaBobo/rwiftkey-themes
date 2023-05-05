@@ -1,7 +1,7 @@
 package com.rswiftkey.ui.screen.settings
 
 import androidx.compose.runtime.mutableStateListOf
-import com.rswiftkey.SimpleApplication
+import com.rswiftkey.model.SimpleApplication
 
 enum class SettingToast {
     NONE,

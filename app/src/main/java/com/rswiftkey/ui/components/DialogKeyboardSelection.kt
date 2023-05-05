@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.rswiftkey.R
-import com.rswiftkey.SimpleApplication
+import com.rswiftkey.model.SimpleApplication
 
 @Composable
 fun DialogKeyboardSelection(

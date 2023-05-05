@@ -1,9 +1,11 @@
-package com.rswiftkey
+package com.rswiftkey.core
 
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.rswiftkey.BuildConfig
+import com.rswiftkey.model.SimpleApplication
 
 class SKeyboardManager(
     private val ctx: Context,
@@ -35,7 +37,7 @@ class SKeyboardManager(
     }
 
     suspend fun startSKThemeAc() {
-        Util.startSKActivity(getPackage())
+        Utils.startSKActivity(getPackage())
     }
 
     fun hasKeyboardsAvailable(): Boolean {

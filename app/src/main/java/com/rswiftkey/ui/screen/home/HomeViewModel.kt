@@ -6,8 +6,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rswiftkey.BuildConfig
-import com.rswiftkey.SKeyboardManager
-import com.rswiftkey.ThemesOp
+import com.rswiftkey.core.SKeyboardManager
+import com.rswiftkey.installation.root.ThemesOp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

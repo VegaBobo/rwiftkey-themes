@@ -1,4 +1,4 @@
-package com.rswiftkey
+package com.rswiftkey.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.rswiftkey.core.AppPreferences
+import com.rswiftkey.core.SKeyboardManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

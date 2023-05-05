@@ -1,9 +1,11 @@
-package com.rswiftkey
+package com.rswiftkey.installation.root
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.beust.klaxon.Klaxon
+import com.rswiftkey.BuildConfig
+import com.rswiftkey.core.Utils
 import com.topjohnwu.superuser.Shell
 import com.rswiftkey.model.Theme
 import com.rswiftkey.model.Themes
@@ -34,9 +36,9 @@ class ThemesOp(
         //File(temporaryWorkFolder).deleteRecursively()
         File(temporaryWorkFolder).mkdir()
 
-        Util.copyFile(c, uri!!, absoluteForZipThemeFile)
+        Utils.copyFile(c, uri!!, absoluteForZipThemeFile)
 
-        Util.unzip(absoluteForZipThemeFile, temporaryWorkFolder)
+        Utils.unzip(absoluteForZipThemeFile, temporaryWorkFolder)
 
         val bufferedReader: BufferedReader =
             File(jsonFileFromTheme).bufferedReader()
@@ -44,12 +46,12 @@ class ThemesOp(
 
         val themes: ArrayList<Theme> = ArrayList()
 
-        themes.addAll(Util.jsonToThemeObject(inputString))
+        themes.addAll(Utils.jsonToThemeObject(inputString))
 
         val skInstalledThemes =
             Shell.cmd("cat $absoluteForTargetJson").exec().out[0]
 
-        themes.addAll(Util.jsonToThemeObject(skInstalledThemes))
+        themes.addAll(Utils.jsonToThemeObject(skInstalledThemes))
 
         val skUid = Shell.cmd("dumpsys package $packageNameFromSKApp | grep -E \"appId=|userId=\"")
             .exec().out[0].trim().split("=")[1]
