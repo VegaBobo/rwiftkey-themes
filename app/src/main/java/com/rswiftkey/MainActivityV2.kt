@@ -9,10 +9,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.rswiftkey.ui.RwiftkeyApp
-import com.rswiftkey.util.KeyboardUtils
 import com.rswiftkey.vm.HomepageVM
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 // TODO: Rename to MainActivity once ready to be released
 @AndroidEntryPoint
@@ -33,7 +33,9 @@ class MainActivityV2 : AppCompatActivity() {
     private val mainActivityVM: HomepageVM by viewModels()
 
     var fileSelection: ActivityResultLauncher<Intent>? = null
-    var sKeyboard = SKeyboard()
+
+    @Inject
+    lateinit var sKeyboardManager: SKeyboardManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +45,11 @@ class MainActivityV2 : AppCompatActivity() {
 
         setContent { RwiftkeyApp() }
 
-        sKeyboard = KeyboardUtils.obtainSKeyboard(this)
-
         fileSelection =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == RESULT_OK) {
                     val uri = result.data!!.data
-                    mainActivityVM.addTheme(uri!!, sKeyboard)
+                    mainActivityVM.addTheme(uri!!, sKeyboardManager)
                 }
             }
 

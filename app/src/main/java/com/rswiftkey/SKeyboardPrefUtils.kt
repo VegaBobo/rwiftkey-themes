@@ -2,7 +2,7 @@ package com.rswiftkey
 
 import android.content.Context
 
-open class SKeyboardDS {
+open class SKeyboardPrefUtils {
 
     companion object {
         const val PREF_TARGET_APPNAME = "target_appname"

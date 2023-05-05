@@ -29,12 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.rswiftkey.ui.theme.SapoTheme
-import com.rswiftkey.util.KeyboardUtils
 import com.topjohnwu.superuser.Shell
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     companion object {
@@ -52,12 +53,13 @@ class MainActivity : ComponentActivity() {
     private var loadingBarVisible: MutableState<Boolean> = mutableStateOf(false)
     private val showErrorDialog = mutableStateOf(false)
     private val isRooted = mutableStateOf(true)
-    private var sKeyboard = SKeyboard()
+
+    @Inject
+    lateinit var sKeyboardManager: SKeyboardManager
 
     private fun applicationCheck() {
         lifecycleScope.launch {
-            sKeyboard = KeyboardUtils.obtainSKeyboard(applicationContext)
-            showErrorDialog.value = sKeyboard.hasNoKeyboardsAvailable()
+            showErrorDialog.value = sKeyboardManager.hasNoKeyboardsAvailable()
         }
     }
 
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
                     ThemesOp(
                         applicationContext,
                         uri,
-                        sKeyboard.getPackage(applicationContext)
+                        sKeyboardManager.getPackage()
                     ).install()
                     runOnUiThread {
                         Toast.makeText(
@@ -215,9 +217,7 @@ class MainActivity : ComponentActivity() {
                             if (!loadingBarVisible.value)
                                 lifecycleScope.launch {
                                     Util.startSKActivity(
-                                        sKeyboard.getPackage(
-                                            applicationContext
-                                        )
+                                        sKeyboardManager.getPackage()
                                     )
                                 }
                         }

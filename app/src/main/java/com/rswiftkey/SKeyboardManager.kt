@@ -1,8 +1,33 @@
 package com.rswiftkey
 
 import android.content.Context
+import android.util.Log
 
-class SKeyboard(public val keyboards: List<SimpleApplication> = listOf()) : SKeyboardDS() {
+class SKeyboardManager(
+    private val ctx: Context,
+    val keyboards: ArrayList<SimpleApplication> = arrayListOf()
+) : SKeyboardPrefUtils() {
+
+    private val targetPackages = arrayListOf(
+        SimpleApplication("Swiftkey", "com.touchtype.swiftkey"),
+        SimpleApplication("Swiftkey Beta", "com.touchtype.swiftkey.beta"),
+    )
+
+    private fun loadAvailableKeyboards() {
+        for (tp in targetPackages) {
+            try {
+                ctx.packageManager.getPackageInfo(tp.packageName, 0)
+                keyboards.add(tp)
+                if (BuildConfig.DEBUG)
+                    Log.i("obtainSwiftKeyInstallation", tp.packageName)
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    init {
+        loadAvailableKeyboards()
+    }
 
     fun hasKeyboardsAvailable(): Boolean {
         return keyboards.isNotEmpty()
@@ -12,13 +37,13 @@ class SKeyboard(public val keyboards: List<SimpleApplication> = listOf()) : SKey
         return keyboards.isEmpty()
     }
 
-    suspend fun getPackage(c: Context): String {
-        val app = obtainTargetKeyboard(c)
+    suspend fun getPackage(): String {
+        val app = obtainTargetKeyboard(ctx)
         return app.packageName
     }
 
-    suspend fun getName(c: Context): String {
-        val app = obtainTargetKeyboard(c)
+    suspend fun getName(): String {
+        val app = obtainTargetKeyboard(ctx)
         return app.applicationName
     }
 

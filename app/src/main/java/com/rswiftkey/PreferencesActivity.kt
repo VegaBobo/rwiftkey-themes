@@ -23,14 +23,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.rswiftkey.ui.theme.SapoTheme
-import com.rswiftkey.util.KeyboardUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PreferencesActivity : ComponentActivity() {
 
     private val openDialog = mutableStateOf(false)
     private val targetKeyboard = mutableStateOf("")
-    private var sKeyboard = SKeyboard()
+
+    @Inject
+    lateinit var sKeyboardManager: SKeyboardManager
 
     private fun deleteThemes() {
         Toast.makeText(
@@ -43,7 +47,7 @@ class PreferencesActivity : ComponentActivity() {
             ThemesOp(
                 this@PreferencesActivity,
                 null,
-                sKeyboard.getPackage(applicationContext)
+                sKeyboardManager.getPackage()
             ).clearThemes()
             Toast.makeText(
                 this@PreferencesActivity,
@@ -113,9 +117,8 @@ class PreferencesActivity : ComponentActivity() {
                 }
             }
         }
-        sKeyboard = KeyboardUtils.obtainSKeyboard(applicationContext)
         lifecycleScope.launch {
-            targetKeyboard.value = sKeyboard.getName(applicationContext)
+            targetKeyboard.value = sKeyboardManager.getName()
         }
     }
 
@@ -171,7 +174,7 @@ class PreferencesActivity : ComponentActivity() {
                     Text(text = getString(R.string.select_keyboard))
                 },
                 confirmButton = {
-                    val possibleTargets = sKeyboard.keyboards
+                    val possibleTargets = sKeyboardManager.keyboards
                     Column {
                         for (t in possibleTargets) {
                             Preference(
@@ -191,8 +194,8 @@ class PreferencesActivity : ComponentActivity() {
 
     private fun selectTargetKeyboard(c: Context, sa: SimpleApplication) {
         lifecycleScope.launch {
-            sKeyboard.setTargetKeyboard(c, sa)
-            targetKeyboard.value = sKeyboard.getName(c)
+            sKeyboardManager.setTargetKeyboard(c, sa)
+            targetKeyboard.value = sKeyboardManager.getName()
         }
     }
 
