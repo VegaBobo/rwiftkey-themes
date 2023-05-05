@@ -6,6 +6,7 @@ plugins {
     kotlin("kapt")
     kotlin("plugin.parcelize")
     id("dagger.hilt.android.plugin")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 
@@ -88,6 +89,7 @@ dependencies {
     implementation("com.github.topjohnwu.libsu:core:_")
     implementation("com.github.topjohnwu.libsu:io:_")
 
+    implementation("com.mikepenz:aboutlibraries-core:_")
     implementation("com.beust:klaxon:_")
 
     implementation(COIL)
