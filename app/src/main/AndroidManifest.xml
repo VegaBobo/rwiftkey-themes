@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
-        <package android:name="com.touchtype.swiftkey"/>
-        <package android:name="com.touchtype.swiftkey.beta"/>
+        <package android:name="com.touchtype.swiftkey" />
+        <package android:name="com.touchtype.swiftkey.beta" />
     </queries>
 
     <application
@@ -28,6 +28,28 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="content" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.rwift" />
+                <data android:pathPattern=".*..*..*..*..*..*.rwift" />
+                <data android:pathPattern=".*..*..*..*..*.rwift" />
+                <data android:pathPattern=".*..*..*..*.rwift" />
+                <data android:pathPattern=".*..*..*.rwift" />
+                <data android:pathPattern=".*..*.rwift" />
+                <data android:pathPattern=".*.rwift" />
+                <data android:pathPattern=".*\\.zip" />
+                <data android:pathPattern=".*..*..*..*..*..*.zip" />
+                <data android:pathPattern=".*..*..*..*..*.zip" />
+                <data android:pathPattern=".*..*..*..*.zip" />
+                <data android:pathPattern=".*..*..*.zip" />
+                <data android:pathPattern=".*..*.zip" />
+                <data android:pathPattern=".*.zip" />
+            </intent-filter>
         </activity>
 
         <meta-data
@@ -50,20 +72,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-<!--        <activity-->
-<!--            android:name=".InstallIntent"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-
-<!--                <data android:host="*" />-->
-<!--                <data android:scheme="file" />-->
-<!--                <data android:scheme="content" />-->
-<!--                <data android:mimeType="application/zip" />-->
-<!--                <data android:mimeType="application/octet-stream" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
     </application>
 
 </manifest>

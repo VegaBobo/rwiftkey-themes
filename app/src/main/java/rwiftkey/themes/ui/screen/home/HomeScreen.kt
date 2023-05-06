@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import rwiftkey.themes.R
+import rwiftkey.themes.core.findActivity
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
 import rwiftkey.themes.ui.components.RwiftkeyMainFAB
 import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
@@ -55,6 +56,9 @@ fun HomepageScreen(
     }
 
     LaunchedEffect(Unit) {
+        val givenUri = ctx.findActivity().intent?.data
+        if (givenUri != null)
+            homeVm.onFileSelected(givenUri)
         snapshotFlow { uiState.homeToast }.collectLatest {
             when (it) {
                 HomeToast.INSTALLATION_FAILED ->
