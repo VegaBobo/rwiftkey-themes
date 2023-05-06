@@ -3,8 +3,12 @@ package rwiftkey.themes.ui.screen.home
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -12,8 +16,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,8 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -78,7 +91,9 @@ fun HomepageScreen(
             .fillMaxSize()
             .padding(insets)
     ) {
-        if (uiState.isCompatible) {
+        if (uiState.operationMode == AppOperationMode.INCOMPATIBLE) {
+            ContinueWithXposedContainer { homeVm.onClickSwitchToXposed() }
+        } else {
             RwiftkeyAppBar(
                 modifier = Modifier.align(Alignment.TopStart),
                 showSettings = true,
@@ -106,14 +121,6 @@ fun HomepageScreen(
                             launcherSelectFile.launch(chooseFile)
                         }
                     )
-            }
-        } else {
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(id = R.string.dialog_no_root_title))
-                Text(text = stringResource(id = R.string.dialog_no_root_desc))
             }
         }
 

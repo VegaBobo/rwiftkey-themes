@@ -30,6 +30,26 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="Xposed module for Rwiftkey Themes (made for Rootless usage with LSPatch)" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="93" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
 <!--        <activity-->
 <!--            android:name=".InstallIntent"-->
 <!--            android:exported="true">-->

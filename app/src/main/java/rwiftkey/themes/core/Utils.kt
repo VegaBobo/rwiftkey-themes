@@ -1,13 +1,16 @@
 package rwiftkey.themes.core
 
+import android.app.Application
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
+import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
 import java.io.*
@@ -109,3 +112,22 @@ fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): Pa
     } else {
         @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
     }
+
+fun Application.copyFile(input: Uri, output: Uri): Boolean? {
+    try {
+        val out = this.contentResolver.openOutputStream(output)
+        val inp = this.contentResolver.openInputStream(input)
+        val buffer = ByteArray(1024)
+        var read: Int
+        while (inp!!.read(buffer).also { read = it } != -1) {
+            out!!.write(buffer, 0, read)
+        }
+        inp.close()
+        out!!.flush()
+        out.close()
+        return true
+    } catch (e: Exception) {
+        Log.e(BuildConfig.APPLICATION_ID, "Copy operation failed: \n${e.stackTraceToString()}")
+        return null
+    }
+}

@@ -16,6 +16,11 @@
     <string name="dialog_no_root_title">Root unavailable</string>
     <string name="dialog_no_root_desc">This app requires root to work</string>
 
+    <!-- Xposed OPMode -->
+    <string name="proceed_without_root_title">Proceed without root?</string>
+    <string name="proceed_without_root_desc">You can still use Rwiftkey Themes without root, with the help of LSPatch (rootless Xposed implementation), you must install LSPatch and patch desired keyboard before proceed.</string>
+    <string name="mcontinue">Continue</string>
+
     <string name="dialog_close">Close app</string>
 
     <!-- Preferences Activity -->
@@ -41,4 +46,7 @@
     <string name="libraries_list">Libraries list</string>
     <string name="library_info">some libraries may contains dependencies that aren\'t listed here</string>
     <string name="close">Close</string>
+
+    <!-- Xposed -->
+    <string name="installing_theme">Installing theme, please wait…</string>
 </resources>

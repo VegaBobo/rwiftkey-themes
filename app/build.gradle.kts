@@ -25,7 +25,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -91,6 +94,7 @@ dependencies {
 
     implementation("com.mikepenz:aboutlibraries-core:_")
     implementation("com.beust:klaxon:_")
+    compileOnly("de.robv.android.xposed:api:82")
 
     implementation(COIL)
     implementation(COIL.gif)

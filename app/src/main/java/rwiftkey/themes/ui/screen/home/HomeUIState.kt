@@ -6,8 +6,14 @@ enum class HomeToast {
     INSTALLATION_FAILED
 }
 
+enum class AppOperationMode {
+    INCOMPATIBLE,
+    ROOT,
+    XPOSED
+}
+
 data class HomeUIState(
-    val isCompatible: Boolean = true,
+    val operationMode: AppOperationMode = AppOperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
     val isLoadingVisible: Boolean = false
 )

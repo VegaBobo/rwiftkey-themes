@@ -32,8 +32,6 @@ class ThemesOp(
 
     @Throws(Exception::class)
     fun install() {
-        println("install call")
-        //File(temporaryWorkFolder).deleteRecursively()
         File(temporaryWorkFolder).mkdir()
 
         Utils.copyFile(c, uri!!, absoluteForZipThemeFile)
