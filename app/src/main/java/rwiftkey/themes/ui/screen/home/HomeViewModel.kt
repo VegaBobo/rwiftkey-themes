@@ -17,18 +17,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.xposed.IntentAction
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
-import rwiftkey.themes.installation.root.ThemesOp
+import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.installation.RootThemeManager
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     val app: Application,
-    val sKeyboardManager: SKeyboardManager,
-    val appPreferences: AppPreferences
+    private val sKeyboardManager: SKeyboardManager,
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState())
@@ -38,27 +40,26 @@ open class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             if (Shell.getShell().isRoot) {
                 _uiState.update { it.copy(operationMode = AppOperationMode.ROOT) }
+                sKeyboardManager.operationMode = AppOperationMode.ROOT
                 return@launch
             }
             if (appPreferences.readUseXposed()) {
                 _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
+                sKeyboardManager.operationMode = AppOperationMode.XPOSED
                 return@launch
             }
             _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
+            sKeyboardManager.operationMode = AppOperationMode.INCOMPATIBLE
         }
     }
 
     fun onClickOpenTheme() {
         viewModelScope.launch {
-            if (Shell.getShell().isRoot) {
+            if (sKeyboardManager.isRooted()) {
                 sKeyboardManager.startSKThemeAc()
                 return@launch
             }
-            val i = Intent()
-            i.setClassName(sKeyboardManager.getPackage(), "com.touchtype.LauncherActivity")
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            i.putExtra("openThemesSection", true)
-            app.startActivity(i)
+            app.startSKActivity(sKeyboardManager.getPackage(), IntentAction.OPEN_THEME_SECTION)
         }
     }
 
@@ -69,7 +70,7 @@ open class HomeViewModel @Inject constructor(
             try {
                 when (uiState.value.operationMode) {
                     AppOperationMode.ROOT -> {
-                        ThemesOp(app, uri, targetPackage).install()
+                        RootThemeManager(app, uri, targetPackage).install()
                     }
 
                     AppOperationMode.XPOSED -> {
@@ -106,13 +107,12 @@ open class HomeViewModel @Inject constructor(
 
         app.grantUriPermission(targetPackage, copiedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-        val i = Intent()
-        i.setClassName(targetPackage, "com.touchtype.LauncherActivity")
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        i.putExtra("themeFileUri", copiedFileUri)
-        i.putExtra("finish", true)
-        i.putExtra("exitProcess", true)
-        app.startActivity(i)
+        app.startSKActivity(
+            targetPackage,
+            copiedFileUri,
+            IntentAction.FINISH,
+            IntentAction.EXIT_PROCESS
+        )
     }
 
     fun setToastState(toast: HomeToast) {

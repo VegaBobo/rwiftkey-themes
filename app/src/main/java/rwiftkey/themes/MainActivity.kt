@@ -8,14 +8,11 @@ import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.AndroidEntryPoint
 import rwiftkey.themes.ui.screen.RwiftkeyApp
 
-// TODO: Rename to MainActivity once ready to be released
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     companion object {
         init {
-            // Set settings before the main shell can be created
-            //Shell.enableVerboseLogging = BuildConfig.DEBUG
             Shell.setDefaultBuilder(
                 Shell.Builder.create()
                     .setFlags(Shell.FLAG_MOUNT_MASTER)

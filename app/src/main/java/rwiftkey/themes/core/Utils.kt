@@ -1,110 +1,25 @@
 package rwiftkey.themes.core
 
-import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.documentfile.provider.DocumentFile
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
 import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.xposed.IntentAction
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-
-
-class Utils {
-
-    companion object {
-
-        fun copyFile(
-            context: Context,
-            inputFile: Uri,
-            outputFilename: String
-        ): Uri {
-            val input: InputStream?
-            val output: OutputStream?
-            val finalFile: DocumentFile =
-                DocumentFile.fromFile(File(outputFilename))
-            try {
-                File(context.cacheDir.path + "/theme").mkdir()
-                output = context.contentResolver.openOutputStream(finalFile.uri)
-                input = context.contentResolver.openInputStream(inputFile)
-                val buffer = ByteArray(1024)
-                var read: Int
-                while (input!!.read(buffer).also { read = it } != -1) {
-                    output!!.write(buffer, 0, read)
-                }
-                input.close()
-                output!!.flush()
-                output.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return finalFile.uri
-        }
-
-        fun unzip(zipFilePath: String, destDir: String) {
-            val buffer = ByteArray(1024)
-            val zis = ZipInputStream(FileInputStream(zipFilePath))
-            var zipEntry = zis.nextEntry
-            while (zipEntry != null) {
-                val newFile: File = newFile(File(destDir), zipEntry)!!
-                if (zipEntry.isDirectory) {
-                    if (!newFile.isDirectory && !newFile.mkdirs()) {
-                        throw IOException("Failed to create directory $newFile")
-                    }
-                } else {
-                    val parent = newFile.parentFile
-                    if (!parent.isDirectory && !parent.mkdirs()) {
-                        throw IOException("Failed to create directory $parent")
-                    }
-                    val fos = FileOutputStream(newFile)
-                    var len: Int
-                    while (zis.read(buffer).also { len = it } > 0) {
-                        fos.write(buffer, 0, len)
-                    }
-                    fos.close()
-                }
-                zipEntry = zis.nextEntry
-            }
-            zis.closeEntry()
-            zis.close()
-        }
-
-        private fun newFile(destinationDir: File, zipEntry: ZipEntry): File {
-            val destFile = File(destinationDir, zipEntry.name)
-            val destDirPath = destinationDir.canonicalPath
-            val destFilePath = destFile.canonicalPath
-            if (!destFilePath.startsWith(destDirPath + File.separator)) {
-                throw IOException("Entry is outside of the target dir: " + zipEntry.name)
-            }
-            return destFile
-        }
-
-        fun jsonToThemeObject(inputString: String): List<Theme> {
-            val themeArray: ArrayList<Theme> = ArrayList()
-            val theme = Klaxon().parse<Themes>(inputString)
-            for (t in theme!!.themes) {
-                themeArray.add(t)
-            }
-            return themeArray
-        }
-
-        fun startSKActivity(targetPackage: String) {
-            Shell
-                .cmd("am start $targetPackage/com.touchtype.materialsettings.themessettings.ThemeSettingsActivity")
-                .exec()
-        }
-
-    }
-
-}
 
 fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -113,7 +28,7 @@ fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): Pa
         @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
     }
 
-fun Application.copyFile(input: Uri, output: Uri): Boolean? {
+fun Context.copyFile(input: Uri, output: Uri): Boolean? {
     try {
         val out = this.contentResolver.openOutputStream(output)
         val inp = this.contentResolver.openInputStream(input)
@@ -129,5 +44,95 @@ fun Application.copyFile(input: Uri, output: Uri): Boolean? {
     } catch (e: Exception) {
         Log.e(BuildConfig.APPLICATION_ID, "Copy operation failed: \n${e.stackTraceToString()}")
         return null
+    }
+}
+
+fun jsonToThemeObject(inputString: String): List<Theme> {
+    val themeArray: ArrayList<Theme> = ArrayList()
+    val theme = Klaxon().parse<Themes>(inputString)
+    for (t in theme!!.themes) {
+        themeArray.add(t)
+    }
+    return themeArray
+}
+
+fun shellStartSKActivity(targetPackage: String) {
+    Shell
+        .cmd("am start $targetPackage/com.touchtype.materialsettings.themessettings.ThemeSettingsActivity")
+        .exec()
+}
+
+fun Context.startSKActivity(
+    targetPackage: String,
+    uri: Uri?,
+    vararg actions: String
+) {
+    val i = Intent()
+    i.setClassName(targetPackage, "com.touchtype.LauncherActivity")
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (uri != null)
+        i.putExtra(IntentAction.THEME_FILE_URI, uri)
+
+    for (action in actions)
+        i.putExtra(action, true)
+
+    this.startActivity(i)
+}
+
+fun Context.startSKActivity(
+    targetPackage: String,
+    vararg actions: String
+) {
+    startSKActivity(targetPackage, null, *actions)
+}
+
+fun unzip(filePath: String, output: String) {
+    unzip(File(filePath), File(output))
+}
+
+fun unzip(zipFile: File, output: File) {
+    ZipInputStream(BufferedInputStream(FileInputStream(zipFile))).use { inStream ->
+        unzip(inStream, output)
+    }
+}
+
+fun unzip(context: Context, zipFile: Uri, output: File) {
+    context.contentResolver.openFileDescriptor(zipFile, "r").use { descriptor ->
+        descriptor?.fileDescriptor?.let {
+            ZipInputStream(BufferedInputStream(FileInputStream(it))).use { inStream ->
+                unzip(inStream, output)
+            }
+        }
+    }
+}
+
+private fun unzip(inStream: ZipInputStream, output: File) {
+    if (output.exists() && !output.isDirectory)
+        throw IllegalStateException("Location file must be directory or not exist")
+
+    if (!output.isDirectory) output.mkdirs()
+
+    val locationPath = output.absolutePath.let {
+        if (!it.endsWith(File.separator)) "$it${File.separator}"
+        else it
+    }
+
+    var zipEntry: ZipEntry?
+    var unzipFile: File
+    var unzipParentDir: File?
+
+    while (inStream.nextEntry.also { zipEntry = it } != null) {
+        unzipFile = File(locationPath + zipEntry!!.name)
+        if (zipEntry!!.isDirectory) {
+            if (!unzipFile.isDirectory) unzipFile.mkdirs()
+        } else {
+            unzipParentDir = unzipFile.parentFile
+            if (unzipParentDir != null && !unzipParentDir.isDirectory) {
+                unzipParentDir.mkdirs()
+            }
+            BufferedOutputStream(FileOutputStream(unzipFile)).use { outStream ->
+                inStream.copyTo(outStream)
+            }
+        }
     }
 }

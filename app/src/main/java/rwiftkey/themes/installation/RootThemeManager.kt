@@ -1,18 +1,21 @@
-package rwiftkey.themes.installation.root
+package rwiftkey.themes.installation
 
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.documentfile.provider.DocumentFile
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
 import rwiftkey.themes.BuildConfig
-import rwiftkey.themes.core.Utils
+import rwiftkey.themes.core.copyFile
+import rwiftkey.themes.core.jsonToThemeObject
+import rwiftkey.themes.core.unzip
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
 import java.io.BufferedReader
 import java.io.File
 
-class ThemesOp(
+class RootThemeManager(
     private val c: Context,
     private val uri: Uri?,
     private val targetPackage: String?
@@ -34,9 +37,10 @@ class ThemesOp(
     fun install() {
         File(temporaryWorkFolder).mkdir()
 
-        Utils.copyFile(c, uri!!, absoluteForZipThemeFile)
+        val outputFile = DocumentFile.fromFile(File(absoluteForZipThemeFile))
+        c.copyFile(uri!!, outputFile.uri)
 
-        Utils.unzip(absoluteForZipThemeFile, temporaryWorkFolder)
+        unzip(absoluteForZipThemeFile, temporaryWorkFolder)
 
         val bufferedReader: BufferedReader =
             File(jsonFileFromTheme).bufferedReader()
@@ -44,12 +48,12 @@ class ThemesOp(
 
         val themes: ArrayList<Theme> = ArrayList()
 
-        themes.addAll(Utils.jsonToThemeObject(inputString))
+        themes.addAll(jsonToThemeObject(inputString))
 
         val skInstalledThemes =
             Shell.cmd("cat $absoluteForTargetJson").exec().out[0]
 
-        themes.addAll(Utils.jsonToThemeObject(skInstalledThemes))
+        themes.addAll(jsonToThemeObject(skInstalledThemes))
 
         val skUid = Shell.cmd("dumpsys package $packageNameFromSKApp | grep -E \"appId=|userId=\"")
             .exec().out[0].trim().split("=")[1]
@@ -58,7 +62,7 @@ class ThemesOp(
 
         File(temporarySKJson).writeText(finalJson)
 
-        if(BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG)
             Log.i("JSON", finalJson)
 
         Shell.cmd("cat $temporarySKJson > $absoluteForTargetJson").exec()

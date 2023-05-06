@@ -1,4 +1,4 @@
-package rwiftkey.themes
+package rwiftkey.themes.xposed
 
 import android.app.Activity
 import android.app.Application
@@ -6,12 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.beust.klaxon.Klaxon
-import rwiftkey.themes.core.Utils
+import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.core.jsonToThemeObject
+import rwiftkey.themes.core.unzip
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
 import java.io.BufferedReader
 import java.io.File
-import kotlin.system.exitProcess
 
 fun installTheme(app: Application, themeUri: Uri) {
     val targetDir = File(app.filesDir.absolutePath + "/custom_themes/wip")
@@ -28,13 +29,13 @@ fun mergeJsons(app: Application) {
     val originalJsonAsString = filePathToString(originalJson)
 
     val themes: ArrayList<Theme> = ArrayList()
-    themes.addAll(Utils.jsonToThemeObject(originalJsonAsString))
+    themes.addAll(jsonToThemeObject(originalJsonAsString))
 
     // Process newly installed theme(s)
     val themesToBeAppended =
         app.filesDir.absolutePath + "/custom_themes/wip/themelist_custom.json"
     val jsonToBeAppendedAsString = filePathToString(themesToBeAppended)
-    themes.addAll(Utils.jsonToThemeObject(jsonToBeAppendedAsString))
+    themes.addAll(jsonToThemeObject(jsonToBeAppendedAsString))
 
     // Merge
     val finalJson = Klaxon().toJsonString(Themes(themes.distinctBy { it.id }))

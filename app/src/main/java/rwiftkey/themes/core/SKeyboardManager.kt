@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.model.SimpleApplication
+import rwiftkey.themes.ui.screen.home.AppOperationMode
 
 class SKeyboardManager(
     private val ctx: Context,
@@ -32,12 +33,21 @@ class SKeyboardManager(
         }
     }
 
+    var operationMode = AppOperationMode.XPOSED
+    fun updateOperationMode(newOperationMode: AppOperationMode) {
+        operationMode = newOperationMode
+    }
+
+    fun isRooted(): Boolean {
+        return operationMode == AppOperationMode.ROOT
+    }
+
     init {
         loadAvailableKeyboards()
     }
 
     suspend fun startSKThemeAc() {
-        Utils.startSKActivity(getPackage())
+        shellStartSKActivity(getPackage())
     }
 
     fun hasKeyboardsAvailable(): Boolean {

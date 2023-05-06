@@ -1,4 +1,4 @@
-package rwiftkey.themes
+package rwiftkey.themes.xposed
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -15,10 +15,17 @@ import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
+
+object IntentAction {
+    const val THEME_FILE_URI = "themeFileUri"
+    const val CLEAN_UP = "cleanup"
+    const val OPEN_THEME_SECTION = "openThemesSection"
+    const val EXIT_PROCESS = "exitProcess"
+    const val FINISH = "finish"
+}
 
 
 class XposedInit : IXposedHookLoadPackage {
@@ -78,19 +85,24 @@ class XposedInit : IXposedHookLoadPackage {
 
                 // Operations
 
+                @Suppress("DEPRECATION")
                 val themeUri =
                     if (Build.VERSION.SDK_INT >= 33)
-                        bundleFromStartup?.getParcelable("themeFileUri", Uri::class.java)
+                        bundleFromStartup?.getParcelable(
+                            IntentAction.THEME_FILE_URI,
+                            Uri::class.java
+                        )
                     else
-                        bundleFromStartup?.getParcelable("themeFileUri") as Uri?
+                        bundleFromStartup?.getParcelable(IntentAction.THEME_FILE_URI) as Uri?
 
-                val shouldClean = bundleFromStartup?.getBoolean("cleanup") ?: false
+                val shouldClean = bundleFromStartup?.getBoolean(IntentAction.CLEAN_UP) ?: false
 
-                val finish = bundleFromStartup?.getBoolean("finish") ?: false
+                val finish = bundleFromStartup?.getBoolean(IntentAction.FINISH) ?: false
 
-                val openThemesSection = bundleFromStartup?.getBoolean("openThemesSection") ?: false
+                val openThemesSection =
+                    bundleFromStartup?.getBoolean(IntentAction.OPEN_THEME_SECTION) ?: false
 
-                val exitProcess = bundleFromStartup?.getBoolean("exitProcess") ?: false
+                val exitProcess = bundleFromStartup?.getBoolean(IntentAction.EXIT_PROCESS) ?: false
 
                 if (themeUri != null)
                     installTheme(thisActivity.application, themeUri)
