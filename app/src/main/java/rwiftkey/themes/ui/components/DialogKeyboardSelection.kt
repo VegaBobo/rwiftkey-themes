@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,7 +21,7 @@ fun DialogKeyboardSelection(
         modifier = Modifier.fillMaxWidth(),
         onDismissRequest = onDismissRequest,
         title = { Text(text = stringResource(id = R.string.select_keyboard)) },
-        confirmButton = {
+        text = {
             Column {
                 for (t in availKeyboards) {
                     PreferenceItem(
@@ -30,6 +31,11 @@ fun DialogKeyboardSelection(
                         onClick = { onClick(t) }
                     )
                 }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = stringResource(id = R.string.close))
             }
         }
     )
