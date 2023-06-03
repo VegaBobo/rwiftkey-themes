@@ -65,6 +65,10 @@ fun ContinueWithXposedContainer(
                     )
                 }
             }
+            Text(
+                text = stringResource(id = R.string.continue_desc),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

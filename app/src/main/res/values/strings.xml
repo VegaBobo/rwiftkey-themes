@@ -20,6 +20,7 @@
     <string name="proceed_without_root_title">Proceed without root?</string>
     <string name="proceed_without_root_desc">You can still use Rwiftkey Themes without root, with the help of LSPatch (rootless Xposed implementation), you must install LSPatch and patch desired keyboard before proceed.</string>
     <string name="mcontinue">Continue</string>
+    <string name="continue_desc">Only continue if you have installed LSPatch, have already patched desired Swiftkey and enabled Rwiftkey on module scope.</string>
 
     <string name="dialog_close">Close app</string>
 
