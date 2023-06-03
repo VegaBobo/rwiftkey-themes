@@ -15,5 +15,6 @@ enum class AppOperationMode {
 data class HomeUIState(
     val operationMode: AppOperationMode = AppOperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
-    val isLoadingVisible: Boolean = false
+    val isLoadingVisible: Boolean = false,
+    val hasNoKeyboardsAvail: Boolean = false,
 )

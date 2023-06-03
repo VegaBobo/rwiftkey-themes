@@ -37,6 +37,7 @@ open class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
     init {
+        _uiState.update { it.copy(hasNoKeyboardsAvail = !sKeyboardManager.hasKeyboardsAvailable()) }
         viewModelScope.launch(Dispatchers.IO) {
             if (Shell.getShell().isRoot) {
                 _uiState.update { it.copy(operationMode = AppOperationMode.ROOT) }

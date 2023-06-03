@@ -115,4 +115,7 @@ fun HomepageScreen(
 
     }
 
+    if (uiState.hasNoKeyboardsAvail)
+        NoKeyboardsAvailDialog(onClickClose = { ctx.findActivity().finishAffinity() })
+
 }
