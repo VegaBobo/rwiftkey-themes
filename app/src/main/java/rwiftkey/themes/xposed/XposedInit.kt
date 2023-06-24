@@ -51,7 +51,7 @@ class XposedInit : IXposedHookLoadPackage {
         })
     }
 
-    fun installThemeHook(lpparam: XC_LoadPackage.LoadPackageParam?) {
+    fun onCreateHook(lpparam: XC_LoadPackage.LoadPackageParam?) {
         val launcherClazz =
             XposedHelpers.findClass(
                 "com.touchtype.materialsettingsx.NavigationActivity",
@@ -135,7 +135,7 @@ class XposedInit : IXposedHookLoadPackage {
         if (lpparam != null && !supportedPackages.contains(lpparam.packageName))
             return
         captureInitBundle(lpparam)
-        installThemeHook(lpparam)
+        onCreateHook(lpparam)
     }
 
 }
