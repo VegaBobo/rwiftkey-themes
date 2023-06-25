@@ -40,6 +40,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        aidl = true
     }
 
     kotlinOptions {
@@ -91,6 +92,7 @@ dependencies {
 
     implementation("com.github.topjohnwu.libsu:core:_")
     implementation("com.github.topjohnwu.libsu:io:_")
+    implementation("com.github.topjohnwu.libsu:service:_")
 
     implementation("com.mikepenz:aboutlibraries-core:_")
     implementation("com.beust:klaxon:_")
