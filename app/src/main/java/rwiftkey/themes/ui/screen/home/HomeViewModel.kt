@@ -17,12 +17,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
-import rwiftkey.themes.xposed.IntentAction
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.startSKActivity
-import rwiftkey.themes.installation.RootThemeManager
+import rwiftkey.themes.rootservice.PrivilegedProvider
+import rwiftkey.themes.xposed.IntentAction
 import java.io.File
 import javax.inject.Inject
 
@@ -71,7 +71,12 @@ open class HomeViewModel @Inject constructor(
             try {
                 when (uiState.value.operationMode) {
                     AppOperationMode.ROOT -> {
-                        RootThemeManager(app, uri, targetPackage).install()
+                        val newThemeAbs =
+                            copyThemeZipToFilesDir(uri, targetPackage)?.second ?: return@launch
+                        PrivilegedProvider.run {
+                            installTheme(targetPackage, newThemeAbs)
+                            forceStopPackage(targetPackage)
+                        }
                     }
 
                     AppOperationMode.XPOSED -> {
@@ -95,18 +100,7 @@ open class HomeViewModel @Inject constructor(
     }
 
     private fun installThemeXposed(uri: Uri, targetPackage: String) {
-        // Cannot open Uri inside hooked app
-        // as workaround, we are using FileProvider instead.
-        val remoteFile = DocumentFile.fromSingleUri(app, uri)
-        val ourFilesDir = DocumentFile.fromFile(app.filesDir)
-        val localFile = ourFilesDir.createFile("application/zip", "theme")
-        app.copyFile(remoteFile!!.uri, localFile!!.uri) ?: return
-
-        val copiedFile = File(app.filesDir.path + "/theme.zip")
-        val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
-        val copiedFileUri = FileProvider.getUriForFile(app, ourProvider, copiedFile)
-
-        app.grantUriPermission(targetPackage, copiedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val copiedFileUri = copyThemeZipToFilesDir(uri, targetPackage)?.first ?: return
 
         app.startSKActivity(
             targetPackage,
@@ -114,6 +108,23 @@ open class HomeViewModel @Inject constructor(
             IntentAction.FINISH,
             IntentAction.EXIT_PROCESS
         )
+    }
+
+    private fun copyThemeZipToFilesDir(
+        uri: Uri,
+        targetPackage: String
+    ): Pair<Uri /* copied file uri*/, String /* copied file absolute path*/>? {
+        val remoteFile = DocumentFile.fromSingleUri(app, uri)
+        val ourFilesDir = DocumentFile.fromFile(app.filesDir)
+        val localFile = ourFilesDir.createFile("application/zip", "theme")
+        app.copyFile(remoteFile!!.uri, localFile!!.uri) ?: return null
+
+        val copiedFile = File(app.filesDir.path + "/theme.zip")
+        val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
+        val copiedFileUri = FileProvider.getUriForFile(app, ourProvider, copiedFile)
+
+        app.grantUriPermission(targetPackage, copiedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        return Pair(copiedFileUri, app.filesDir.path + "/theme.zip")
     }
 
     fun setToastState(toast: HomeToast) {

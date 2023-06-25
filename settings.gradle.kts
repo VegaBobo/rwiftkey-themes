@@ -23,3 +23,4 @@ plugins {
 
 rootProject.name = "rwiftkey"
 include(":app")
+include(":stubs")

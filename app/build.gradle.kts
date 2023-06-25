@@ -105,4 +105,5 @@ dependencies {
     implementation(Google.dagger.hilt.android)
     kapt(Google.dagger.hilt.compiler)
 
+    compileOnly(project(":stubs"))
 }

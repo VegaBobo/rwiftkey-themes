@@ -17,6 +17,7 @@ import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
+import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -146,4 +147,38 @@ fun Context.findActivity(): Activity {
         context = context.baseContext
     }
     throw IllegalStateException("Permissions should be called in the context of an Activity")
+}
+
+fun filePathToString(path: String): String {
+    return try {
+        val bufferedReader: BufferedReader =
+            File(path).bufferedReader()
+        bufferedReader.use { it.readText() }
+    } catch (e: Exception) {
+        Log.e(BuildConfig.APPLICATION_ID, "Cannot filepath to String: \n${e.stackTraceToString()}")
+        ""
+    }
+}
+
+fun mergeJsonThemes(originalJson: String, themesToBeAppended: String): String {
+    val originalJsonAsString = filePathToString(originalJson)
+
+    val themes: ArrayList<Theme> = ArrayList()
+    themes.addAll(jsonToThemeObject(originalJsonAsString))
+
+    val jsonToBeAppendedAsString = filePathToString(themesToBeAppended)
+    themes.addAll(jsonToThemeObject(jsonToBeAppendedAsString))
+
+    return Klaxon().toJsonString(Themes(themes.distinctBy { it.id }))
+}
+
+fun fileContentToString(filePath: String): String {
+    return try {
+        val bufferedReader: BufferedReader =
+            File(filePath).bufferedReader()
+        bufferedReader.use { it.readText() }
+    } catch (e: Exception) {
+        Log.e(BuildConfig.APPLICATION_ID, "Cannot filepath to String: \n${e.stackTraceToString()}")
+        ""
+    }
 }

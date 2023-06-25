@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rwiftkey.themes.core.Operations
 import kotlin.system.exitProcess
 
 object IntentAction {
@@ -105,15 +106,15 @@ class XposedInit : IXposedHookLoadPackage {
                 val exitProcess = bundleFromStartup?.getBoolean(IntentAction.EXIT_PROCESS) ?: false
 
                 if (themeUri != null)
-                    installTheme(thisActivity.application, themeUri)
+                    Operations.installTheme(thisActivity.application, lpparam.packageName, themeUri)
 
                 if (shouldClean)
-                    cleanUp(thisActivity.application)
+                    Operations.cleanUp(lpparam.packageName)
 
                 dialog.dismiss()
 
                 if (openThemesSection)
-                    openThemesSection(thisActivity)
+                    Operations.openThemesSection(thisActivity)
 
                 if (finish)
                     thisActivity.finishAffinity()

@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.model.SimpleApplication
-import rwiftkey.themes.installation.RootThemeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.xposed.IntentAction
 import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.rootservice.PrivilegedProvider
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,8 +55,10 @@ open class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             if (sKeyboardManager.isRooted()) {
                 val targetKeyboard = sKeyboardManager.getPackage()
-                RootThemeManager(app, null, targetKeyboard).clearThemes()
-                _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+                PrivilegedProvider.run {
+                    cleanThemes(targetKeyboard)
+                    _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+                }
                 return@launch
             }
 
