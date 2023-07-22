@@ -58,6 +58,7 @@ open class SettingsViewModel @Inject constructor(
                 PrivilegedProvider.run {
                     cleanThemes(targetKeyboard)
                     _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+                    forceStopPackage(targetKeyboard)
                 }
                 return@launch
             }
