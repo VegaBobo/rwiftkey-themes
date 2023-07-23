@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
+import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
 import java.io.File
 
@@ -97,7 +99,8 @@ object Operations {
         if (!styleJsonFile.exists()) return null
         val styleJsonText = styleJsonFile.readText()
         val themeNameRgx = Regex("\"name\":\"(.+?(?=\"))")
-        val themeName = themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1) ?: return null
+        val themeName = themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1)?.trim() ?: return null
+        if (themeName == "Theme Customiser") return null
 
         val thumbnailAbs = dir.absolutePath + "/default/ldpi/thumbnail.png"
         val thumbnailFile = File(thumbnailAbs)
