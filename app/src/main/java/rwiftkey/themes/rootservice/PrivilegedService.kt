@@ -6,6 +6,7 @@ import android.os.IBinder
 import android.os.Process
 import rwiftkey.themes.IPrivilegedService
 import rwiftkey.themes.core.Operations
+import rwiftkey.themes.ui.screen.home.KeyboardTheme
 
 class PrivilegedService : IPrivilegedService.Stub() {
 
@@ -42,5 +43,10 @@ class PrivilegedService : IPrivilegedService.Stub() {
     override fun forceStopPackage(packageName: String?) {
         requiresActivityManager()
         ACTIVITY_MANAGER!!.forceStopPackage(packageName, 0)
+    }
+
+    override fun getKeyboardThemes(targetKeyboardPackage: String?): MutableList<KeyboardTheme> {
+        if(targetKeyboardPackage == null) return ArrayList()
+        return Operations.retrieveThemes(targetKeyboardPackage)
     }
 }

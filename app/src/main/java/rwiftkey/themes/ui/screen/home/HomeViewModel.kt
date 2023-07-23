@@ -42,6 +42,7 @@ open class HomeViewModel @Inject constructor(
             if (Shell.getShell().isRoot) {
                 _uiState.update { it.copy(operationMode = AppOperationMode.ROOT) }
                 sKeyboardManager.operationMode = AppOperationMode.ROOT
+                loadThemesRoot()
                 return@launch
             }
             if (appPreferences.readUseXposed()) {
@@ -51,6 +52,13 @@ open class HomeViewModel @Inject constructor(
             }
             _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
             sKeyboardManager.operationMode = AppOperationMode.INCOMPATIBLE
+        }
+    }
+
+    fun loadThemesRoot() {
+        PrivilegedProvider.run {
+            val keyboardThemes = getKeyboardThemes(sKeyboardManager.getPackage())
+            _uiState.update { it.copy(keyboardThemes = keyboardThemes) }
         }
     }
 
@@ -76,6 +84,7 @@ open class HomeViewModel @Inject constructor(
                         PrivilegedProvider.run {
                             installTheme(targetPackage, newThemeAbs)
                             forceStopPackage(targetPackage)
+                            loadThemesRoot()
                         }
                     }
 

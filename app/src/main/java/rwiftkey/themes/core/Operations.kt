@@ -2,7 +2,10 @@ package rwiftkey.themes.core
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import rwiftkey.themes.ui.screen.home.KeyboardTheme
 import java.io.File
 
 object Operations {
@@ -72,5 +75,38 @@ object Operations {
             "com.touchtype.materialsettings.themessettings.ThemeSettingsActivity"
         )
         ctx.startActivity(i)
+    }
+
+    fun retrieveThemes(targetPackage: String): MutableList<KeyboardTheme> {
+        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
+        val customThemesFiles = File(customThemesFolderPath)
+
+        val keyboardThemes = ArrayList<KeyboardTheme>()
+        for (f in customThemesFiles.listFiles() ?: return mutableListOf()) {
+            if (!f.isDirectory) continue
+            val keyboardTheme = themeFolderToAppTheme(f) ?: continue
+            keyboardThemes.add(keyboardTheme)
+        }
+
+        return keyboardThemes
+    }
+
+    fun themeFolderToAppTheme(dir: File): KeyboardTheme? {
+        val styleJson = dir.absolutePath + "/style.json"
+        val styleJsonFile = File(styleJson)
+        if (!styleJsonFile.exists()) return null
+        val styleJsonText = styleJsonFile.readText()
+        val themeNameRgx = Regex("\"name\":\"(.+?(?=\"))")
+        val themeName = themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1) ?: return null
+
+        val thumbnailAbs = dir.absolutePath + "/default/ldpi/thumbnail.png"
+        val thumbnailFile = File(thumbnailAbs)
+        if (!thumbnailFile.exists()) return KeyboardTheme(themeName, null)
+
+        val options = BitmapFactory.Options()
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888
+        val bitmap = BitmapFactory.decodeFile(thumbnailFile.absolutePath, options)
+
+        return KeyboardTheme(themeName, bitmap)
     }
 }

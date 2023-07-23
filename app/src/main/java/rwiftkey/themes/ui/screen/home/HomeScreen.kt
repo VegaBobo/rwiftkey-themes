@@ -2,9 +2,8 @@ package rwiftkey.themes.ui.screen.home
 
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -12,7 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -59,15 +63,20 @@ fun HomepageScreen(
         val givenUri = ctx.findActivity().intent?.data
         if (givenUri != null)
             homeVm.onFileSelected(givenUri)
+
+        if (uiState.operationMode == AppOperationMode.ROOT)
+            homeVm.loadThemesRoot()
+
         snapshotFlow { uiState.homeToast }.collectLatest {
             when (it) {
                 HomeToast.INSTALLATION_FAILED ->
                     Toast.makeText(ctx, ctx.getString(R.string.error_theme), Toast.LENGTH_LONG)
                         .show()
 
-                HomeToast.INSTALLATION_FINISHED ->
+                HomeToast.INSTALLATION_FINISHED -> {
                     Toast.makeText(ctx, ctx.getString(R.string.theme_installed), Toast.LENGTH_LONG)
                         .show()
+                }
 
                 else -> {}
             }
@@ -75,44 +84,69 @@ fun HomepageScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(insets)
-    ) {
-        if (uiState.operationMode == AppOperationMode.INCOMPATIBLE) {
+    if (uiState.operationMode == AppOperationMode.INCOMPATIBLE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(insets)
+        ) {
             ContinueWithXposedContainer { homeVm.onClickSwitchToXposed() }
-        } else {
-            RwiftkeyAppBar(
-                modifier = Modifier.align(Alignment.TopStart),
-                showSettings = true,
-                onSettingsClick = { onClickSettings() }
-            )
-
-            RwiftkeyPaletteButton(
-                modifier = Modifier.align(Alignment.Center),
-                onClick = { homeVm.onClickOpenTheme() }
-            )
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .animateContentSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (uiState.isLoadingVisible)
-                    CircularProgressIndicator(modifier = Modifier.padding(48.dp))
-                else
-                    RwiftkeyMainFAB(
-                        modifier = Modifier
-                            .padding(bottom = 16.dp),
-                        onClick = {
-                            launcherSelectFile.launch(chooseFile)
-                        }
-                    )
-            }
         }
-
+    } else {
+        Scaffold(
+            topBar = {
+                RwiftkeyAppBar(
+                    showSettings = true,
+                    onSettingsClick = { onClickSettings() }
+                )
+            },
+            content = { paddingValues ->
+                Box(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize()
+                ) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                    ) {
+                        item(span = { GridItemSpan(2) }) {
+                            RwiftkeyPaletteButton(
+                                modifier = Modifier
+                                    .padding(6.dp)
+                                    .align(Alignment.Center),
+                                onClick = { homeVm.onClickOpenTheme() }
+                            )
+                        }
+                        items(uiState.keyboardThemes.size) {
+                            val thisKeyboardTheme = uiState.keyboardThemes.elementAt(it)
+                            ThemeCard(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(6.dp),
+                                themeName = thisKeyboardTheme.name ?: "No name",
+                                thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
+                            )
+                        }
+                        item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.padding(64.dp)) }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        if (uiState.isLoadingVisible)
+                            CircularProgressIndicator(modifier = Modifier.padding(48.dp))
+                        else
+                            RwiftkeyMainFAB(
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp),
+                                onClick = {
+                                    launcherSelectFile.launch(chooseFile)
+                                }
+                            )
+                    }
+                }
+            }
+        )
     }
 
     if (uiState.hasNoKeyboardsAvail)
