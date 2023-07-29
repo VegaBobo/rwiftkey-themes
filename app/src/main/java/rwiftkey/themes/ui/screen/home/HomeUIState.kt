@@ -20,4 +20,5 @@ data class HomeUIState(
     val keyboardThemes: MutableList<KeyboardTheme> = mutableStateListOf(),
     val isLoadingVisible: Boolean = false,
     val hasNoKeyboardsAvail: Boolean = false,
+    val isBottomSheetVisible: Boolean = false,
 )

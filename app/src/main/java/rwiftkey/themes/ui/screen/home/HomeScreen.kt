@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import rwiftkey.themes.R
 import rwiftkey.themes.core.findActivity
+import rwiftkey.themes.ui.components.CustomBottomSheet
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
 import rwiftkey.themes.ui.components.RwiftkeyMainFAB
 import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
@@ -123,6 +124,7 @@ fun HomepageScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(6.dp),
+                                onClick = { homeVm.toggleSheet() },
                                 themeName = thisKeyboardTheme.name ?: "No name",
                                 thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
                             )
@@ -148,6 +150,14 @@ fun HomepageScreen(
             }
         )
     }
+
+    if (uiState.isBottomSheetVisible)
+        CustomBottomSheet(
+            title = "Test",
+            onDismiss = { homeVm.toggleSheet() }
+        ) {
+
+        }
 
     if (uiState.hasNoKeyboardsAvail)
         NoKeyboardsAvailDialog(onClickClose = { ctx.findActivity().finishAffinity() })

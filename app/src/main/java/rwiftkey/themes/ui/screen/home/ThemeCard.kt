@@ -2,6 +2,7 @@ package rwiftkey.themes.ui.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import rwiftkey.themes.R
 @Composable
 fun ThemeCard(
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
     themeName: String,
     thumbnail: ImageBitmap? = null,
 ) {
@@ -35,6 +37,7 @@ fun ThemeCard(
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { onClick() }
     ) {
         if (thumbnail != null)
             Image(

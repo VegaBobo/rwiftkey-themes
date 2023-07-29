@@ -55,6 +55,11 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
+    fun toggleSheet() {
+        val newSheetVisibilityState = !uiState.value.isBottomSheetVisible
+        _uiState.update { it.copy(isBottomSheetVisible = newSheetVisibilityState) }
+    }
+
     fun loadThemesRoot() {
         PrivilegedProvider.run {
             val keyboardThemes = getKeyboardThemes(sKeyboardManager.getPackage())
