@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -35,6 +36,7 @@ import rwiftkey.themes.ui.components.CustomBottomSheet
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
 import rwiftkey.themes.ui.components.RwiftkeyMainFAB
 import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
+import rwiftkey.themes.ui.components.ThemeThumb
 import rwiftkey.themes.ui.util.launchAcResult
 
 @Composable
@@ -124,7 +126,7 @@ fun HomepageScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(6.dp),
-                                onClick = { homeVm.toggleSheet() },
+                                onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
                                 themeName = thisKeyboardTheme.name ?: "No name",
                                 thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
                             )
@@ -151,11 +153,15 @@ fun HomepageScreen(
         )
     }
 
-    if (uiState.isBottomSheetVisible)
+    if (uiState.selectedTheme != null)
         CustomBottomSheet(
-            title = "Test",
-            onDismiss = { homeVm.toggleSheet() }
+            title = uiState.selectedTheme?.name ?: "Theme title",
+            onDismiss = { homeVm.updateSelectedTheme(null) }
         ) {
+            ThemeThumb(
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                thumbnail = uiState.selectedTheme?.thumbnail?.asImageBitmap()
+            )
 
         }
 
