@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -32,10 +35,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import rwiftkey.themes.R
 import rwiftkey.themes.core.findActivity
+import rwiftkey.themes.ui.components.BottomSheetDivisor
 import rwiftkey.themes.ui.components.CustomBottomSheet
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
 import rwiftkey.themes.ui.components.RwiftkeyMainFAB
 import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
+import rwiftkey.themes.ui.components.SimpleListButton
 import rwiftkey.themes.ui.components.ThemeThumb
 import rwiftkey.themes.ui.util.launchAcResult
 
@@ -159,10 +164,24 @@ fun HomepageScreen(
             onDismiss = { homeVm.updateSelectedTheme(null) }
         ) {
             ThemeThumb(
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
                 thumbnail = uiState.selectedTheme?.thumbnail?.asImageBitmap()
             )
-
+            Spacer(modifier = Modifier.padding(4.dp))
+            SimpleListButton(
+                icon = Icons.Outlined.Extension,
+                text = "Patch theme",
+                onClick = {}
+            )
+            BottomSheetDivisor()
+            SimpleListButton(
+                icon = Icons.Outlined.Delete,
+                text = "Remove theme",
+                onClick = { homeVm.onClickDeleteThemeRoot() }
+            )
+            Spacer(modifier = Modifier.padding(4.dp))
         }
 
     if (uiState.hasNoKeyboardsAvail)
