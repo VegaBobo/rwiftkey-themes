@@ -149,4 +149,13 @@ open class HomeViewModel @Inject constructor(
         viewModelScope.launch { appPreferences.setUseXposed() }
     }
 
+    fun onClickDeleteThemeRoot() {
+        val selectedTheme = _uiState.value.selectedTheme?.name ?: return
+        PrivilegedProvider.run {
+            deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
+            updateSelectedTheme(null)
+            loadThemesRoot()
+        }
+    }
+
 }

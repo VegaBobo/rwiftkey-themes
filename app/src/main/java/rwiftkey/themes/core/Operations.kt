@@ -5,8 +5,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
-import rwiftkey.themes.BuildConfig
+import com.beust.klaxon.Klaxon
+import rwiftkey.themes.model.Theme
+import rwiftkey.themes.model.Themes
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
 import java.io.File
 
@@ -99,7 +100,8 @@ object Operations {
         if (!styleJsonFile.exists()) return null
         val styleJsonText = styleJsonFile.readText()
         val themeNameRgx = Regex("\"name\":\"(.+?(?=\"))")
-        val themeName = themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1)?.trim() ?: return null
+        val themeName =
+            themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1)?.trim() ?: return null
         if (themeName == "Theme Customiser") return null
 
         val thumbnailAbs = dir.absolutePath + "/default/ldpi/thumbnail.png"
@@ -111,5 +113,28 @@ object Operations {
         val bitmap = BitmapFactory.decodeFile(thumbnailFile.absolutePath, options)
 
         return KeyboardTheme(themeName, bitmap)
+    }
+
+    fun deleteTheme(targetPackage: String, themeName: String) {
+        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
+        val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
+
+        val themesJsonString = filePathToString(customThemesFolderJson)
+        val themes: ArrayList<Theme> = ArrayList()
+        themes.addAll(
+            jsonToThemeObject(themesJsonString).mapNotNull {
+                if (it.name == themeName) {
+                    val themeFolder = File(customThemesFolderPath + "/${it.id}")
+                    if (themeFolder.exists())
+                        themeFolder.deleteRecursively()
+                    null
+                } else {
+                    it
+                }
+            }
+        )
+
+        val newThemesJson = Klaxon().toJsonString(Themes(themes.distinctBy { it.id }))
+        File(customThemesFolderJson).writeText(newThemesJson)
     }
 }

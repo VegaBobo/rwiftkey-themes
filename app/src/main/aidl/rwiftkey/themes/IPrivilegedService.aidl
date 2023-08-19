@@ -8,4 +8,5 @@ interface IPrivilegedService {
     void cleanThemes(String targetKeyboardPackage);
     void forceStopPackage(String packageName);
     List<KeyboardTheme> getKeyboardThemes(String targetKeyboardPackage);
+    void deleteTheme(String targetKeyboardPackage, String themeName);
 }

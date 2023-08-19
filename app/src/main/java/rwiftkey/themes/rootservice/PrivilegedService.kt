@@ -46,7 +46,12 @@ class PrivilegedService : IPrivilegedService.Stub() {
     }
 
     override fun getKeyboardThemes(targetKeyboardPackage: String?): MutableList<KeyboardTheme> {
-        if(targetKeyboardPackage == null) return ArrayList()
+        if (targetKeyboardPackage == null) return ArrayList()
         return Operations.retrieveThemes(targetKeyboardPackage)
+    }
+
+    override fun deleteTheme(targetKeyboardPackage: String?, themeName: String?) {
+        if (themeName == null || targetKeyboardPackage == null) return
+        Operations.deleteTheme(targetKeyboardPackage, themeName)
     }
 }
