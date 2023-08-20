@@ -21,6 +21,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -180,5 +181,19 @@ fun fileContentToString(filePath: String): String {
     } catch (e: Exception) {
         Log.e(BuildConfig.APPLICATION_ID, "Cannot filepath to String: \n${e.stackTraceToString()}")
         ""
+    }
+}
+
+fun downloadFile(url: String, fileName: String) {
+    URL(url).openStream().use { inp ->
+        BufferedInputStream(inp).use { bis ->
+            FileOutputStream(fileName).use { fos ->
+                val data = ByteArray(1024)
+                var count: Int
+                while (bis.read(data, 0, 1024).also { count = it } != -1) {
+                    fos.write(data, 0, count)
+                }
+            }
+        }
     }
 }

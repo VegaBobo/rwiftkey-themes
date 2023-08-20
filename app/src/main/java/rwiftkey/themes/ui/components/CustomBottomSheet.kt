@@ -42,6 +42,7 @@ fun CustomBottomSheet(
     val coroutineScope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = true,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded },
     )
 

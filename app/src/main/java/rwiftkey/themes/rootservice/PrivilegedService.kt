@@ -6,7 +6,9 @@ import android.os.IBinder
 import android.os.Process
 import rwiftkey.themes.IPrivilegedService
 import rwiftkey.themes.core.Operations
+import rwiftkey.themes.core.unzip
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
+import java.io.File
 
 class PrivilegedService : IPrivilegedService.Stub() {
 
@@ -53,5 +55,15 @@ class PrivilegedService : IPrivilegedService.Stub() {
     override fun deleteTheme(targetKeyboardPackage: String?, themeName: String?) {
         if (themeName == null || targetKeyboardPackage == null) return
         Operations.deleteTheme(targetKeyboardPackage, themeName)
+    }
+
+    override fun modifyTheme(
+        targetKeyboardPackage: String?,
+        themeId: String?,
+        absZipFileToApply: String?
+    ) {
+        val workingThemeDir =
+            File("/data/data/$targetKeyboardPackage/files/custom_themes/$themeId")
+        unzip(File(absZipFileToApply!!), workingThemeDir)
     }
 }

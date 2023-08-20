@@ -112,7 +112,7 @@ object Operations {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
         val bitmap = BitmapFactory.decodeFile(thumbnailFile.absolutePath, options)
 
-        return KeyboardTheme(themeName, bitmap)
+        return KeyboardTheme(themeName, dir.name, bitmap)
     }
 
     fun deleteTheme(targetPackage: String, themeName: String) {

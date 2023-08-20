@@ -8,6 +8,7 @@ import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +21,13 @@ import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
+import rwiftkey.themes.core.downloadFile
 import rwiftkey.themes.core.startSKActivity
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import rwiftkey.themes.xposed.IntentAction
 import java.io.File
+import java.io.StringReader
+import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -155,6 +159,49 @@ open class HomeViewModel @Inject constructor(
             deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
             updateSelectedTheme(null)
             loadThemesRoot()
+        }
+    }
+
+    fun onClickPatchTheme() {
+        val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
+        _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
+
+        if (!newPatchMenuValue)
+            return
+
+        if (!uiState.value.hasAlreadyLoadedPatches)
+            viewModelScope.launch(Dispatchers.IO) { loadAddonsFromUrl() }
+    }
+
+    fun loadAddonsFromUrl() {
+        val addons = "https://localhost/addons.json"
+        val remoteJson = URL(addons).readText()
+
+        val klaxon = Klaxon()
+        val jsonParsedObject = klaxon.parseJsonObject(StringReader(remoteJson))
+        for (obj in jsonParsedObject) {
+            val addonsArray = jsonParsedObject.array<Any>(obj.key) ?: return
+            val patches = addonsArray.let { klaxon.parseFromJsonArray<ThemePatch>(it) } ?: return
+            val thisCollection = PatchCollection(obj.key, patches)
+            _uiState.value.patchCollection.add(thisCollection)
+        }
+
+        _uiState.update { it.copy(hasAlreadyLoadedPatches = true) }
+    }
+
+    fun onClickApplyPatch(themePatch: ThemePatch) {
+        // TODO: rootless impl.
+        PrivilegedProvider.run {
+            val addonFile = File(app.filesDir.path + "/addon.zip")
+            if (addonFile.exists())
+                addonFile.delete()
+            downloadFile(themePatch.url, addonFile.absolutePath)
+
+            modifyTheme(
+                sKeyboardManager.getPackage(),
+                uiState.value.selectedTheme!!.id,
+                addonFile.absolutePath
+            )
         }
     }
 
