@@ -2,6 +2,7 @@ package rwiftkey.themes.ui.screen.home
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,6 +26,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -92,6 +96,16 @@ fun HomepageScreen(
                         .show()
                 }
 
+                HomeToast.PATCHED_SUCCESS -> {
+                    Toast.makeText(ctx, ctx.getString(R.string.success), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                HomeToast.PATCHED_FAILED -> {
+                    Toast.makeText(ctx, ctx.getString(R.string.failed), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
                 else -> {}
             }
             homeVm.setToastState(HomeToast.NONE)
@@ -148,7 +162,7 @@ fun HomepageScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                     ) {
-                        if (uiState.isLoadingVisible)
+                        if (uiState.isInstallationLoadingVisible)
                             CircularProgressIndicator(modifier = Modifier.padding(48.dp))
                         else
                             RwiftkeyMainFAB(
@@ -197,7 +211,9 @@ fun HomepageScreen(
                             )
                             BottomSheetDivisor()
                             for (item in thisPatchCollection.patches) {
-                                Column(modifier = Modifier.clickable { homeVm.onClickApplyPatch(item) }) {
+                                Column(modifier = Modifier.clickable {
+                                    homeVm.onClickApplyPatch(item)
+                                }) {
                                     Text(text = item.title, modifier = Modifier.fillMaxWidth())
                                     AsyncImage(
                                         model = item.thumbnail,
@@ -221,5 +237,23 @@ fun HomepageScreen(
 
     if (uiState.hasNoKeyboardsAvail)
         NoKeyboardsAvailDialog(onClickClose = { ctx.findActivity().finishAffinity() })
+
+    if (uiState.isLoadingOverlayVisible) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.8f)
+        ) {}
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            CircularProgressIndicator(modifier = Modifier
+                .alpha(1f)
+                .size(52.dp))
+        }
+        BackHandler { }
+    }
+
 
 }

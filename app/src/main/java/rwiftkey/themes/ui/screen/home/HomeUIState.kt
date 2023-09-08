@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateListOf
 enum class HomeToast {
     NONE,
     INSTALLATION_FINISHED,
-    INSTALLATION_FAILED
+    INSTALLATION_FAILED,
+    PATCHED_SUCCESS,
+    PATCHED_FAILED
 }
 
 enum class AppOperationMode {
@@ -30,11 +32,11 @@ data class HomeUIState(
     val operationMode: AppOperationMode = AppOperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
     val keyboardThemes: MutableList<KeyboardTheme> = mutableStateListOf(),
-    val isLoadingVisible: Boolean = false,
+    val isInstallationLoadingVisible: Boolean = false,
     val hasNoKeyboardsAvail: Boolean = false,
     val selectedTheme: KeyboardTheme? = null,
-
     val isPatchMenuVisible: Boolean = false,
     val hasAlreadyLoadedPatches: Boolean = false,
-    val patchCollection: MutableList<PatchCollection> = mutableStateListOf()
+    val patchCollection: MutableList<PatchCollection> = mutableStateListOf(),
+    val isLoadingOverlayVisible: Boolean = false
 )

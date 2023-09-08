@@ -60,7 +60,7 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun updateSelectedTheme(keyboardTheme: KeyboardTheme?) {
-        _uiState.update { it.copy(selectedTheme = keyboardTheme) }
+        _uiState.update { it.copy(selectedTheme = keyboardTheme, isPatchMenuVisible = false) }
     }
 
     fun loadThemesRoot() {
@@ -81,7 +81,7 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onFileSelected(uri: Uri) {
-        _uiState.update { it.copy(isLoadingVisible = true) }
+        _uiState.update { it.copy(isInstallationLoadingVisible = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val targetPackage = sKeyboardManager.getPackage()
             try {
@@ -112,7 +112,7 @@ open class HomeViewModel @Inject constructor(
                 )
                 setToastState(HomeToast.INSTALLATION_FAILED)
             }
-            _uiState.update { it.copy(isLoadingVisible = false) }
+            _uiState.update { it.copy(isInstallationLoadingVisible = false) }
         }
     }
 
@@ -154,11 +154,13 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickDeleteThemeRoot() {
+        _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         val selectedTheme = _uiState.value.selectedTheme?.name ?: return
         PrivilegedProvider.run {
             deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
             updateSelectedTheme(null)
             loadThemesRoot()
+            _uiState.update { it.copy(isLoadingOverlayVisible = false) }
         }
     }
 
@@ -169,8 +171,10 @@ open class HomeViewModel @Inject constructor(
         if (!newPatchMenuValue)
             return
 
-        if (!uiState.value.hasAlreadyLoadedPatches)
+        if (!uiState.value.hasAlreadyLoadedPatches) {
+            _uiState.update { it.copy(isLoadingOverlayVisible = true) }
             viewModelScope.launch(Dispatchers.IO) { loadAddonsFromUrl() }
+        }
     }
 
     fun loadAddonsFromUrl() {
@@ -186,10 +190,11 @@ open class HomeViewModel @Inject constructor(
             _uiState.value.patchCollection.add(thisCollection)
         }
 
-        _uiState.update { it.copy(hasAlreadyLoadedPatches = true) }
+        _uiState.update { it.copy(hasAlreadyLoadedPatches = true, isLoadingOverlayVisible = false) }
     }
 
     fun onClickApplyPatch(themePatch: ThemePatch) {
+        _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         // TODO: rootless impl.
         PrivilegedProvider.run {
             val addonFile = File(app.filesDir.path + "/addon.zip")
@@ -202,6 +207,14 @@ open class HomeViewModel @Inject constructor(
                 uiState.value.selectedTheme!!.id,
                 addonFile.absolutePath
             )
+
+            _uiState.update {
+                it.copy(
+                    isPatchMenuVisible = false,
+                    homeToast = HomeToast.PATCHED_SUCCESS,
+                    isLoadingOverlayVisible = false
+                )
+            }
         }
     }
 

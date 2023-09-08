@@ -50,4 +50,7 @@
 
     <!-- Xposed -->
     <string name="installing_theme">Installing theme, please wait…</string>
+
+    <string name="success">Success!</string>
+    <string name="failed">Failed, try again</string>
 </resources>
