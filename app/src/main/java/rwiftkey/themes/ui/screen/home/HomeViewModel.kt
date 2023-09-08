@@ -218,4 +218,9 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
+    fun onClickToggleThemes() {
+        val newHomeThemesVisibility = !uiState.value.isHomeThemesVisible
+        _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
+    }
+
 }

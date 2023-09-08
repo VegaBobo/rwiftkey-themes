@@ -53,4 +53,5 @@
 
     <string name="success">Success!</string>
     <string name="failed">Failed, try again</string>
+    <string name="load_keyboard_themes">Load installed themes</string>
 </resources>

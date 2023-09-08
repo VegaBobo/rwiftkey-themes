@@ -3,7 +3,10 @@ package rwiftkey.themes.ui.screen.home
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,9 +25,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,6 +54,7 @@ import rwiftkey.themes.core.findActivity
 import rwiftkey.themes.ui.components.BottomSheetDivisor
 import rwiftkey.themes.ui.components.CustomBottomSheet
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
+import rwiftkey.themes.ui.components.RwiftkeyLoadThemesButton
 import rwiftkey.themes.ui.components.RwiftkeyMainFAB
 import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
 import rwiftkey.themes.ui.components.SimpleListButton
@@ -125,7 +132,19 @@ fun HomepageScreen(
             topBar = {
                 RwiftkeyAppBar(
                     showSettings = true,
-                    onSettingsClick = { onClickSettings() }
+                    onSettingsClick = { onClickSettings() },
+                    navContent = {
+                        AnimatedVisibility(visible = uiState.isHomeThemesVisible) {
+                            IconButton(
+                                modifier = Modifier.animateContentSize(),
+                                onClick = { homeVm.onClickToggleThemes() }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ArrowBack,
+                                    contentDescription = "Back button"
+                                )
+                            }
+                        }
+                    }
                 )
             },
             content = { paddingValues ->
@@ -134,44 +153,47 @@ fun HomepageScreen(
                         .padding(paddingValues)
                         .fillMaxSize()
                 ) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                    ) {
-                        item(span = { GridItemSpan(2) }) {
-                            RwiftkeyPaletteButton(
-                                modifier = Modifier
-                                    .padding(6.dp)
-                                    .align(Alignment.Center),
-                                onClick = { homeVm.onClickOpenTheme() }
-                            )
+                    if (uiState.isHomeThemesVisible) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                        ) {
+                            items(uiState.keyboardThemes.size) {
+                                val thisKeyboardTheme = uiState.keyboardThemes.elementAt(it)
+                                ThemeCard(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(6.dp),
+                                    onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
+                                    themeName = thisKeyboardTheme.name ?: "No name",
+                                    thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
+                                )
+                            }
+                            item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.padding(64.dp)) }
                         }
-                        items(uiState.keyboardThemes.size) {
-                            val thisKeyboardTheme = uiState.keyboardThemes.elementAt(it)
-                            ThemeCard(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(6.dp),
-                                onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
-                                themeName = thisKeyboardTheme.name ?: "No name",
-                                thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
-                            )
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            RwiftkeyPaletteButton { homeVm.onClickOpenTheme() }
+                            Spacer(modifier = Modifier.padding(4.dp))
+                            RwiftkeyLoadThemesButton { homeVm.onClickToggleThemes() }
                         }
-                        item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.padding(64.dp)) }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                    ) {
-                        if (uiState.isInstallationLoadingVisible)
-                            CircularProgressIndicator(modifier = Modifier.padding(48.dp))
-                        else
-                            RwiftkeyMainFAB(
-                                modifier = Modifier
-                                    .padding(bottom = 16.dp),
-                                onClick = {
-                                    launcherSelectFile.launch(chooseFile)
-                                }
-                            )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                        ) {
+                            if (uiState.isInstallationLoadingVisible)
+                                CircularProgressIndicator(modifier = Modifier.padding(48.dp))
+                            else
+                                RwiftkeyMainFAB(
+                                    modifier = Modifier.padding(bottom = 16.dp),
+                                    onClick = {
+                                        launcherSelectFile.launch(chooseFile)
+                                    }
+                                )
+                        }
                     }
                 }
             }
@@ -248,12 +270,18 @@ fun HomepageScreen(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            CircularProgressIndicator(modifier = Modifier
-                .alpha(1f)
-                .size(52.dp))
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .alpha(1f)
+                    .size(52.dp)
+            )
         }
         BackHandler { }
     }
 
+    if (uiState.isHomeThemesVisible)
+        BackHandler {
+            homeVm.onClickToggleThemes()
+        }
 
 }

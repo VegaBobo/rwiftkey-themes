@@ -16,9 +16,11 @@ fun RwiftkeyAppBar(
     modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.app_name),
     showSettings: Boolean = false,
+    navContent: @Composable () -> Unit = {},
     onSettingsClick: () -> Unit = { }
 ) = LargeTopAppBar(
     modifier = modifier,
+    navigationIcon = navContent,
     title = { Text(text = title) },
     actions = {
         if (showSettings) {
