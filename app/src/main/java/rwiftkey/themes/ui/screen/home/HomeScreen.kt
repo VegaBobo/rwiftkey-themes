@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -154,21 +155,33 @@ fun HomepageScreen(
                         .fillMaxSize()
                 ) {
                     if (uiState.isHomeThemesVisible) {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                        ) {
-                            items(uiState.keyboardThemes.size) {
-                                val thisKeyboardTheme = uiState.keyboardThemes.elementAt(it)
-                                ThemeCard(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(6.dp),
-                                    onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
-                                    themeName = thisKeyboardTheme.name ?: "No name",
-                                    thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
-                                )
+                        if (uiState.keyboardThemes.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.no_themes),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        } else {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(2),
+                            ) {
+                                items(uiState.keyboardThemes.size) {
+                                    val thisKeyboardTheme = uiState.keyboardThemes.elementAt(it)
+                                    ThemeCard(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(6.dp),
+                                        onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
+                                        themeName = thisKeyboardTheme.name ?: "No name",
+                                        thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
+                                    )
+                                }
+                                item(span = { GridItemSpan(2) }) {
+                                    Spacer(
+                                        modifier = Modifier.padding(64.dp)
+                                    )
+                                }
                             }
-                            item(span = { GridItemSpan(2) }) { Spacer(modifier = Modifier.padding(64.dp)) }
                         }
                     } else {
                         Column(
