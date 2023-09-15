@@ -5,12 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.Process
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
-import java.lang.Thread.sleep
 
 
 class RemoteService : Service() {
@@ -43,6 +38,11 @@ class RemoteService : Service() {
             override fun sendThemesToSelf(themes: MutableList<KeyboardTheme>?) {
                 Log.d(BuildConfig.APPLICATION_ID, "sendThemesToSelf(), themes: $themes")
                 selfCallback!!.onReceiveThemes(themes)
+            }
+
+            override fun onRemoteServiceStarted() {
+                Log.d(BuildConfig.APPLICATION_ID, "onRemoteServiceStarted()")
+                selfCallback!!.onRemoteBoundService()
             }
 
             // CALLED BY SELF

@@ -13,6 +13,7 @@ object RemoteServiceProvider {
     private val tag = this.javaClass.simpleName
 
     var REMOTE_SERVICE: IRemoteService? = null
+    var isRemoteLikelyConnected = false
 
     var connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {

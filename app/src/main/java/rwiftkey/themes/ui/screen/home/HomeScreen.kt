@@ -78,6 +78,7 @@ fun HomepageScreen(
 
     val uiState by homeVm.uiState.collectAsState()
     val ctx = LocalContext.current
+    val composableScope = rememberCoroutineScope()
 
     val launcherSelectFile = launchAcResult {
         homeVm.onFileSelected(it.data!!.data!!)
@@ -137,7 +138,19 @@ fun HomepageScreen(
                 .fillMaxSize()
                 .padding(insets)
         ) {
-            ContinueWithXposedContainer { homeVm.onClickSwitchToXposed() }
+            ContinueWithXposedContainer {
+                composableScope.launch {
+                    val i = Intent()
+                    i.setClassName(
+                        homeVm.sKeyboardManager.getPackage(),
+                        "com.touchtype.LauncherActivity"
+                    )
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    i.putExtra(IntentAction.BIND, true)
+                    launcherRetrieveThemesXposed.launch(i)
+                    homeVm.onClickSwitchToXposed()
+                }
+            }
         }
     } else {
         Scaffold(
@@ -202,25 +215,8 @@ fun HomepageScreen(
                         ) {
                             RwiftkeyPaletteButton { homeVm.onClickOpenTheme() }
                             Spacer(modifier = Modifier.padding(4.dp))
-                            val composableScope = rememberCoroutineScope()
                             RwiftkeyLoadThemesButton {
-                                if (uiState.operationMode == AppOperationMode.XPOSED) {
-                                    homeVm.onClickToggleThemes()
-                                    // TODO MOVE TO APPLICATION STARTUP, BINDER SHOULD BE AVAIABLE AT THIS MOMENT
-                                    composableScope.launch {
-                                        val i = Intent()
-                                        i.setClassName(
-                                            homeVm.sKeyboardManager.getPackage(),
-                                            "com.touchtype.LauncherActivity"
-                                        )
-                                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        i.putExtra(IntentAction.READ_THEMES, true)
-                                        launcherRetrieveThemesXposed.launch(i)
-                                        //ctx.findActivity().finishAffinity()
-                                    }
-                                } else {
-                                    homeVm.onClickToggleThemes()
-                                }
+                                homeVm.onClickToggleThemes()
                             }
                         }
                         Box(

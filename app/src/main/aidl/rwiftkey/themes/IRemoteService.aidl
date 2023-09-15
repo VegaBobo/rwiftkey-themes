@@ -11,6 +11,7 @@ interface IRemoteService {
     void registerRemoteCallback(IRemoteServiceCallback callback);
     void removeRemoteCallback();
     void sendThemesToSelf(in List<KeyboardTheme> themes);
+    void onRemoteServiceStarted();
 
     // self-side stuff
     void registerSelfCallbacks(ISelfServiceCallback callback);

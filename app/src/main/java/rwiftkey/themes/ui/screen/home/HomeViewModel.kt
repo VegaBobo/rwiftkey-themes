@@ -53,12 +53,6 @@ open class HomeViewModel @Inject constructor(
                 loadThemesRoot()
                 return@launch
             }
-            if (appPreferences.readUseXposed()) {
-                _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
-                sKeyboardManager.operationMode = AppOperationMode.XPOSED
-                initializeSelfServiceCallbacks()
-                return@launch
-            }
             _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
             sKeyboardManager.operationMode = AppOperationMode.INCOMPATIBLE
         }
@@ -154,8 +148,7 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickSwitchToXposed() {
-        _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
-        viewModelScope.launch { appPreferences.setUseXposed() }
+        initializeSelfServiceCallbacks()
     }
 
     fun onClickDeleteThemeRoot() {
@@ -226,6 +219,12 @@ open class HomeViewModel @Inject constructor(
     fun initializeSelfServiceCallbacks() {
         RemoteServiceProvider.run {
             registerSelfCallbacks(object : ISelfServiceCallback.Stub() {
+                override fun onRemoteBoundService() {
+                    // Remote has bound to our service
+                    RemoteServiceProvider.isRemoteLikelyConnected = true
+                    _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
+                }
+
                 override fun onReceiveThemes(themes: MutableList<KeyboardTheme>?) {
                     Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
                     if (themes == null) return
