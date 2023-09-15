@@ -75,7 +75,7 @@
         </provider>
 
         <service
-            android:name=".RemoteService"
+            android:name=".remoteservice.RemoteService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

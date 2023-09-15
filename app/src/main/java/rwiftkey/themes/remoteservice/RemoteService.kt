@@ -1,10 +1,14 @@
-package rwiftkey.themes
+package rwiftkey.themes.remoteservice
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
 import android.util.Log
+import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.IRemoteService
+import rwiftkey.themes.IRemoteServiceCallback
+import rwiftkey.themes.ISelfServiceCallback
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
 
 

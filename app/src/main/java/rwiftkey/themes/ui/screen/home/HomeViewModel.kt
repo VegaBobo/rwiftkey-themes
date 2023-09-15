@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.ISelfServiceCallback
-import rwiftkey.themes.RemoteServiceProvider
+import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile

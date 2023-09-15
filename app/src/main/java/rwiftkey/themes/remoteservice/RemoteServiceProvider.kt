@@ -1,4 +1,4 @@
-package rwiftkey.themes
+package rwiftkey.themes.remoteservice
 
 import android.content.ComponentName
 import android.content.ServiceConnection
@@ -8,6 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.IRemoteService
 
 object RemoteServiceProvider {
     private val tag = this.javaClass.simpleName
@@ -32,7 +34,7 @@ object RemoteServiceProvider {
         onFail: () -> Unit = {},
         onConnected: suspend IRemoteService.() -> Unit,
     ) {
-        fun service() = this.REMOTE_SERVICE!!
+        fun service() = REMOTE_SERVICE!!
         CoroutineScope(Dispatchers.IO).launch {
             if (isConnected()) {
                 onConnected(service())
@@ -64,10 +66,10 @@ object RemoteServiceProvider {
             }
             Thread.sleep(1000)
         }
-        return this.REMOTE_SERVICE!!
+        return REMOTE_SERVICE!!
     }
 
     fun isConnected(): Boolean {
-        return this.REMOTE_SERVICE != null
+        return REMOTE_SERVICE != null
     }
 }

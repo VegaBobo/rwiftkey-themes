@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
-import rwiftkey.themes.RemoteServiceProvider
+import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import javax.inject.Singleton
