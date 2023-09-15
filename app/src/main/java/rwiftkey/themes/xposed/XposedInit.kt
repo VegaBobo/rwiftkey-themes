@@ -2,10 +2,17 @@ package rwiftkey.themes.xposed
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ComponentName
+import android.content.Context.BIND_AUTO_CREATE
+import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.Process
+import android.os.RemoteException
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import de.robv.android.xposed.IXposedHookLoadPackage
@@ -17,13 +24,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.IRemoteService
+import rwiftkey.themes.IRemoteServiceCallback
 import rwiftkey.themes.core.Operations
 import kotlin.system.exitProcess
+
 
 object IntentAction {
     const val THEME_FILE_URI = "themeFileUri"
     const val CLEAN_UP = "cleanup"
     const val OPEN_THEME_SECTION = "openThemesSection"
+    const val READ_THEMES = "readThemes"
     const val EXIT_PROCESS = "exitProcess"
     const val FINISH = "finish"
 }
@@ -105,6 +117,8 @@ class XposedInit : IXposedHookLoadPackage {
 
                 val exitProcess = bundleFromStartup?.getBoolean(IntentAction.EXIT_PROCESS) ?: false
 
+                val readThemes = bundleFromStartup?.getBoolean(IntentAction.READ_THEMES) ?: false
+
                 if (themeUri != null)
                     Operations.installTheme(thisActivity.application, lpparam.packageName, themeUri)
 
@@ -112,6 +126,41 @@ class XposedInit : IXposedHookLoadPackage {
                     Operations.cleanUp(lpparam.packageName)
 
                 dialog.dismiss()
+
+                // TODO PROPER REMOTE SERVICE BIND
+                if (readThemes) {
+                    Log.i(BuildConfig.APPLICATION_ID, "readThemes()")
+
+                    var REMOTE_SERVICE: IRemoteService?
+
+                    val serviceConnection = object : ServiceConnection {
+                        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                            Log.i(BuildConfig.APPLICATION_ID, "onServiceConnected")
+                            REMOTE_SERVICE = IRemoteService.Stub.asInterface(service)
+
+                            REMOTE_SERVICE!!.registerRemoteCallback(
+                                object : IRemoteServiceCallback.Stub() {
+                                    override fun onThemesRequest() {
+                                        val themes = Operations.retrieveThemes(lpparam.packageName)
+                                        REMOTE_SERVICE!!.sendThemesToSelf(themes)
+                                    }
+                                }
+                            )
+
+                            REMOTE_SERVICE!!.ping()
+
+                        }
+
+                        override fun onServiceDisconnected(name: ComponentName) {
+                            Log.i(BuildConfig.APPLICATION_ID, "onServiceDisconnected")
+                            REMOTE_SERVICE = null
+                        }
+                    }
+
+                    val intent = Intent("${BuildConfig.APPLICATION_ID}.REMOTESERVICE")
+                    intent.setPackage(BuildConfig.APPLICATION_ID)
+                    thisActivity.bindService(intent, serviceConnection, BIND_AUTO_CREATE)
+                }
 
                 if (openThemesSection)
                     Operations.openThemesSection(thisActivity)

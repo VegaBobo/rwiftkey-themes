@@ -1,6 +1,7 @@
 package rwiftkey.themes.di
 
 import android.content.Context
+import android.content.Intent
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -15,6 +16,9 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.IRemoteService
+import rwiftkey.themes.RemoteServiceProvider
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import javax.inject.Singleton
@@ -29,7 +33,10 @@ class Modules {
 
     @Singleton
     @Provides
-    fun provideKeyboardManager(@ApplicationContext appContext: Context, dataStore: DataStore<Preferences>): SKeyboardManager {
+    fun provideKeyboardManager(
+        @ApplicationContext appContext: Context,
+        dataStore: DataStore<Preferences>
+    ): SKeyboardManager {
         return SKeyboardManager(appContext, dataStore)
     }
 
@@ -47,8 +54,17 @@ class Modules {
 
     @Singleton
     @Provides
-    fun appPrefs(dataStore: DataStore<Preferences>): AppPreferences {
+    fun provideAppPrefs(dataStore: DataStore<Preferences>): AppPreferences {
         return AppPreferences(dataStore)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSelfService(@ApplicationContext appContext: Context): IRemoteService? {
+        val intent = Intent("${BuildConfig.APPLICATION_ID}.REMOTESERVICE")
+        intent.setPackage(BuildConfig.APPLICATION_ID)
+        appContext.bindService(intent, RemoteServiceProvider.connection, Context.BIND_AUTO_CREATE)
+        return RemoteServiceProvider.REMOTE_SERVICE
     }
 
 }

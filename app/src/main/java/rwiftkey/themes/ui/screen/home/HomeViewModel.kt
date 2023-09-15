@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
+import rwiftkey.themes.IRemoteService
+import rwiftkey.themes.ISelfServiceCallback
+import rwiftkey.themes.RemoteServiceProvider
 import rwiftkey.themes.core.AppPreferences
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
@@ -33,7 +36,8 @@ import javax.inject.Inject
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     val app: Application,
-    private val sKeyboardManager: SKeyboardManager,
+    val sKeyboardManager: SKeyboardManager,
+    val remoteService: IRemoteService?,
     private val appPreferences: AppPreferences
 ) : ViewModel() {
 
@@ -52,6 +56,7 @@ open class HomeViewModel @Inject constructor(
             if (appPreferences.readUseXposed()) {
                 _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
                 sKeyboardManager.operationMode = AppOperationMode.XPOSED
+                initializeSelfServiceCallbacks()
                 return@launch
             }
             _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
@@ -218,9 +223,25 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
+    fun initializeSelfServiceCallbacks() {
+        RemoteServiceProvider.run {
+            registerSelfCallbacks(object : ISelfServiceCallback.Stub() {
+                override fun onReceiveThemes(themes: MutableList<KeyboardTheme>?) {
+                    Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
+                    if (themes == null) return
+                    _uiState.update { it.copy(keyboardThemes = themes) }
+                }
+            })
+        }
+    }
+
     fun onClickToggleThemes() {
         val newHomeThemesVisibility = !uiState.value.isHomeThemesVisible
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
+    }
+
+    fun onReceiveKeyboardThemes(keyboardThemes: ArrayList<KeyboardTheme>) {
+        Log.d(BuildConfig.APPLICATION_ID, "onReceiveKeyboardThemes $keyboardThemes")
     }
 
 }

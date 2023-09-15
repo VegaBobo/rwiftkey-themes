@@ -74,6 +74,15 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
+        <service
+            android:name=".RemoteService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="${applicationId}.REMOTESERVICE"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

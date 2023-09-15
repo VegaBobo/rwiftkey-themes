@@ -80,12 +80,12 @@ object Operations {
         ctx.startActivity(i)
     }
 
-    fun retrieveThemes(targetPackage: String): MutableList<KeyboardTheme> {
+    fun retrieveThemes(targetPackage: String): ArrayList<KeyboardTheme> {
         val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
         val customThemesFiles = File(customThemesFolderPath)
 
         val keyboardThemes = ArrayList<KeyboardTheme>()
-        for (f in customThemesFiles.listFiles() ?: return mutableListOf()) {
+        for (f in customThemesFiles.listFiles() ?: return ArrayList()) {
             if (!f.isDirectory) continue
             val keyboardTheme = themeFolderToAppTheme(f) ?: continue
             keyboardThemes.add(keyboardTheme)

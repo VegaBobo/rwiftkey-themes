@@ -1,6 +1,7 @@
 package rwiftkey.themes.ui.screen.home
 
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -38,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import rwiftkey.themes.R
 import rwiftkey.themes.core.findActivity
 import rwiftkey.themes.ui.components.BottomSheetDivisor
@@ -61,6 +64,7 @@ import rwiftkey.themes.ui.components.RwiftkeyPaletteButton
 import rwiftkey.themes.ui.components.SimpleListButton
 import rwiftkey.themes.ui.components.ThemeThumb
 import rwiftkey.themes.ui.util.launchAcResult
+import rwiftkey.themes.xposed.IntentAction
 
 @Composable
 fun HomepageScreen(
@@ -75,20 +79,27 @@ fun HomepageScreen(
     val uiState by homeVm.uiState.collectAsState()
     val ctx = LocalContext.current
 
-    var chooseFile = Intent(Intent.ACTION_OPEN_DOCUMENT)
-    chooseFile.type = "*/*"
-    val mimetypes = arrayOf("application/zip", "application/octet-stream")
-    chooseFile.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes)
-    chooseFile = Intent.createChooser(chooseFile, stringResource(R.string.select_theme))
-
     val launcherSelectFile = launchAcResult {
-        homeVm.onFileSelected(it)
+        homeVm.onFileSelected(it.data!!.data!!)
+    }
+
+    val launcherRetrieveThemesXposed = launchAcResult {
+        val intent = it.data
+        if (intent != null) {
+            val keyboardThemes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableArrayListExtra("KeyboardThemes", KeyboardTheme::class.java)
+            } else {
+                intent.getParcelableArrayListExtra("KeyboardThemes")
+            }
+            if (keyboardThemes != null)
+                homeVm.onReceiveKeyboardThemes(keyboardThemes)
+        }
     }
 
     LaunchedEffect(Unit) {
-        val givenUri = ctx.findActivity().intent?.data
-        if (givenUri != null)
-            homeVm.onFileSelected(givenUri)
+        val data = ctx.findActivity().intent?.data
+        if (data != null)
+            homeVm.onFileSelected(data)
 
         if (uiState.operationMode == AppOperationMode.ROOT)
             homeVm.loadThemesRoot()
@@ -191,7 +202,26 @@ fun HomepageScreen(
                         ) {
                             RwiftkeyPaletteButton { homeVm.onClickOpenTheme() }
                             Spacer(modifier = Modifier.padding(4.dp))
-                            RwiftkeyLoadThemesButton { homeVm.onClickToggleThemes() }
+                            val composableScope = rememberCoroutineScope()
+                            RwiftkeyLoadThemesButton {
+                                if (uiState.operationMode == AppOperationMode.XPOSED) {
+                                    homeVm.onClickToggleThemes()
+                                    // TODO MOVE TO APPLICATION STARTUP, BINDER SHOULD BE AVAIABLE AT THIS MOMENT
+                                    composableScope.launch {
+                                        val i = Intent()
+                                        i.setClassName(
+                                            homeVm.sKeyboardManager.getPackage(),
+                                            "com.touchtype.LauncherActivity"
+                                        )
+                                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        i.putExtra(IntentAction.READ_THEMES, true)
+                                        launcherRetrieveThemesXposed.launch(i)
+                                        //ctx.findActivity().finishAffinity()
+                                    }
+                                } else {
+                                    homeVm.onClickToggleThemes()
+                                }
+                            }
                         }
                         Box(
                             modifier = Modifier
@@ -203,6 +233,15 @@ fun HomepageScreen(
                                 RwiftkeyMainFAB(
                                     modifier = Modifier.padding(bottom = 16.dp),
                                     onClick = {
+                                        var chooseFile = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                                        chooseFile.type = "*/*"
+                                        val mimetypes =
+                                            arrayOf("application/zip", "application/octet-stream")
+                                        chooseFile.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes)
+                                        chooseFile = Intent.createChooser(
+                                            chooseFile,
+                                            ctx.getString(R.string.select_theme)
+                                        )
                                         launcherSelectFile.launch(chooseFile)
                                     }
                                 )

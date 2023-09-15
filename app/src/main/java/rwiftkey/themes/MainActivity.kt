@@ -12,10 +12,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import rwiftkey.themes.rootservice.PrivilegedRootService
 import rwiftkey.themes.ui.screen.RwiftkeyApp
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    var remoteService: IRemoteService? = null
+        @Inject set
 
     companion object {
         init {
@@ -41,4 +45,5 @@ class MainActivity : AppCompatActivity() {
         if (Shell.getShell().isRoot)
             bindRootService()
     }
+
 }
