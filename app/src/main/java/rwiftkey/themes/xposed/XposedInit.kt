@@ -1,29 +1,20 @@
 package rwiftkey.themes.xposed
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.ComponentName
+import android.content.Context
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Process
-import android.os.RemoteException
 import android.util.Log
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.IRemoteServiceCallback
@@ -63,6 +54,17 @@ class XposedInit : IXposedHookLoadPackage {
                         override fun onThemesRequest() {
                             val themes = Operations.retrieveThemes(lpparam.packageName)
                             REMOTE_SERVICE!!.sendThemesToSelf(themes)
+                        }
+
+                        override fun onInstallThemeRequest(uri: Uri) {
+                            try {
+                                Operations.installTheme(hookedActivity, lpparam.packageName, uri)
+                                REMOTE_SERVICE!!.onInstallThemeFromUriResult(true)
+                            } catch (e: Exception) {
+                                Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
+                                REMOTE_SERVICE!!.onInstallThemeFromUriResult(false)
+                            }
+                            exitProcess(0)
                         }
                     }
                 )

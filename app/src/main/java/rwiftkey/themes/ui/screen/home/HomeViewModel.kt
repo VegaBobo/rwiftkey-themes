@@ -12,6 +12,7 @@ import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -92,6 +93,7 @@ open class HomeViewModel @Inject constructor(
                             installTheme(targetPackage, newThemeAbs)
                             forceStopPackage(targetPackage)
                             loadThemesRoot()
+                            setToastState(HomeToast.INSTALLATION_FINISHED)
                         }
                     }
 
@@ -103,7 +105,6 @@ open class HomeViewModel @Inject constructor(
                         return@launch
                     }
                 }
-                setToastState(HomeToast.INSTALLATION_FINISHED)
             } catch (e: Exception) {
                 Log.e(
                     BuildConfig.APPLICATION_ID,
@@ -116,14 +117,11 @@ open class HomeViewModel @Inject constructor(
     }
 
     private fun installThemeXposed(uri: Uri, targetPackage: String) {
+        _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         val copiedFileUri = copyThemeZipToFilesDir(uri, targetPackage)?.first ?: return
-
-        app.startSKActivity(
-            targetPackage,
-            copiedFileUri,
-            IntentAction.FINISH,
-            IntentAction.EXIT_PROCESS
-        )
+        RemoteServiceProvider.run {
+            requestInstallThemeFromUri(copiedFileUri)
+        }
     }
 
     private fun copyThemeZipToFilesDir(
@@ -229,6 +227,30 @@ open class HomeViewModel @Inject constructor(
                     Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
                     if (themes == null) return
                     _uiState.update { it.copy(keyboardThemes = themes) }
+                }
+
+                override fun onInstallThemeResult(hasInstalled: Boolean) {
+                    _uiState.update {
+                        it.copy(homeToast = if (hasInstalled) HomeToast.INSTALLATION_FINISHED else HomeToast.INSTALLATION_FAILED)
+                    }
+                }
+
+                // some operations may require app restart.
+                // onRemoteRequestRebind is called when remote is about to call exitProcess(0)
+                // then we can rebind
+                override fun onRemoteRequestRebind() {
+                    viewModelScope.launch {
+                        delay(200) /* hope exitProcess do its job in 200ms  */
+                        val i = Intent()
+                        i.setClassName(
+                            sKeyboardManager.getPackage(),
+                            "com.touchtype.LauncherActivity"
+                        )
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        i.putExtra(IntentAction.BIND, true)
+                        app.startActivity(i)
+                        _uiState.update { it.copy(isLoadingOverlayVisible = false) }
+                    }
                 }
             })
         }

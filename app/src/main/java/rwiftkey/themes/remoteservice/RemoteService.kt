@@ -2,6 +2,7 @@ package rwiftkey.themes.remoteservice
 
 import android.app.Service
 import android.content.Intent
+import android.net.Uri
 import android.os.IBinder
 import android.os.Process
 import android.util.Log
@@ -49,6 +50,12 @@ class RemoteService : Service() {
                 selfCallback!!.onRemoteBoundService()
             }
 
+            override fun onInstallThemeFromUriResult(hasInstalled: Boolean) {
+                Log.d(BuildConfig.APPLICATION_ID, "onInstallThemeFromUriResult()")
+                selfCallback!!.onInstallThemeResult(hasInstalled)
+                selfCallback!!.onRemoteRequestRebind()
+            }
+
             // CALLED BY SELF
 
             override fun registerSelfCallbacks(callback: ISelfServiceCallback) {
@@ -59,6 +66,18 @@ class RemoteService : Service() {
             override fun removeSelfCallback() {
                 Log.d(BuildConfig.APPLICATION_ID, "removeSelfCallback()")
                 selfCallback = null
+            }
+
+            override fun requestInstallThemeFromUri(uri: Uri?) {
+                Log.d(BuildConfig.APPLICATION_ID, "removeSelfCallback()")
+                if (uri == null) {
+                    Log.d(
+                        BuildConfig.APPLICATION_ID,
+                        "removeSelfCallback(), uri is null, cannot proceed."
+                    )
+                    return
+                }
+                remoteCallback!!.onInstallThemeRequest(uri)
             }
 
         }
