@@ -158,55 +158,73 @@ open class HomeViewModel @Inject constructor(
 
     fun onClickPatchTheme() {
         val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
-        _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
-
-        if (!newPatchMenuValue)
-            return
 
         if (!uiState.value.hasAlreadyLoadedPatches) {
             _uiState.update { it.copy(isLoadingOverlayVisible = true) }
             viewModelScope.launch(Dispatchers.IO) { loadAddonsFromUrl() }
+        } else {
+            _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
         }
+
+        if (!newPatchMenuValue)
+            return
     }
 
     fun loadAddonsFromUrl() {
         val addons = "https://localhost/addons.json"
-        val remoteJson = URL(addons).readText()
-
-        val klaxon = Klaxon()
-        val jsonParsedObject = klaxon.parseJsonObject(StringReader(remoteJson))
-        for (obj in jsonParsedObject) {
-            val addonsArray = jsonParsedObject.array<Any>(obj.key) ?: return
-            val patches = addonsArray.let { klaxon.parseFromJsonArray<ThemePatch>(it) } ?: return
-            val thisCollection = PatchCollection(obj.key, patches)
-            _uiState.value.patchCollection.add(thisCollection)
+        val remoteJson = try {
+            URL(addons).readText()
+        } catch (e: Exception) {
+            Log.e(BuildConfig.APPLICATION_ID, "loadAddonsFromUrl(): ${e.stackTraceToString()}")
+            null
         }
 
-        _uiState.update { it.copy(hasAlreadyLoadedPatches = true, isLoadingOverlayVisible = false) }
+        if (remoteJson != null) {
+            val klaxon = Klaxon()
+            val jsonParsedObject = klaxon.parseJsonObject(StringReader(remoteJson))
+            for (obj in jsonParsedObject) {
+                val addonsArray = jsonParsedObject.array<Any>(obj.key) ?: return
+                val patches =
+                    addonsArray.let { klaxon.parseFromJsonArray<ThemePatch>(it) } ?: return
+                val thisCollection = PatchCollection(obj.key, patches)
+                _uiState.value.patchCollection.add(thisCollection)
+            }
+        } else {
+            // todo when cannot reach URL()
+        }
+        _uiState.update {
+            it.copy(
+                isPatchMenuVisible = remoteJson != null,
+                hasAlreadyLoadedPatches = remoteJson != null,
+                isLoadingOverlayVisible = false
+            )
+        }
     }
 
     fun onClickApplyPatch(themePatch: ThemePatch) {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
-        // TODO: rootless impl.
-        PrivilegedProvider.run {
-            val addonFile = File(app.filesDir.path + "/addon.zip")
-            if (addonFile.exists())
-                addonFile.delete()
-            downloadFile(themePatch.url, addonFile.absolutePath)
+        if (uiState.value.operationMode == AppOperationMode.ROOT) {
+            PrivilegedProvider.run {
+                val addonFile = File(app.filesDir.path + "/addon.zip")
+                if (addonFile.exists())
+                    addonFile.delete()
+                downloadFile(themePatch.url, addonFile.absolutePath)
 
-            modifyTheme(
-                sKeyboardManager.getPackage(),
-                uiState.value.selectedTheme!!.id,
-                addonFile.absolutePath
-            )
-
-            _uiState.update {
-                it.copy(
-                    isPatchMenuVisible = false,
-                    homeToast = HomeToast.PATCHED_SUCCESS,
-                    isLoadingOverlayVisible = false
+                modifyTheme(
+                    sKeyboardManager.getPackage(),
+                    uiState.value.selectedTheme!!.id,
+                    addonFile.absolutePath
                 )
+
+                _uiState.update {
+                    it.copy(
+                        isPatchMenuVisible = false,
+                        homeToast = HomeToast.PATCHED_SUCCESS,
+                        isLoadingOverlayVisible = false
+                    )
+                }
             }
+            return
         }
     }
 
