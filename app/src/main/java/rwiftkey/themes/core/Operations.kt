@@ -66,6 +66,9 @@ object Operations {
 
     fun cleanUp(targetPackage: String) {
         val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
+        val customThemesFile = File(customThemesFolderPath)
+        if(!customThemesFile.exists())
+            return
         for (file in File(customThemesFolderPath).listFiles() ?: return) {
             file.deleteRecursively()
         }
