@@ -1,6 +1,7 @@
 package rwiftkey.themes.core
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -11,10 +12,11 @@ import android.os.Build
 import android.util.Log
 import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.delay
 import rwiftkey.themes.BuildConfig
-import rwiftkey.themes.xposed.IntentAction
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
+import rwiftkey.themes.xposed.IntentAction
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.BufferedReader
@@ -66,6 +68,7 @@ fun shellStartSKActivity(targetPackage: String) {
         .exec()
 }
 
+// todo IntentAction.THEME_FILE_URI isn't used anymore
 fun Context.startSKActivity(
     targetPackage: String,
     uri: Uri?,
@@ -75,7 +78,7 @@ fun Context.startSKActivity(
     i.setClassName(targetPackage, "com.touchtype.LauncherActivity")
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     if (uri != null)
-        i.putExtra(IntentAction.THEME_FILE_URI, uri)
+        i.putExtra("IntentAction.THEME_FILE_URI", uri)
 
     for (action in actions)
         i.putExtra(action, true)
@@ -196,4 +199,18 @@ fun downloadFile(url: String, fileName: String) {
             }
         }
     }
+}
+
+suspend fun requestRemoteBinding(
+    targetPackageName: String,
+    app: Application,
+    onFinish: () -> Unit = {}
+) {
+    delay(200)
+    val i = Intent()
+    i.setClassName(targetPackageName, "com.touchtype.LauncherActivity")
+    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    i.putExtra(IntentAction.BIND, true)
+    app.startActivity(i)
+    onFinish()
 }

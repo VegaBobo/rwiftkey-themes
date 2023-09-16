@@ -3,17 +3,17 @@ package rwiftkey.themes.ui.screen.settings
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import rwiftkey.themes.core.SKeyboardManager
-import rwiftkey.themes.model.SimpleApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import rwiftkey.themes.xposed.IntentAction
-import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.ISettingsCallbacks
+import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.requestRemoteBinding
+import rwiftkey.themes.model.SimpleApplication
+import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import javax.inject.Inject
 
@@ -35,6 +35,22 @@ open class SettingsViewModel @Inject constructor(
 
     init {
         setupInitialUiState()
+        RemoteServiceProvider.run {
+            registerSettingsCallbacks(object : ISettingsCallbacks.Stub() {
+                override fun onRequestCleanupFinish() {
+                    _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+                }
+
+                override fun onRemoteRequestRebind() {
+                    viewModelScope.launch {
+                        requestRemoteBinding(
+                            targetPackageName = sKeyboardManager.getPackage(),
+                            app = app
+                        )
+                    }
+                }
+            })
+        }
     }
 
     fun onToggleDialog() {
@@ -63,14 +79,9 @@ open class SettingsViewModel @Inject constructor(
                 return@launch
             }
 
-            app.startSKActivity(
-                sKeyboardManager.getPackage(),
-                IntentAction.CLEAN_UP,
-                IntentAction.EXIT_PROCESS
-            )
-            delay(3000)
-            app.startSKActivity(sKeyboardManager.getPackage(), IntentAction.OPEN_THEME_SECTION)
-            _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+            RemoteServiceProvider.run {
+                requestCleanup()
+            }
         }
     }
 

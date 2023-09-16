@@ -8,15 +8,18 @@ import android.os.Process
 import android.util.Log
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
-import rwiftkey.themes.IRemoteServiceCallback
-import rwiftkey.themes.ISelfServiceCallback
+import rwiftkey.themes.IRemoteServiceCallbacks
+import rwiftkey.themes.IHomeCallbacks
+import rwiftkey.themes.ISettingsCallbacks
 import rwiftkey.themes.ui.screen.home.KeyboardTheme
 
 
 class RemoteService : Service() {
 
-    var remoteCallback: IRemoteServiceCallback? = null
-    var selfCallback: ISelfServiceCallback? = null
+    var remoteCallback: IRemoteServiceCallbacks? = null
+
+    var settingsCallback: ISettingsCallbacks? = null
+    var selfCallback: IHomeCallbacks? = null
     override fun onBind(p0: Intent?): IBinder {
         return object : IRemoteService.Stub() {
             override fun ping() {
@@ -27,7 +30,7 @@ class RemoteService : Service() {
 
             // CALLED BY REMOTE
 
-            override fun registerRemoteCallback(callback: IRemoteServiceCallback) {
+            override fun registerRemoteCallbacks(callback: IRemoteServiceCallbacks) {
                 Log.d(BuildConfig.APPLICATION_ID, "registerCallback()")
                 remoteCallback = callback
 
@@ -35,7 +38,7 @@ class RemoteService : Service() {
                 remoteCallback!!.onThemesRequest()
             }
 
-            override fun removeRemoteCallback() {
+            override fun removeRemoteCallbacks() {
                 Log.d(BuildConfig.APPLICATION_ID, "removeRemoteCallback()")
                 remoteCallback = null
             }
@@ -56,14 +59,14 @@ class RemoteService : Service() {
                 selfCallback!!.onRemoteRequestRebind()
             }
 
-            // CALLED BY SELF
+            // CALLED BY HOME
 
-            override fun registerSelfCallbacks(callback: ISelfServiceCallback) {
+            override fun registerHomeCallbacks(callback: IHomeCallbacks) {
                 Log.d(BuildConfig.APPLICATION_ID, "registerSelfCallbacks()")
                 selfCallback = callback
             }
 
-            override fun removeSelfCallback() {
+            override fun removeHomeCallbacks() {
                 Log.d(BuildConfig.APPLICATION_ID, "removeSelfCallback()")
                 selfCallback = null
             }
@@ -78,6 +81,27 @@ class RemoteService : Service() {
                     return
                 }
                 remoteCallback!!.onInstallThemeRequest(uri)
+            }
+
+            // CALLED BY SETTINGS
+
+            override fun registerSettingsCallbacks(callback: ISettingsCallbacks?) {
+                Log.d(BuildConfig.APPLICATION_ID, "registerSettingsCallback()")
+                settingsCallback = callback
+            }
+
+            override fun removeSettingsCallbacks() {
+                Log.d(BuildConfig.APPLICATION_ID, "removeSettingsCallback()")
+                settingsCallback = null
+            }
+
+            override fun requestCleanup() {
+                remoteCallback!!.onRequestCleanup()
+            }
+
+            override fun onRequestCleanupFinish() {
+                settingsCallback!!.onRequestCleanupFinish()
+                settingsCallback!!.onRemoteRequestRebind()
             }
 
         }

@@ -12,21 +12,19 @@ import com.beust.klaxon.Klaxon
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
-import rwiftkey.themes.IRemoteService
-import rwiftkey.themes.ISelfServiceCallback
-import rwiftkey.themes.remoteservice.RemoteServiceProvider
-import rwiftkey.themes.core.AppPreferences
+import rwiftkey.themes.IHomeCallbacks
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.downloadFile
+import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import rwiftkey.themes.xposed.IntentAction
 import java.io.File
@@ -37,9 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     val app: Application,
-    val sKeyboardManager: SKeyboardManager,
-    val remoteService: IRemoteService?,
-    private val appPreferences: AppPreferences
+    val sKeyboardManager: SKeyboardManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState())
@@ -216,7 +212,7 @@ open class HomeViewModel @Inject constructor(
 
     fun initializeSelfServiceCallbacks() {
         RemoteServiceProvider.run {
-            registerSelfCallbacks(object : ISelfServiceCallback.Stub() {
+            registerHomeCallbacks(object : IHomeCallbacks.Stub() {
                 override fun onRemoteBoundService() {
                     // Remote has bound to our service
                     RemoteServiceProvider.isRemoteLikelyConnected = true
@@ -240,16 +236,11 @@ open class HomeViewModel @Inject constructor(
                 // then we can rebind
                 override fun onRemoteRequestRebind() {
                     viewModelScope.launch {
-                        delay(200) /* hope exitProcess do its job in 200ms  */
-                        val i = Intent()
-                        i.setClassName(
-                            sKeyboardManager.getPackage(),
-                            "com.touchtype.LauncherActivity"
+                        requestRemoteBinding(
+                            targetPackageName = sKeyboardManager.getPackage(),
+                            app = app,
+                            onFinish = { _uiState.update { it.copy(isLoadingOverlayVisible = false) } }
                         )
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        i.putExtra(IntentAction.BIND, true)
-                        app.startActivity(i)
-                        _uiState.update { it.copy(isLoadingOverlayVisible = false) }
                     }
                 }
             })
