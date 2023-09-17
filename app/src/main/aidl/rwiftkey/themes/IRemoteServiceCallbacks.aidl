@@ -5,4 +5,5 @@ oneway interface IRemoteServiceCallbacks {
     void onInstallThemeRequest(in Uri uri);
     void onRequestCleanup();
     void onRequestModifyTheme(String themeId, in Uri uri);
+    void onRequestThemeDelete(String name);
 }

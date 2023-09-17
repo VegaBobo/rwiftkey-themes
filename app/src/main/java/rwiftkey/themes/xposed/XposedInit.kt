@@ -74,6 +74,11 @@ class XposedInit : IXposedHookLoadPackage {
                             unzip(hookedActivity.baseContext, uri, workingThemeDir)
                             REMOTE_SERVICE!!.onFinishModifyTheme()
                         }
+
+                        override fun onRequestThemeDelete(name: String) {
+                            Operations.deleteTheme(lpparam.packageName, name)
+                            REMOTE_SERVICE!!.onFinishDeleteTheme()
+                        }
                     }
                 )
 

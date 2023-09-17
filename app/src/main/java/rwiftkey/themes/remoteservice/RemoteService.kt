@@ -64,6 +64,11 @@ class RemoteService : Service() {
                 selfCallback!!.onFinishModifyTheme()
             }
 
+            override fun onFinishDeleteTheme() {
+                Log.d(BuildConfig.APPLICATION_ID, "onFinishDeleteTheme()")
+                selfCallback!!.onFinishDeleteTheme()
+            }
+
             // CALLED BY HOME
 
             override fun registerHomeCallbacks(callback: IHomeCallbacks) {
@@ -98,6 +103,11 @@ class RemoteService : Service() {
                     return
                 }
                 remoteCallback!!.onRequestModifyTheme(themeId, uri)
+            }
+
+            override fun requestDeleteTheme(themeName: String) {
+                Log.d(BuildConfig.APPLICATION_ID, "requestDeleteTheme()")
+                remoteCallback!!.onRequestThemeDelete(themeName)
             }
 
             // CALLED BY SETTINGS

@@ -15,12 +15,14 @@ interface IRemoteService {
     void onRemoteServiceStarted();
     void onInstallThemeFromUriResult(boolean hasInstalled);
     void onFinishModifyTheme();
+    void onFinishDeleteTheme();
 
     // home
     void registerHomeCallbacks(IHomeCallbacks callback);
     void removeHomeCallbacks();
     void requestInstallThemeFromUri(in Uri uri);
     void requestModifyTheme(String themeId, in Uri file);
+    void requestDeleteTheme(String themeName);
 
     // settings
     void registerSettingsCallbacks(ISettingsCallbacks callback);

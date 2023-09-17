@@ -8,4 +8,5 @@ oneway interface IHomeCallbacks {
     void onInstallThemeResult(boolean hasInstalled);
     void onRemoteRequestRebind();
     void onFinishModifyTheme();
+    void onFinishDeleteTheme();
 }

@@ -148,12 +148,16 @@ open class HomeViewModel @Inject constructor(
     fun onClickDeleteThemeRoot() {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         val selectedTheme = _uiState.value.selectedTheme?.name ?: return
-        PrivilegedProvider.run {
-            deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
-            updateSelectedTheme(null)
-            loadThemesRoot()
-            _uiState.update { it.copy(isLoadingOverlayVisible = false) }
+        if (uiState.value.operationMode == AppOperationMode.ROOT) {
+            PrivilegedProvider.run {
+                deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
+                updateSelectedTheme(null)
+                loadThemesRoot()
+                _uiState.update { it.copy(isLoadingOverlayVisible = false) }
+            }
+            return
         }
+        RemoteServiceProvider.run { requestDeleteTheme(selectedTheme) }
     }
 
     fun onClickPatchTheme() {
@@ -233,7 +237,11 @@ open class HomeViewModel @Inject constructor(
                 val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
                 val addonFileUri = FileProvider.getUriForFile(app, ourProvider, addonFile)
                 val targetPkg = sKeyboardManager.getPackage()
-                app.grantUriPermission(targetPkg, addonFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                app.grantUriPermission(
+                    targetPkg,
+                    addonFileUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
                 requestModifyTheme(targetTheme, addonFileUri)
             }
         }
@@ -251,7 +259,8 @@ open class HomeViewModel @Inject constructor(
                 override fun onReceiveThemes(themes: MutableList<KeyboardTheme>?) {
                     Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
                     if (themes == null) return
-                    _uiState.update { it.copy(keyboardThemes = themes) }
+                    _uiState.value.keyboardThemes.clear()
+                    _uiState.value.keyboardThemes.addAll(themes)
                 }
 
                 override fun onInstallThemeResult(hasInstalled: Boolean) {
@@ -281,6 +290,12 @@ open class HomeViewModel @Inject constructor(
                             isLoadingOverlayVisible = false
                         )
                     }
+                }
+
+                override fun onFinishDeleteTheme() {
+                    _uiState.value.keyboardThemes.remove(_uiState.value.selectedTheme)
+                    updateSelectedTheme(null)
+                    _uiState.update { it.copy(isLoadingOverlayVisible = false) }
                 }
             })
         }
