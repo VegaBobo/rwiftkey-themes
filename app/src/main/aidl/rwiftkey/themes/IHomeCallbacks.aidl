@@ -7,4 +7,5 @@ oneway interface IHomeCallbacks {
     void onReceiveThemes(in List<KeyboardTheme> themes);
     void onInstallThemeResult(boolean hasInstalled);
     void onRemoteRequestRebind();
+    void onFinishModifyTheme();
 }

@@ -203,28 +203,39 @@ open class HomeViewModel @Inject constructor(
 
     fun onClickApplyPatch(themePatch: ThemePatch) {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
-        if (uiState.value.operationMode == AppOperationMode.ROOT) {
-            PrivilegedProvider.run {
-                val addonFile = File(app.filesDir.path + "/addon.zip")
-                if (addonFile.exists())
-                    addonFile.delete()
-                downloadFile(themePatch.url, addonFile.absolutePath)
+        val targetTheme = uiState.value.selectedTheme!!.id
+        viewModelScope.launch(Dispatchers.IO) {
+            val addonFile = File(app.filesDir.path + "/addon.zip")
+            if (addonFile.exists())
+                addonFile.delete()
+            downloadFile(themePatch.url, addonFile.absolutePath)
 
-                modifyTheme(
-                    sKeyboardManager.getPackage(),
-                    uiState.value.selectedTheme!!.id,
-                    addonFile.absolutePath
-                )
-
-                _uiState.update {
-                    it.copy(
-                        isPatchMenuVisible = false,
-                        homeToast = HomeToast.PATCHED_SUCCESS,
-                        isLoadingOverlayVisible = false
+            if (uiState.value.operationMode == AppOperationMode.ROOT) {
+                PrivilegedProvider.run {
+                    modifyTheme(
+                        sKeyboardManager.getPackage(),
+                        targetTheme,
+                        addonFile.absolutePath
                     )
+
+                    _uiState.update {
+                        it.copy(
+                            isPatchMenuVisible = false,
+                            homeToast = HomeToast.PATCHED_SUCCESS,
+                            isLoadingOverlayVisible = false
+                        )
+                    }
                 }
+                return@launch
             }
-            return
+
+            RemoteServiceProvider.run {
+                val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
+                val addonFileUri = FileProvider.getUriForFile(app, ourProvider, addonFile)
+                val targetPkg = sKeyboardManager.getPackage()
+                app.grantUriPermission(targetPkg, addonFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                requestModifyTheme(targetTheme, addonFileUri)
+            }
         }
     }
 
@@ -258,6 +269,16 @@ open class HomeViewModel @Inject constructor(
                             targetPackageName = sKeyboardManager.getPackage(),
                             app = app,
                             onFinish = { _uiState.update { it.copy(isLoadingOverlayVisible = false) } }
+                        )
+                    }
+                }
+
+                override fun onFinishModifyTheme() {
+                    _uiState.update {
+                        it.copy(
+                            isPatchMenuVisible = false,
+                            homeToast = HomeToast.PATCHED_SUCCESS,
+                            isLoadingOverlayVisible = false
                         )
                     }
                 }

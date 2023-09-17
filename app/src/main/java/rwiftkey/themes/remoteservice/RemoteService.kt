@@ -59,6 +59,11 @@ class RemoteService : Service() {
                 selfCallback!!.onRemoteRequestRebind()
             }
 
+            override fun onFinishModifyTheme() {
+                Log.d(BuildConfig.APPLICATION_ID, "onFinishModifyTheme()")
+                selfCallback!!.onFinishModifyTheme()
+            }
+
             // CALLED BY HOME
 
             override fun registerHomeCallbacks(callback: IHomeCallbacks) {
@@ -81,6 +86,18 @@ class RemoteService : Service() {
                     return
                 }
                 remoteCallback!!.onInstallThemeRequest(uri)
+            }
+
+            override fun requestModifyTheme(themeId: String?, uri: Uri?) {
+                Log.d(BuildConfig.APPLICATION_ID, "requestModifyTheme()")
+                if (uri == null) {
+                    Log.d(
+                        BuildConfig.APPLICATION_ID,
+                        "removeSelfCallback(), uri is null, cannot proceed."
+                    )
+                    return
+                }
+                remoteCallback!!.onRequestModifyTheme(themeId, uri)
             }
 
             // CALLED BY SETTINGS

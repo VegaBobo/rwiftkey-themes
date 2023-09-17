@@ -18,6 +18,8 @@ import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.IRemoteServiceCallbacks
 import rwiftkey.themes.core.Operations
+import rwiftkey.themes.core.unzip
+import java.io.File
 import kotlin.system.exitProcess
 
 
@@ -64,6 +66,13 @@ class XposedInit : IXposedHookLoadPackage {
                             Operations.cleanUp(lpparam.packageName)
                             REMOTE_SERVICE!!.onRequestCleanupFinish()
                             exitProcess(0)
+                        }
+
+                        override fun onRequestModifyTheme(themeId: String, uri: Uri) {
+                            val workingThemeDir =
+                                File("/data/data/${lpparam.packageName}/files/custom_themes/$themeId")
+                            unzip(hookedActivity.baseContext, uri, workingThemeDir)
+                            REMOTE_SERVICE!!.onFinishModifyTheme()
                         }
                     }
                 )

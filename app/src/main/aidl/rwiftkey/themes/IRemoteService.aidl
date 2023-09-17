@@ -14,11 +14,13 @@ interface IRemoteService {
     void sendThemesToSelf(in List<KeyboardTheme> themes);
     void onRemoteServiceStarted();
     void onInstallThemeFromUriResult(boolean hasInstalled);
+    void onFinishModifyTheme();
 
     // home
     void registerHomeCallbacks(IHomeCallbacks callback);
     void removeHomeCallbacks();
     void requestInstallThemeFromUri(in Uri uri);
+    void requestModifyTheme(String themeId, in Uri file);
 
     // settings
     void registerSettingsCallbacks(ISettingsCallbacks callback);
