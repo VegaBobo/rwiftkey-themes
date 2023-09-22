@@ -162,16 +162,12 @@ open class HomeViewModel @Inject constructor(
 
     fun onClickPatchTheme() {
         val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
+        _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
 
         if (!uiState.value.hasAlreadyLoadedPatches) {
             _uiState.update { it.copy(isLoadingOverlayVisible = true) }
             viewModelScope.launch(Dispatchers.IO) { loadAddonsFromUrl() }
-        } else {
-            _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
         }
-
-        if (!newPatchMenuValue)
-            return
     }
 
     fun loadAddonsFromUrl() {
@@ -198,7 +194,6 @@ open class HomeViewModel @Inject constructor(
         }
         _uiState.update {
             it.copy(
-                isPatchMenuVisible = remoteJson != null,
                 hasAlreadyLoadedPatches = remoteJson != null,
                 isLoadingOverlayVisible = false
             )

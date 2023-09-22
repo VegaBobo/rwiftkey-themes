@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -269,30 +269,33 @@ fun HomepageScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .heightIn(0.dp, 200.dp)
                         .padding(start = 46.dp)
                 ) {
-                    LazyColumn() {
-                        items(uiState.patchCollection.size) {
-                            val thisPatchCollection = uiState.patchCollection[it]
-                            Text(
-                                text = thisPatchCollection.title,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            BottomSheetDivisor()
-                            for (item in thisPatchCollection.patches) {
-                                Column(modifier = Modifier.clickable {
-                                    homeVm.onClickApplyPatch(item)
-                                }) {
-                                    Text(text = item.title, modifier = Modifier.fillMaxWidth())
-                                    AsyncImage(
-                                        model = item.thumbnail,
-                                        contentDescription = "thumbnail"
-                                    )
+                    LazyColumn {
+                        if (!uiState.patchCollection.isEmpty())
+                            items(uiState.patchCollection.size) {
+                                val thisPatchCollection = uiState.patchCollection[it]
+                                Text(
+                                    text = thisPatchCollection.title,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                BottomSheetDivisor()
+                                for (item in thisPatchCollection.patches) {
+                                    Column(modifier = Modifier.clickable {
+                                        homeVm.onClickApplyPatch(item)
+                                    }) {
+                                        Text(text = item.title, modifier = Modifier.fillMaxWidth())
+                                        AsyncImage(
+                                            model = item.thumbnail,
+                                            contentDescription = "thumbnail"
+                                        )
+                                    }
                                 }
+                                Spacer(modifier = Modifier.padding(8.dp))
                             }
-                            Spacer(modifier = Modifier.padding(8.dp))
-                        }
+                        else
+                            item { Text(text = "No patches available") }
                     }
                 }
             }
