@@ -111,6 +111,11 @@ class RemoteService : Service() {
                 selfCallback!!.onRemoteRequestRebind()
             }
 
+            override fun requestUnbind() {
+                Log.d(BuildConfig.APPLICATION_ID, "requestUnbind()")
+                remoteCallbackOperation { onRequestUnbind() }
+            }
+
             // CALLED BY HOME
 
             override fun registerHomeCallbacks(callback: IHomeCallbacks) {

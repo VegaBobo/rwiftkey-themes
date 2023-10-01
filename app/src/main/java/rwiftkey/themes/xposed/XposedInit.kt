@@ -39,7 +39,9 @@ class XposedInit : IXposedHookLoadPackage {
     fun bindService(hookedActivity: Activity, lpparam: XC_LoadPackage.LoadPackageParam) {
         var REMOTE_SERVICE: IRemoteService?
 
-        val serviceConnection = object : ServiceConnection {
+        var serviceConnection: ServiceConnection? = null
+
+        serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 Log.i(BuildConfig.APPLICATION_ID, "onServiceConnected")
                 REMOTE_SERVICE = IRemoteService.Stub.asInterface(service)
@@ -79,6 +81,10 @@ class XposedInit : IXposedHookLoadPackage {
                             Operations.deleteTheme(lpparam.packageName, name)
                             REMOTE_SERVICE!!.onFinishDeleteTheme()
                             exitProcess(0)
+                        }
+
+                        override fun onRequestUnbind() {
+                            hookedActivity.applicationContext.unbindService(serviceConnection!!)
                         }
                     }
                 )

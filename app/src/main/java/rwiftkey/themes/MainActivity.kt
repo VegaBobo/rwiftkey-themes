@@ -9,6 +9,7 @@ import androidx.core.view.WindowCompat
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ipc.RootService
 import dagger.hilt.android.AndroidEntryPoint
+import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import rwiftkey.themes.rootservice.PrivilegedRootService
 import rwiftkey.themes.ui.screen.RwiftkeyApp
@@ -44,6 +45,27 @@ class MainActivity : AppCompatActivity() {
         setContent { RwiftkeyApp() }
         if (Shell.getShell().isRoot)
             bindRootService()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        if (!isFinishing)
+            return
+
+        if (Shell.getShell().isRoot) {
+            RootService.unbind(PrivilegedProvider.connection)
+            return
+        }
+
+        if (RemoteServiceProvider.isRemoteLikelyConnected) {
+            RemoteServiceProvider.isRemoteLikelyConnected = false
+            RemoteServiceProvider.run {
+                requestUnbind()
+                unbindService(RemoteServiceProvider.connection)
+            }
+            return
+        }
     }
 
 }

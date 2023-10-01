@@ -16,6 +16,7 @@ interface IRemoteService {
     void onInstallThemeFromUriResult(boolean hasInstalled);
     void onFinishModifyTheme();
     void onFinishDeleteTheme();
+    void requestUnbind();
 
     // home
     void registerHomeCallbacks(IHomeCallbacks callback);
