@@ -204,6 +204,7 @@ fun downloadFile(url: String, fileName: String) {
 suspend fun requestRemoteBinding(
     targetPackageName: String,
     app: Application,
+    shouldOpenThemes: Boolean = false,
     onFinish: () -> Unit = {}
 ) {
     delay(200)
@@ -211,6 +212,8 @@ suspend fun requestRemoteBinding(
     i.setClassName(targetPackageName, "com.touchtype.LauncherActivity")
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     i.putExtra(IntentAction.BIND, true)
+    if(shouldOpenThemes)
+        i.putExtra(IntentAction.OPEN_THEME_SECTION, true)
     app.startActivity(i)
     onFinish()
 }

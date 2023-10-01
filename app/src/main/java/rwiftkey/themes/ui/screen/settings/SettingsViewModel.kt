@@ -45,7 +45,8 @@ open class SettingsViewModel @Inject constructor(
                     viewModelScope.launch {
                         requestRemoteBinding(
                             targetPackageName = sKeyboardManager.getPackage(),
-                            app = app
+                            app = app,
+                            shouldOpenThemes = true
                         )
                     }
                 }
@@ -67,7 +68,6 @@ open class SettingsViewModel @Inject constructor(
     }
 
     fun onClickClean() {
-        _uiState.update { it.copy(settingToast = SettingToast.PLEASE_WAIT) }
         viewModelScope.launch {
             if (sKeyboardManager.isRooted()) {
                 val targetKeyboard = sKeyboardManager.getPackage()
