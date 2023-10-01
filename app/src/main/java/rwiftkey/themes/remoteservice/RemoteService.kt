@@ -29,11 +29,25 @@ class RemoteService : Service() {
             }
 
             fun remoteCallbackOperation(action: IRemoteServiceCallbacks.() -> Unit) {
+                var ticks = 0
                 while (remoteCallback == null) {
                     Log.d(
                         BuildConfig.APPLICATION_ID, "remoteCallback is not available, waiting.."
                     )
+                    ticks++
                     Thread.sleep(200)
+                    if (ticks > 10) {
+                        Log.d(
+                            BuildConfig.APPLICATION_ID,
+                            "remoteCallback is not available for a long time, trying to rebind..."
+                        )
+                        if (selfCallback != null) {
+                            selfCallback!!.onRemoteRequestRebind()
+                            ticks = 0
+                        } else {
+                            throw Exception("remoteCallback is not available")
+                        }
+                    }
                 }
                 action(remoteCallback!!)
             }
