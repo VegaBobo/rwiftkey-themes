@@ -3,6 +3,7 @@ package rwiftkey.themes.remoteservice
 import android.app.Service
 import android.content.Intent
 import android.net.Uri
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Process
 import android.util.Log
@@ -41,15 +42,27 @@ class RemoteService : Service() {
                             BuildConfig.APPLICATION_ID,
                             "remoteCallback is not available for a long time, trying to rebind..."
                         )
-                        if (selfCallback != null) {
-                            selfCallback!!.onRemoteRequestRebind()
-                            ticks = 0
-                        } else {
-                            throw Exception("remoteCallback is not available")
-                        }
+                        callSelfToRebind()
+                        ticks = 0
                     }
                 }
-                action(remoteCallback!!)
+
+                try {
+                    action(remoteCallback!!)
+                } catch (e: DeadObjectException) {
+                    Log.e(BuildConfig.APPLICATION_ID, "remoteCallback is dead, trying to rebind...")
+                    callSelfToRebind()
+                    remoteCallbackOperation(action)
+                }
+            }
+
+            fun callSelfToRebind() {
+                remoteCallback = null
+                if (selfCallback != null) {
+                    selfCallback!!.onRemoteRequestRebind()
+                } else {
+                    throw Exception("remoteCallback is not available")
+                }
             }
 
             // CALLED BY REMOTE

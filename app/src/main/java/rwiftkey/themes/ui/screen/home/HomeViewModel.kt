@@ -260,7 +260,10 @@ open class HomeViewModel @Inject constructor(
 
                 override fun onInstallThemeResult(hasInstalled: Boolean) {
                     _uiState.update {
-                        it.copy(homeToast = if (hasInstalled) HomeToast.INSTALLATION_FINISHED else HomeToast.INSTALLATION_FAILED)
+                        it.copy(
+                            homeToast = if (hasInstalled) HomeToast.INSTALLATION_FINISHED else HomeToast.INSTALLATION_FAILED,
+                            isLoadingOverlayVisible = false
+                        )
                     }
                 }
 
@@ -271,8 +274,7 @@ open class HomeViewModel @Inject constructor(
                     viewModelScope.launch {
                         requestRemoteBinding(
                             targetPackageName = sKeyboardManager.getPackage(),
-                            app = app,
-                            onFinish = { _uiState.update { it.copy(isLoadingOverlayVisible = false) } }
+                            app = app
                         )
                     }
                 }

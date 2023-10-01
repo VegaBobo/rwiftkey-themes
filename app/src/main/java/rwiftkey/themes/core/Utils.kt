@@ -204,8 +204,7 @@ fun downloadFile(url: String, fileName: String) {
 suspend fun requestRemoteBinding(
     targetPackageName: String,
     app: Application,
-    shouldOpenThemes: Boolean = false,
-    onFinish: () -> Unit = {}
+    shouldOpenThemes: Boolean = false
 ) {
     delay(200)
     val i = Intent()
@@ -215,5 +214,4 @@ suspend fun requestRemoteBinding(
     if(shouldOpenThemes)
         i.putExtra(IntentAction.OPEN_THEME_SECTION, true)
     app.startActivity(i)
-    onFinish()
 }
