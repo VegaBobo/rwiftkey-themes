@@ -39,11 +39,11 @@ fun SettingsScreen(
         snapshotFlow { uiState.settingToast }.collectLatest {
             when (it) {
                 SettingToast.PLEASE_WAIT ->
-                    Toast.makeText(ctx, ctx.getString(R.string.please_wait), Toast.LENGTH_LONG)
+                    Toast.makeText(ctx, ctx.getString(R.string.please_wait), Toast.LENGTH_SHORT)
                         .show()
 
                 SettingToast.THEMES_CLEANED ->
-                    Toast.makeText(ctx, ctx.getString(R.string.cleaned_installed_themes), Toast.LENGTH_LONG)
+                    Toast.makeText(ctx, ctx.getString(R.string.cleaned_installed_themes), Toast.LENGTH_SHORT)
                         .show()
 
                 else -> {}

@@ -78,6 +78,7 @@ class XposedInit : IXposedHookLoadPackage {
                         override fun onRequestThemeDelete(name: String) {
                             Operations.deleteTheme(lpparam.packageName, name)
                             REMOTE_SERVICE!!.onFinishDeleteTheme()
+                            exitProcess(0)
                         }
                     }
                 )

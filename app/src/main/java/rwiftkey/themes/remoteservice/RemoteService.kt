@@ -28,6 +28,16 @@ class RemoteService : Service() {
                 Log.d(BuildConfig.APPLICATION_ID, "ping(): pid=$pid, uid=$uid")
             }
 
+            fun remoteCallbackOperation(action: IRemoteServiceCallbacks.() -> Unit) {
+                while (remoteCallback == null) {
+                    Log.d(
+                        BuildConfig.APPLICATION_ID, "remoteCallback is not available, waiting.."
+                    )
+                    Thread.sleep(200)
+                }
+                action(remoteCallback!!)
+            }
+
             // CALLED BY REMOTE
 
             override fun registerRemoteCallbacks(callback: IRemoteServiceCallbacks) {
@@ -35,7 +45,7 @@ class RemoteService : Service() {
                 remoteCallback = callback
 
                 // load installed themes when callback is registered.
-                remoteCallback!!.onThemesRequest()
+                remoteCallbackOperation { onThemesRequest() }
             }
 
             override fun removeRemoteCallbacks() {
@@ -56,6 +66,8 @@ class RemoteService : Service() {
             override fun onInstallThemeFromUriResult(hasInstalled: Boolean) {
                 Log.d(BuildConfig.APPLICATION_ID, "onInstallThemeFromUriResult()")
                 selfCallback!!.onInstallThemeResult(hasInstalled)
+
+                remoteCallback = null
                 selfCallback!!.onRemoteRequestRebind()
             }
 
@@ -67,6 +79,9 @@ class RemoteService : Service() {
             override fun onFinishDeleteTheme() {
                 Log.d(BuildConfig.APPLICATION_ID, "onFinishDeleteTheme()")
                 selfCallback!!.onFinishDeleteTheme()
+
+                remoteCallback = null
+                selfCallback!!.onRemoteRequestRebind()
             }
 
             // CALLED BY HOME
@@ -82,15 +97,15 @@ class RemoteService : Service() {
             }
 
             override fun requestInstallThemeFromUri(uri: Uri?) {
-                Log.d(BuildConfig.APPLICATION_ID, "removeSelfCallback()")
+                Log.d(BuildConfig.APPLICATION_ID, "requestInstallThemeFromUri()")
                 if (uri == null) {
                     Log.d(
                         BuildConfig.APPLICATION_ID,
-                        "removeSelfCallback(), uri is null, cannot proceed."
+                        "requestInstallThemeFromUri(), uri is null, cannot proceed."
                     )
                     return
                 }
-                remoteCallback!!.onInstallThemeRequest(uri)
+                remoteCallbackOperation { onInstallThemeRequest(uri) }
             }
 
             override fun requestModifyTheme(themeId: String?, uri: Uri?) {
@@ -102,12 +117,12 @@ class RemoteService : Service() {
                     )
                     return
                 }
-                remoteCallback!!.onRequestModifyTheme(themeId, uri)
+                remoteCallbackOperation { onRequestModifyTheme(themeId, uri) }
             }
 
             override fun requestDeleteTheme(themeName: String) {
                 Log.d(BuildConfig.APPLICATION_ID, "requestDeleteTheme()")
-                remoteCallback!!.onRequestThemeDelete(themeName)
+                remoteCallbackOperation { onRequestThemeDelete(themeName) }
             }
 
             // CALLED BY SETTINGS
@@ -123,11 +138,14 @@ class RemoteService : Service() {
             }
 
             override fun requestCleanup() {
-                remoteCallback!!.onRequestCleanup()
+                Log.d(BuildConfig.APPLICATION_ID, "requestCleanup()")
+                remoteCallbackOperation { onRequestCleanup() }
             }
 
             override fun onRequestCleanupFinish() {
                 settingsCallback!!.onRequestCleanupFinish()
+
+                remoteCallback = null
                 settingsCallback!!.onRemoteRequestRebind()
             }
 
