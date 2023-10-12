@@ -98,7 +98,7 @@ object Operations {
 
     fun getThumbnailFromThemeId(targetPackage: String, themeId: String): Bitmap? {
         val thumbnailAbs =
-            "/data/data/$targetPackage/files/custom_themes/$themeId/default/ldpi/thumbnail.png"
+            "/data/data/$targetPackage/files/custom_themes/$themeId/default/xhdpi/thumbnail.png"
         val thumbnailFile = File(thumbnailAbs)
 
         if (!thumbnailFile.exists()) return null
