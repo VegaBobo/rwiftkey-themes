@@ -3,7 +3,7 @@ package rwiftkey.themes;
 import rwiftkey.themes.IRemoteServiceCallbacks;
 import rwiftkey.themes.IHomeCallbacks;
 import rwiftkey.themes.ISettingsCallbacks;
-import rwiftkey.themes.ui.screen.home.KeyboardTheme;
+import rwiftkey.themes.model.Theme;
 
 interface IRemoteService {
     void ping();
@@ -11,7 +11,7 @@ interface IRemoteService {
     // remote
     void registerRemoteCallbacks(IRemoteServiceCallbacks callback);
     void removeRemoteCallbacks();
-    void sendThemesToSelf(in List<KeyboardTheme> themes);
+    void sendThemesToSelf(in List<Theme> themes);
     void onRemoteServiceStarted();
     void onInstallThemeFromUriResult(boolean hasInstalled);
     void onFinishModifyTheme();

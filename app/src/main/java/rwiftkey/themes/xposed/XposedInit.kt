@@ -47,7 +47,12 @@ class XposedInit : IXposedHookLoadPackage {
                 REMOTE_SERVICE!!.registerRemoteCallbacks(
                     object : IRemoteServiceCallbacks.Stub() {
                         override fun onThemesRequest() {
-                            val themes = Operations.retrieveThemes(lpparam.packageName)
+                            val themes =
+                                try {
+                                    Operations.retrieveThemes(lpparam.packageName)
+                                } catch (e: Exception) {
+                                    emptyList()
+                                }
                             REMOTE_SERVICE!!.sendThemesToSelf(themes)
                         }
 

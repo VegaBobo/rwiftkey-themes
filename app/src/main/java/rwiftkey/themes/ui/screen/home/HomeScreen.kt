@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import rwiftkey.themes.R
 import rwiftkey.themes.core.findActivity
+import rwiftkey.themes.model.Theme
 import rwiftkey.themes.ui.components.BottomSheetDivisor
 import rwiftkey.themes.ui.components.CustomBottomSheet
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
@@ -88,7 +89,7 @@ fun HomepageScreen(
         val intent = it.data
         if (intent != null) {
             val keyboardThemes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableArrayListExtra("KeyboardThemes", KeyboardTheme::class.java)
+                intent.getParcelableArrayListExtra("KeyboardThemes", Theme::class.java)
             } else {
                 intent.getParcelableArrayListExtra("KeyboardThemes")
             }
@@ -196,7 +197,7 @@ fun HomepageScreen(
                                             .fillMaxSize()
                                             .padding(6.dp),
                                         onClick = { homeVm.updateSelectedTheme(thisKeyboardTheme) },
-                                        themeName = thisKeyboardTheme.name ?: "No name",
+                                        themeName = thisKeyboardTheme.name,
                                         thumbnail = thisKeyboardTheme.thumbnail?.asImageBitmap(),
                                     )
                                 }

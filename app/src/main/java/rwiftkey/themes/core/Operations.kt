@@ -8,7 +8,6 @@ import android.net.Uri
 import com.beust.klaxon.Klaxon
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
-import rwiftkey.themes.ui.screen.home.KeyboardTheme
 import java.io.File
 
 object Operations {
@@ -67,7 +66,7 @@ object Operations {
     fun cleanUp(targetPackage: String) {
         val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
         val customThemesFile = File(customThemesFolderPath)
-        if(!customThemesFile.exists())
+        if (!customThemesFile.exists())
             return
         for (file in File(customThemesFolderPath).listFiles() ?: return) {
             file.deleteRecursively()
@@ -83,39 +82,30 @@ object Operations {
         ctx.startActivity(i)
     }
 
-    fun retrieveThemes(targetPackage: String): ArrayList<KeyboardTheme> {
+    fun retrieveThemes(targetPackage: String): List<Theme> {
         val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
-        val customThemesFiles = File(customThemesFolderPath)
+        val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
 
-        val keyboardThemes = ArrayList<KeyboardTheme>()
-        for (f in customThemesFiles.listFiles() ?: return ArrayList()) {
-            if (!f.isDirectory) continue
-            val keyboardTheme = themeFolderToAppTheme(f) ?: continue
-            keyboardThemes.add(keyboardTheme)
+        val themesJsonString = filePathToString(customThemesFolderJson)
+        val installedThemes = jsonToThemeObject(themesJsonString)
+        for (theme in installedThemes) {
+            if(theme.id == installedThemes[0].id) continue
+            theme.thumbnail = getThumbnailFromThemeId(targetPackage, theme.id)
         }
 
-        return keyboardThemes
+        return installedThemes.drop(1)
     }
 
-    fun themeFolderToAppTheme(dir: File): KeyboardTheme? {
-        val styleJson = dir.absolutePath + "/style.json"
-        val styleJsonFile = File(styleJson)
-        if (!styleJsonFile.exists()) return null
-        val styleJsonText = styleJsonFile.readText()
-        val themeNameRgx = Regex("\"name\":\"(.+?(?=\"))")
-        val themeName =
-            themeNameRgx.find(styleJsonText)?.groupValues?.getOrNull(1)?.trim() ?: return null
-        if (themeName == "Theme Customiser") return null
-
-        val thumbnailAbs = dir.absolutePath + "/default/ldpi/thumbnail.png"
+    fun getThumbnailFromThemeId(targetPackage: String, themeId: String): Bitmap? {
+        val thumbnailAbs =
+            "/data/data/$targetPackage/files/custom_themes/$themeId/default/ldpi/thumbnail.png"
         val thumbnailFile = File(thumbnailAbs)
-        if (!thumbnailFile.exists()) return KeyboardTheme(themeName, null)
+
+        if (!thumbnailFile.exists()) return null
 
         val options = BitmapFactory.Options()
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
-        val bitmap = BitmapFactory.decodeFile(thumbnailFile.absolutePath, options)
-
-        return KeyboardTheme(themeName, dir.name, bitmap)
+        return BitmapFactory.decodeFile(thumbnailFile.absolutePath, options)
     }
 
     fun deleteTheme(targetPackage: String, themeId: String) {

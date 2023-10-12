@@ -7,7 +7,7 @@ import android.os.Process
 import rwiftkey.themes.IPrivilegedService
 import rwiftkey.themes.core.Operations
 import rwiftkey.themes.core.unzip
-import rwiftkey.themes.ui.screen.home.KeyboardTheme
+import rwiftkey.themes.model.Theme
 import java.io.File
 
 class PrivilegedService : IPrivilegedService.Stub() {
@@ -47,9 +47,10 @@ class PrivilegedService : IPrivilegedService.Stub() {
         ACTIVITY_MANAGER!!.forceStopPackage(packageName, 0)
     }
 
-    override fun getKeyboardThemes(targetKeyboardPackage: String?): MutableList<KeyboardTheme> {
+    override fun getKeyboardThemes(targetKeyboardPackage: String?): MutableList<Theme> {
         if (targetKeyboardPackage == null) return ArrayList()
-        return Operations.retrieveThemes(targetKeyboardPackage)
+        val themes = Operations.retrieveThemes(targetKeyboardPackage)
+        return themes.toMutableList()
     }
 
     override fun deleteTheme(targetKeyboardPackage: String?, themeId: String?) {

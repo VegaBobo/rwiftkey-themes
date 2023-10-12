@@ -12,7 +12,7 @@ import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.IRemoteServiceCallbacks
 import rwiftkey.themes.IHomeCallbacks
 import rwiftkey.themes.ISettingsCallbacks
-import rwiftkey.themes.ui.screen.home.KeyboardTheme
+import rwiftkey.themes.model.Theme
 
 
 class RemoteService : Service() {
@@ -80,7 +80,7 @@ class RemoteService : Service() {
                 remoteCallback = null
             }
 
-            override fun sendThemesToSelf(themes: MutableList<KeyboardTheme>?) {
+            override fun sendThemesToSelf(themes: List<Theme>?) {
                 Log.d(BuildConfig.APPLICATION_ID, "sendThemesToSelf(), themes: $themes")
                 selfCallback!!.onReceiveThemes(themes)
             }

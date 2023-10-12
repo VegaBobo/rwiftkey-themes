@@ -1,6 +1,7 @@
 package rwiftkey.themes.ui.screen.home
 
 import androidx.compose.runtime.mutableStateListOf
+import rwiftkey.themes.model.Theme
 
 enum class HomeToast {
     NONE,
@@ -31,10 +32,10 @@ data class PatchCollection(
 data class HomeUIState(
     val operationMode: AppOperationMode = AppOperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
-    val keyboardThemes: MutableList<KeyboardTheme> = mutableStateListOf(),
+    val keyboardThemes: MutableList<Theme> = mutableStateListOf(),
     val isInstallationLoadingVisible: Boolean = false,
     val hasNoKeyboardsAvail: Boolean = false,
-    val selectedTheme: KeyboardTheme? = null,
+    val selectedTheme: Theme? = null,
     val isPatchMenuVisible: Boolean = false,
     val hasAlreadyLoadedPatches: Boolean = false,
     val patchCollection: MutableList<PatchCollection> = mutableStateListOf(),

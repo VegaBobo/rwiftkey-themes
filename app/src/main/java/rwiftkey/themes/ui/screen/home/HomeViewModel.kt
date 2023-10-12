@@ -24,6 +24,7 @@ import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.downloadFile
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.model.Theme
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
 import rwiftkey.themes.xposed.IntentAction
@@ -55,14 +56,14 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateSelectedTheme(keyboardTheme: KeyboardTheme?) {
-        _uiState.update { it.copy(selectedTheme = keyboardTheme, isPatchMenuVisible = false) }
+    fun updateSelectedTheme(theme: Theme?) {
+        _uiState.update { it.copy(selectedTheme = theme, isPatchMenuVisible = false) }
     }
 
     fun loadThemesRoot() {
         PrivilegedProvider.run {
             val keyboardThemes = getKeyboardThemes(sKeyboardManager.getPackage())
-            _uiState.update { it.copy(keyboardThemes = keyboardThemes) }
+            _uiState.update { it.copy(keyboardThemes = keyboardThemes.toMutableList()) }
         }
     }
 
@@ -251,7 +252,7 @@ open class HomeViewModel @Inject constructor(
                     _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
                 }
 
-                override fun onReceiveThemes(themes: MutableList<KeyboardTheme>?) {
+                override fun onReceiveThemes(themes: List<Theme>?) {
                     Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
                     if (themes == null) return
                     _uiState.value.keyboardThemes.clear()
@@ -303,7 +304,7 @@ open class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
     }
 
-    fun onReceiveKeyboardThemes(keyboardThemes: ArrayList<KeyboardTheme>) {
+    fun onReceiveKeyboardThemes(keyboardThemes: ArrayList<Theme>) {
         Log.d(BuildConfig.APPLICATION_ID, "onReceiveKeyboardThemes $keyboardThemes")
     }
 
