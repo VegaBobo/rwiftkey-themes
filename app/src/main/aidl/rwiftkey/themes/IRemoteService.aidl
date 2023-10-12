@@ -23,7 +23,7 @@ interface IRemoteService {
     void removeHomeCallbacks();
     void requestInstallThemeFromUri(in Uri uri);
     void requestModifyTheme(String themeId, in Uri file);
-    void requestDeleteTheme(String themeName);
+    void requestDeleteTheme(String themeId);
 
     // settings
     void registerSettingsCallbacks(ISettingsCallbacks callback);

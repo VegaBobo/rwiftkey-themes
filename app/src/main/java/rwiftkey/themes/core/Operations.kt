@@ -118,7 +118,7 @@ object Operations {
         return KeyboardTheme(themeName, dir.name, bitmap)
     }
 
-    fun deleteTheme(targetPackage: String, themeName: String) {
+    fun deleteTheme(targetPackage: String, themeId: String) {
         val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
         val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
 
@@ -126,7 +126,7 @@ object Operations {
         val themes: ArrayList<Theme> = ArrayList()
         themes.addAll(
             jsonToThemeObject(themesJsonString).mapNotNull {
-                if (it.name == themeName) {
+                if (it.id == themeId) {
                     val themeFolder = File(customThemesFolderPath + "/${it.id}")
                     if (themeFolder.exists())
                         themeFolder.deleteRecursively()

@@ -52,9 +52,9 @@ class PrivilegedService : IPrivilegedService.Stub() {
         return Operations.retrieveThemes(targetKeyboardPackage)
     }
 
-    override fun deleteTheme(targetKeyboardPackage: String?, themeName: String?) {
-        if (themeName == null || targetKeyboardPackage == null) return
-        Operations.deleteTheme(targetKeyboardPackage, themeName)
+    override fun deleteTheme(targetKeyboardPackage: String?, themeId: String?) {
+        if (themeId == null || targetKeyboardPackage == null) return
+        Operations.deleteTheme(targetKeyboardPackage, themeId)
     }
 
     override fun modifyTheme(

@@ -152,9 +152,9 @@ class RemoteService : Service() {
                 remoteCallbackOperation { onRequestModifyTheme(themeId, uri) }
             }
 
-            override fun requestDeleteTheme(themeName: String) {
+            override fun requestDeleteTheme(themeId: String) {
                 Log.d(BuildConfig.APPLICATION_ID, "requestDeleteTheme()")
-                remoteCallbackOperation { onRequestThemeDelete(themeName) }
+                remoteCallbackOperation { onRequestThemeDelete(themeId) }
             }
 
             // CALLED BY SETTINGS

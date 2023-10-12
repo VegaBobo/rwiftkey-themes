@@ -147,7 +147,7 @@ open class HomeViewModel @Inject constructor(
 
     fun onClickDeleteThemeRoot() {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
-        val selectedTheme = _uiState.value.selectedTheme?.name ?: return
+        val selectedTheme = _uiState.value.selectedTheme?.id ?: return
         if (uiState.value.operationMode == AppOperationMode.ROOT) {
             PrivilegedProvider.run {
                 deleteTheme(sKeyboardManager.getPackage(), selectedTheme)
