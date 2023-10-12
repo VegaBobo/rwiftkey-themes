@@ -8,7 +8,6 @@ import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
@@ -43,8 +42,7 @@ class XposedInit : IXposedHookLoadPackage {
 
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                Log.i(BuildConfig.APPLICATION_ID, "onServiceConnected")
-                REMOTE_SERVICE = IRemoteService.Stub.asInterface(service)
+                REMOTE_SERVICE = IRemoteService.Stub.asInterface(service) ?: return
 
                 REMOTE_SERVICE!!.registerRemoteCallbacks(
                     object : IRemoteServiceCallbacks.Stub() {
@@ -55,10 +53,14 @@ class XposedInit : IXposedHookLoadPackage {
 
                         override fun onInstallThemeRequest(uri: Uri) {
                             try {
-                                Operations.installTheme(hookedActivity, lpparam.packageName, uri)
+                                Operations.installTheme(
+                                    hookedActivity,
+                                    lpparam.packageName,
+                                    uri
+                                )
                                 REMOTE_SERVICE!!.onInstallThemeFromUriResult(true)
                             } catch (e: Exception) {
-                                Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
+                                // Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
                                 REMOTE_SERVICE!!.onInstallThemeFromUriResult(false)
                             }
                             exitProcess(0)
@@ -88,14 +90,12 @@ class XposedInit : IXposedHookLoadPackage {
                         }
                     }
                 )
-
                 REMOTE_SERVICE!!.ping()
                 REMOTE_SERVICE!!.onRemoteServiceStarted()
                 hookedActivity.finish()
             }
 
             override fun onServiceDisconnected(name: ComponentName) {
-                Log.i(BuildConfig.APPLICATION_ID, "onServiceDisconnected")
                 REMOTE_SERVICE = null
             }
         }
@@ -117,6 +117,11 @@ class XposedInit : IXposedHookLoadPackage {
             override fun afterHookedMethod(param: MethodHookParam?) {
                 super.afterHookedMethod(param)
                 val thisActivity = param!!.thisObject as Activity
+
+                // don't capture when LAUNCHED_FROM_HISTORY
+                val flags = thisActivity.intent.flags
+                if (flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return
+
                 bundleFromStartup = thisActivity.intent.extras
             }
         })
@@ -139,6 +144,8 @@ class XposedInit : IXposedHookLoadPackage {
                 val shouldOpenThemeSection =
                     bundleFromStartup?.getBoolean(IntentAction.OPEN_THEME_SECTION) ?: false
                 if (shouldOpenThemeSection) Operations.openThemesSection(thisActivity)
+
+                bundleFromStartup = null
             }
         })
     }
