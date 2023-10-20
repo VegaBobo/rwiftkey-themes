@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -160,7 +162,11 @@ fun HomepageScreen(
                     showSettings = true,
                     onSettingsClick = { onClickSettings() },
                     navContent = {
-                        AnimatedVisibility(visible = uiState.isHomeThemesVisible) {
+                        AnimatedVisibility(
+                            visible = uiState.isHomeThemesVisible,
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
                             IconButton(
                                 modifier = Modifier.animateContentSize(),
                                 onClick = { homeVm.onClickToggleThemes() }) {

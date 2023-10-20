@@ -70,6 +70,7 @@ dependencies {
     implementation(AndroidX.dataStore.preferences)
 
     implementation(Google.Android.Material)
+    implementation("androidx.compose.animation:animation:1.4.3")
 
     // TODO : Remove these dependency once we upgrade to Android Studio Dolphin b/228889042
     // These dependencies are currently necessary to render Compose previews
