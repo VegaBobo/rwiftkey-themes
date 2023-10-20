@@ -177,7 +177,8 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun loadAddonsFromUrl() {
-        val addons = "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
+        val addons =
+            "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
         val remoteJson = try {
             URL(addons).readText()
         } catch (e: Exception) {
@@ -191,7 +192,9 @@ open class HomeViewModel @Inject constructor(
             for (obj in jsonParsedObject) {
                 val addonsArray = jsonParsedObject.array<Any>(obj.key) ?: return
                 val patches =
-                    addonsArray.let { klaxon.parseFromJsonArray<ThemePatch>(it) } ?: return
+                    addonsArray.let { klaxon.parseFromJsonArray<ThemePatch>(it) }
+                        ?.mapNotNull { if (BuildConfig.DEBUG || !it.debugOnly) it else null } ?: return
+                if(patches.isEmpty()) break
                 val thisCollection = PatchCollection(obj.key, patches)
                 _uiState.value.patchCollection.add(thisCollection)
             }

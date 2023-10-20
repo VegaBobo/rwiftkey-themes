@@ -21,6 +21,7 @@ data class ThemePatch(
     val title: String = "",
     val thumbnail: String = "",
     val url: String = "",
+    val debugOnly: Boolean = false
 )
 
 data class PatchCollection(
