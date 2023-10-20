@@ -1,9 +1,12 @@
 package rwiftkey.themes.ui.screen.home
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
@@ -22,6 +25,7 @@ import rwiftkey.themes.IHomeCallbacks
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.downloadFile
+import rwiftkey.themes.core.hasConnection
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.startSKActivity
 import rwiftkey.themes.model.Theme
@@ -32,6 +36,7 @@ import java.io.File
 import java.io.StringReader
 import java.net.URL
 import javax.inject.Inject
+
 
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
@@ -165,7 +170,7 @@ open class HomeViewModel @Inject constructor(
         val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
         _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
 
-        if (!uiState.value.hasAlreadyLoadedPatches) {
+        if (!uiState.value.hasAlreadyLoadedPatches && hasConnection(app)) {
             _uiState.update { it.copy(isLoadingOverlayVisible = true) }
             viewModelScope.launch(Dispatchers.IO) { loadAddonsFromUrl() }
         }

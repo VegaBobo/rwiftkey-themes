@@ -7,6 +7,8 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -213,7 +215,7 @@ suspend fun requestRemoteBinding(
     i.setClassName(targetPackageName, "com.touchtype.LauncherActivity")
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     i.putExtra(IntentAction.BIND, true)
-    if(shouldOpenThemes)
+    if (shouldOpenThemes)
         i.putExtra(IntentAction.OPEN_THEME_SECTION, true)
     app.startActivity(i)
 }
@@ -235,4 +237,18 @@ fun File.calculateSHA1(): String {
     }
 
     return result.toString()
+}
+
+fun hasConnection(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkCapabilities = connectivityManager.activeNetwork ?: return false
+    val actNw =
+        connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+    return when {
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+        else -> false
+    }
 }
