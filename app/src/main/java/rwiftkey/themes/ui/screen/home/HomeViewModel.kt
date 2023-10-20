@@ -177,7 +177,7 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun loadAddonsFromUrl() {
-        val addons = "https://localhost/addons.json"
+        val addons = "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
         val remoteJson = try {
             URL(addons).readText()
         } catch (e: Exception) {
