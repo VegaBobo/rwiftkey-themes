@@ -285,7 +285,8 @@ open class HomeViewModel @Inject constructor(
                         it.copy(
                             isPatchMenuVisible = false,
                             homeToast = HomeToast.PATCHED_SUCCESS,
-                            isLoadingOverlayVisible = false
+                            isLoadingOverlayVisible = false,
+                            selectedTheme = null
                         )
                     }
                 }

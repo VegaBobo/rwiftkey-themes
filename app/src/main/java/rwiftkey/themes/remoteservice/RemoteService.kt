@@ -101,6 +101,9 @@ class RemoteService : Service() {
             override fun onFinishModifyTheme() {
                 Log.d(BuildConfig.APPLICATION_ID, "onFinishModifyTheme()")
                 selfCallback!!.onFinishModifyTheme()
+
+                remoteCallback = null
+                selfCallback!!.onRemoteRequestRebind()
             }
 
             override fun onFinishDeleteTheme() {
