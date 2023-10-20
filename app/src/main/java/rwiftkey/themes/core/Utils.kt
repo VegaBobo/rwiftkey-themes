@@ -24,8 +24,10 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.net.URL
+import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+
 
 fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -214,4 +216,23 @@ suspend fun requestRemoteBinding(
     if(shouldOpenThemes)
         i.putExtra(IntentAction.OPEN_THEME_SECTION, true)
     app.startActivity(i)
+}
+
+fun File.calculateSHA1(): String {
+    val digest = MessageDigest.getInstance("SHA-1")
+    val inputStream = this.inputStream()
+    val buffer = ByteArray(8192)
+    var bytesRead: Int
+
+    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+        digest.update(buffer, 0, bytesRead)
+    }
+
+    val sha1Bytes = digest.digest()
+    val result = StringBuilder()
+    sha1Bytes.forEach {
+        result.append(String.format("%02x", it))
+    }
+
+    return result.toString()
 }

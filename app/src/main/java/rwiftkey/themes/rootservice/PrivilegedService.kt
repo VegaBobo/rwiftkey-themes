@@ -63,8 +63,6 @@ class PrivilegedService : IPrivilegedService.Stub() {
         themeId: String?,
         absZipFileToApply: String?
     ) {
-        val workingThemeDir =
-            File("/data/data/$targetKeyboardPackage/files/custom_themes/$themeId")
-        unzip(File(absZipFileToApply!!), workingThemeDir)
+        Operations.modifyThemeRoot(targetKeyboardPackage!!, themeId!!, File(absZipFileToApply!!))
     }
 }

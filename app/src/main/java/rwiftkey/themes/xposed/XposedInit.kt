@@ -78,9 +78,7 @@ class XposedInit : IXposedHookLoadPackage {
                         }
 
                         override fun onRequestModifyTheme(themeId: String, uri: Uri) {
-                            val workingThemeDir =
-                                File("/data/data/${lpparam.packageName}/files/custom_themes/$themeId")
-                            unzip(hookedActivity.baseContext, uri, workingThemeDir)
+                            Operations.modifyThemeRootless(lpparam.packageName, themeId, uri, hookedActivity.applicationContext)
                             REMOTE_SERVICE!!.onFinishModifyTheme()
                             exitProcess(0)
                         }
