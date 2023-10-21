@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import rwiftkey.themes.ISettingsCallbacks
 import rwiftkey.themes.core.SKeyboardManager
 import rwiftkey.themes.core.requestRemoteBinding
+import rwiftkey.themes.core.shellStartSKActivity
 import rwiftkey.themes.model.SimpleApplication
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
@@ -75,6 +76,7 @@ open class SettingsViewModel @Inject constructor(
                     cleanThemes(targetKeyboard)
                     _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
                     forceStopPackage(targetKeyboard)
+                    shellStartSKActivity(sKeyboardManager.getPackage(), true)
                 }
                 return@launch
             }
