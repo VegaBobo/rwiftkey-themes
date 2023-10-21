@@ -66,10 +66,14 @@ fun jsonToThemeObject(inputString: String): List<Theme> {
     return themeArray
 }
 
-fun shellStartSKActivity(targetPackage: String) {
+fun shellStartSKActivity(targetPackage: String, goBack: Boolean = false) {
     Shell
         .cmd("am start $targetPackage/com.touchtype.materialsettings.themessettings.ThemeSettingsActivity")
         .exec()
+
+    if (goBack) {
+        Shell.cmd("sleep 1 ; input keyevent 4").exec()
+    }
 }
 
 // todo IntentAction.THEME_FILE_URI isn't used anymore

@@ -8,7 +8,8 @@ enum class HomeToast {
     INSTALLATION_FINISHED,
     INSTALLATION_FAILED,
     PATCHED_SUCCESS,
-    PATCHED_FAILED
+    PATCHED_FAILED,
+    WORKING
 }
 
 enum class AppOperationMode {

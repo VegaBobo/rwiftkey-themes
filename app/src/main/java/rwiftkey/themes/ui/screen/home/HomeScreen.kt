@@ -95,8 +95,6 @@ fun HomepageScreen(
             } else {
                 intent.getParcelableArrayListExtra("KeyboardThemes")
             }
-            if (keyboardThemes != null)
-                homeVm.onReceiveKeyboardThemes(keyboardThemes)
         }
     }
 
@@ -129,6 +127,11 @@ fun HomepageScreen(
                         .show()
                 }
 
+                HomeToast.WORKING -> {
+                    Toast.makeText(ctx, ctx.getString(R.string.working), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
                 else -> {}
             }
             homeVm.setToastState(HomeToast.NONE)
@@ -151,7 +154,7 @@ fun HomepageScreen(
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     i.putExtra(IntentAction.BIND, true)
                     launcherRetrieveThemesXposed.launch(i)
-                    homeVm.onClickSwitchToXposed()
+                    homeVm.initializeSelfServiceCallbacks()
                 }
             }
         }
@@ -310,7 +313,7 @@ fun HomepageScreen(
             SimpleListButton(
                 icon = Icons.Outlined.Delete,
                 text = "Remove theme",
-                onClick = { homeVm.onClickDeleteThemeRoot() }
+                onClick = { homeVm.onClickDeleteTheme() }
             )
             Spacer(modifier = Modifier.padding(4.dp))
         }

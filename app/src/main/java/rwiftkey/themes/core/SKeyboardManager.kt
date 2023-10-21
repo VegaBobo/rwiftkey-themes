@@ -42,6 +42,10 @@ class SKeyboardManager(
         return operationMode == AppOperationMode.ROOT
     }
 
+    fun isXposed(): Boolean {
+        return operationMode == AppOperationMode.XPOSED
+    }
+
     init {
         loadAvailableKeyboards()
     }
