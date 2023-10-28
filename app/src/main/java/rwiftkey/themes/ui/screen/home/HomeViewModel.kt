@@ -74,6 +74,9 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickToggleThemes() {
+        if(sKeyboardManager.isRooted()){
+            loadThemesRoot()
+        }
         val newHomeThemesVisibility = !uiState.value.isHomeThemesVisible
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
     }
@@ -173,9 +176,10 @@ open class HomeViewModel @Inject constructor(
                         it.copy(
                             isPatchMenuVisible = false,
                             homeToast = HomeToast.PATCHED_SUCCESS,
-                            isLoadingOverlayVisible = false
+                            selectedTheme = null
                         )
                     }
+                    loadThemesRoot()
                 }
             }
 
