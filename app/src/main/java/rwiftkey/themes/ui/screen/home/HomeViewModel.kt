@@ -236,7 +236,8 @@ open class HomeViewModel @Inject constructor(
                     // Remote has bound to our service, since it happened
                     // we are sure Xposed operation mode is working
                     RemoteServiceProvider.isRemoteLikelyConnected = true
-                    _uiState.update { it.copy(operationMode = AppOperationMode.XPOSED) }
+                    sKeyboardManager.operationMode = AppOperationMode.XPOSED
+                    _uiState.update { it.copy(operationMode = sKeyboardManager.operationMode) }
                 }
 
                 override fun onReceiveThemes(themes: List<Theme>?) {
