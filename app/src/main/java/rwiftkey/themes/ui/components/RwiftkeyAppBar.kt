@@ -4,6 +4,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -16,11 +17,13 @@ fun RwiftkeyAppBar(
     modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.app_name),
     showSettings: Boolean = false,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     navContent: @Composable () -> Unit = {},
     onSettingsClick: () -> Unit = { }
 ) = LargeTopAppBar(
     modifier = modifier,
     navigationIcon = navContent,
+    scrollBehavior = scrollBehavior,
     title = { Text(text = title) },
     actions = {
         if (showSettings) {

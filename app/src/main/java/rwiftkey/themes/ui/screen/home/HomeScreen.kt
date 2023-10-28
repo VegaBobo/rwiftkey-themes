@@ -37,6 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -86,6 +89,11 @@ fun HomepageScreen(
     val launcherSelectFile = launchAcResult {
         homeVm.onFileSelected(it.data!!.data!!)
     }
+
+    val barState = rememberTopAppBarState()
+
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(barState)
 
     val launcherRetrieveThemesXposed = launchAcResult {
         val intent = it.data
@@ -160,10 +168,12 @@ fun HomepageScreen(
         }
     } else {
         Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 RwiftkeyAppBar(
                     showSettings = true,
                     onSettingsClick = { onClickSettings() },
+                    scrollBehavior = scrollBehavior,
                     navContent = {
                         AnimatedVisibility(
                             visible = uiState.isHomeThemesVisible,
@@ -172,7 +182,10 @@ fun HomepageScreen(
                         ) {
                             IconButton(
                                 modifier = Modifier.animateContentSize(),
-                                onClick = { homeVm.onClickToggleThemes() }) {
+                                onClick = {
+                                    scrollBehavior.state.heightOffset = 0f
+                                    homeVm.onClickToggleThemes()
+                                }) {
                                 Icon(
                                     imageVector = Icons.Outlined.ArrowBack,
                                     contentDescription = "Back button"
@@ -342,6 +355,7 @@ fun HomepageScreen(
 
     if (uiState.isHomeThemesVisible)
         BackHandler {
+            scrollBehavior.state.heightOffset = 0f
             homeVm.onClickToggleThemes()
         }
 
