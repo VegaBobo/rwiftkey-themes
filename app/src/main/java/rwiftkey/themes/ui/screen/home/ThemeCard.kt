@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import rwiftkey.themes.ui.components.ThemeThumb
 
@@ -52,6 +53,7 @@ fun ThemeCard(
                 modifier = Modifier.padding(8.dp),
                 text = themeName,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Medium
             )
         }
