@@ -313,10 +313,11 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun loadThemesRoot() {
+        _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         PrivilegedProvider.run {
             val keyboardThemes =
                 getKeyboardThemes(sKeyboardManager.getPackage()).sortedBy { it.name }
-            _uiState.update { it.copy(keyboardThemes = keyboardThemes.toMutableList()) }
+            _uiState.update { it.copy(keyboardThemes = keyboardThemes.toMutableList(), isLoadingOverlayVisible = false) }
         }
     }
 

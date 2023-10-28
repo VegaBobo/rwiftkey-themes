@@ -111,9 +111,6 @@ fun HomepageScreen(
         if (data != null)
             homeVm.onFileSelected(data)
 
-        if (uiState.operationMode == AppOperationMode.ROOT)
-            homeVm.loadThemesRoot()
-
         snapshotFlow { uiState.homeToast }.collectLatest {
             when (it) {
                 HomeToast.INSTALLATION_FAILED ->
@@ -173,7 +170,7 @@ fun HomepageScreen(
                 RwiftkeyAppBar(
                     showSettings = true,
                     onSettingsClick = { onClickSettings() },
-                    scrollBehavior = scrollBehavior,
+                    scrollBehavior = if(uiState.isHomeThemesVisible) scrollBehavior else null,
                     navContent = {
                         AnimatedVisibility(
                             visible = uiState.isHomeThemesVisible,
