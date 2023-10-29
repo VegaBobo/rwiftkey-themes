@@ -2,67 +2,77 @@ package rwiftkey.themes.rootservice
 
 import android.annotation.SuppressLint
 import android.app.IActivityManager
+import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import com.topjohnwu.superuser.ipc.RootService
+import java.io.File
 import rwiftkey.themes.IPrivilegedService
 import rwiftkey.themes.core.Operations
-import rwiftkey.themes.core.unzip
+import rwiftkey.themes.core.logd
 import rwiftkey.themes.model.Theme
-import java.io.File
 
-class PrivilegedService : IPrivilegedService.Stub() {
+class PrivilegedService : RootService() {
 
-    private fun getBinder(service: String): IBinder {
-        val serviceManager = Class.forName("android.os.ServiceManager")
-        val method = serviceManager.getDeclaredMethod("getService", String::class.java)
-        return method.invoke(null, service) as IBinder
-    }
+    override fun onBind(intent: Intent): IBinder {
 
-    override fun getUid(): Int {
-        return Process.myUid()
-    }
+        return object : IPrivilegedService.Stub() {
 
-    @SuppressLint("SdCardPath")
-    override fun installTheme(targetKeyboardPackage: String, themePath: String?) {
-        if (themePath.isNullOrEmpty())
-            return
+            // Internal
 
-        Operations.installTheme(targetKeyboardPackage, themePath)
-    }
+            @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
+            private fun getBinder(service: String): IBinder {
+                val serviceManager = Class.forName("android.os.ServiceManager")
+                val method = serviceManager.getDeclaredMethod("getService", String::class.java)
+                return method.invoke(null, service) as IBinder
+            }
 
-    override fun cleanThemes(targetKeyboardPackage: String) {
-        Operations.cleanUp(targetKeyboardPackage)
-    }
+            override fun getUid(): Int {
+                return Process.myUid()
+            }
 
-    private var ACTIVITY_MANAGER: IActivityManager? = null
+            // Privileged API
 
-    private fun requiresActivityManager() {
-        if (ACTIVITY_MANAGER == null) {
-            ACTIVITY_MANAGER = IActivityManager.Stub.asInterface(getBinder("activity"))
+            private var ACTIVITY_MANAGER: IActivityManager? = null
+
+            private fun requiresActivityManager() {
+                if (ACTIVITY_MANAGER == null) {
+                    ACTIVITY_MANAGER = IActivityManager.Stub.asInterface(getBinder("activity"))
+                }
+            }
+
+            override fun forceStopPackage(packageName: String?) {
+                requiresActivityManager()
+                ACTIVITY_MANAGER!!.forceStopPackage(packageName, 0)
+            }
+
+            // Service operations
+
+            override fun installTheme(targetPackage: String, themePath: String?) {
+                logd(this, "installTheme()")
+                Operations.installTheme(targetPackage, themePath!!)
+            }
+
+            override fun cleanThemes(targetPackage: String) {
+                logd(this, "cleanThemes()")
+                Operations.cleanUp(targetPackage)
+            }
+
+            override fun getKeyboardThemes(targetPackage: String?): MutableList<Theme> {
+                logd(this, "getKeyboardThemes()")
+                val themes = Operations.retrieveThemes(targetPackage!!)
+                return themes.toMutableList()
+            }
+
+            override fun deleteTheme(targetPackage: String?, themeId: String?) {
+                logd(this, "deleteTheme()")
+                Operations.deleteTheme(targetPackage!!, themeId!!)
+            }
+
+            override fun modifyTheme(targetPackage: String?, themeId: String?, absZip: String?) {
+                logd(this, "modifyTheme()")
+                Operations.modifyThemeRoot(targetPackage!!, themeId!!, File(absZip!!))
+            }
         }
-    }
-
-    override fun forceStopPackage(packageName: String?) {
-        requiresActivityManager()
-        ACTIVITY_MANAGER!!.forceStopPackage(packageName, 0)
-    }
-
-    override fun getKeyboardThemes(targetKeyboardPackage: String?): MutableList<Theme> {
-        if (targetKeyboardPackage == null) return ArrayList()
-        val themes = Operations.retrieveThemes(targetKeyboardPackage)
-        return themes.toMutableList()
-    }
-
-    override fun deleteTheme(targetKeyboardPackage: String?, themeId: String?) {
-        if (themeId == null || targetKeyboardPackage == null) return
-        Operations.deleteTheme(targetKeyboardPackage, themeId)
-    }
-
-    override fun modifyTheme(
-        targetKeyboardPackage: String?,
-        themeId: String?,
-        absZipFileToApply: String?
-    ) {
-        Operations.modifyThemeRoot(targetKeyboardPackage!!, themeId!!, File(absZipFileToApply!!))
     }
 }

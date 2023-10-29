@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.ISettingsCallbacks
-import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.Session
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.shellStartSKActivity
 import rwiftkey.themes.model.SimpleApplication
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class SettingsViewModel @Inject constructor(
     val app: Application,
-    private val sKeyboardManager: SKeyboardManager
+    private val sKeyboardManager: Session
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUIState())

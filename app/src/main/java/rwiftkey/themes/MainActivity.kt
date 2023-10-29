@@ -11,7 +11,7 @@ import com.topjohnwu.superuser.ipc.RootService
 import dagger.hilt.android.AndroidEntryPoint
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
-import rwiftkey.themes.rootservice.PrivilegedRootService
+import rwiftkey.themes.rootservice.PrivilegedService
 import rwiftkey.themes.ui.screen.RwiftkeyApp
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindRootService() {
-        val intent = Intent(this, PrivilegedRootService::class.java)
+        val intent = Intent(this, PrivilegedService::class.java)
         RootService.bind(intent, PrivilegedProvider.connection)
         Log.d(BuildConfig.APPLICATION_ID, "bindRootService()")
     }

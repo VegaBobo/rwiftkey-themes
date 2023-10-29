@@ -16,16 +16,17 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun SimpleListButton(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     text: String,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
-    Row(modifier = Modifier
+    Row(modifier = modifier
         .clickable { onClick() }
         .padding(6.dp)
         .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon, contentDescription = "Icon content description")
+        Icon(imageVector = icon, contentDescription = "Icon")
         Spacer(modifier = Modifier.padding(8.dp))
         Text(text = text, fontSize = 18.sp)
     }

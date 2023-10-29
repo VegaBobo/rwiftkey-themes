@@ -143,7 +143,7 @@ fun HomepageScreen(
         }
     }
 
-    if (uiState.operationMode == AppOperationMode.INCOMPATIBLE) {
+    if (uiState.operationMode == AppOperationMode.NONE) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

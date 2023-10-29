@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IHomeCallbacks
-import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.Session
 import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.downloadFile
 import rwiftkey.themes.core.hasConnection
@@ -39,7 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     val app: Application,
-    val sKeyboardManager: SKeyboardManager
+    val sKeyboardManager: Session
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState())
@@ -60,8 +60,8 @@ open class HomeViewModel @Inject constructor(
 
             // If root is not available, says it is incompatible
             // from incompatible, user can setup Xposed operation mode.
-            _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
-            sKeyboardManager.operationMode = AppOperationMode.INCOMPATIBLE
+            _uiState.update { it.copy(operationMode = AppOperationMode.NONE) }
+            sKeyboardManager.operationMode = AppOperationMode.NONE
         }
     }
 

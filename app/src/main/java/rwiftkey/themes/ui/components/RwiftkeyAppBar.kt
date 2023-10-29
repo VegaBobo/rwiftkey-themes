@@ -1,5 +1,6 @@
 package rwiftkey.themes.ui.components
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -12,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import rwiftkey.themes.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RwiftkeyAppBar(
     modifier: Modifier = Modifier,
@@ -30,7 +32,7 @@ fun RwiftkeyAppBar(
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.settings),
-                    contentDescription = "Settings",
+                    contentDescription = "Settings"
                 )
             }
         }

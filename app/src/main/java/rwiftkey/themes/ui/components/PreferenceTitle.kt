@@ -10,16 +10,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PreferenceTitle(title: String) {
+fun PreferenceTitle(
+    modifier: Modifier,
+    title: String
+) {
     Text(
         text = title,
         fontSize = 14.sp,
         fontWeight = FontWeight.Medium,
         color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier
+        modifier = modifier
             .padding(start = 16.dp)
             .padding(bottom = 8.dp)
             .padding(top = 8.dp)
-            .padding(4.dp),
+            .padding(4.dp)
     )
 }

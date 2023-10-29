@@ -1,63 +1,57 @@
 package rwiftkey.themes.rootservice
 
-import android.util.Log
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.IBinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import rwiftkey.themes.IPrivilegedService
+import rwiftkey.themes.core.Constants
+import rwiftkey.themes.core.logd
 
 object PrivilegedProvider {
 
-    private val tag = this.javaClass.simpleName
+    var ROOT_SERVICE: IPrivilegedService? = null
 
-    var connection = RootServiceConnection()
+    private fun isConnected(): Boolean = ROOT_SERVICE != null
+
+    var connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            logd(this, "onServiceConnected()")
+            ROOT_SERVICE = IPrivilegedService.Stub.asInterface(service)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            logd(this, "onServiceDisconnected()")
+            ROOT_SERVICE = null
+        }
+    }
 
     fun run(
         onFail: () -> Unit = {},
         onConnected: suspend IPrivilegedService.() -> Unit,
     ) {
-        fun service() = this.connection.SERVICE!!
+        fun service() = this.ROOT_SERVICE!!
         CoroutineScope(Dispatchers.IO).launch {
             if (isConnected()) {
                 onConnected(service())
                 return@launch
             }
-            var timeout = 0
+            var timeout = 0L
             while (!isConnected()) {
-                timeout += 1000
-                if (timeout > 20000) {
-                    Log.e(tag, "Service unavailable.")
+                timeout += Constants.BIND_SERVICE_RETRY_DELAY_MS
+                if (timeout > Constants.BIND_SERVICE_TIMEOUT_MS) {
+                    logd(this, "Service unavailable.")
                     onFail()
                     return@launch
                 }
-                delay(1000)
-                Log.d(tag, "Service unavailable, checking again in 1s.. [${timeout / 1000}s/20s]")
+                delay(Constants.BIND_SERVICE_RETRY_DELAY_MS)
+                logd(this, "Service unavailable, checking again in 1s.. [${timeout / 1000}s/20s]")
             }
-            Log.d(tag, "IPrivilegedService available, uid: ${service().uid}")
+            logd(this, "IPrivilegedService available, uid: ${service().uid}")
             onConnected(service())
         }
-    }
-
-    // Blocking
-    fun getService(): IPrivilegedService {
-        var timeout = 0
-        while (!isConnected()) {
-            timeout += 1000
-            if (timeout > 20000) {
-                throw Exception("Service unavailable.")
-            }
-            Thread.sleep(1000)
-        }
-        return this.connection.SERVICE!!
-    }
-
-    // Blocking
-    fun isRoot(): Boolean {
-        return this.getService().uid == 0
-    }
-
-    fun isConnected(): Boolean {
-        return this.connection.SERVICE != null
     }
 }

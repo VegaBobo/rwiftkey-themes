@@ -13,12 +13,14 @@ import rwiftkey.themes.model.SimpleApplication
 
 @Composable
 fun DialogKeyboardSelection(
+    modifier: Modifier = Modifier,
     availKeyboards: List<SimpleApplication>,
     onDismissRequest: () -> Unit,
-    onClick: (SimpleApplication) -> Unit,
+    onClick: (SimpleApplication) -> Unit
 ) {
     AlertDialog(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth(),
         onDismissRequest = onDismissRequest,
         title = { Text(text = stringResource(id = R.string.select_keyboard)) },
         text = {

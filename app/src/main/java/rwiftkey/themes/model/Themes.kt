@@ -18,6 +18,8 @@ data class Theme(
     val hidden: Boolean = false,
     val creationTimestamp: Long = 0,
 
+    // thumbnail is only used internally inside our app
+    // to display theme thumbs when user load themes.
     @Json(ignored = true)
     var thumbnail: Bitmap? = null
 ) : Parcelable

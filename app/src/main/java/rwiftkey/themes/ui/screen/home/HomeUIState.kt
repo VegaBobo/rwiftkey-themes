@@ -13,7 +13,7 @@ enum class HomeToast {
 }
 
 enum class AppOperationMode {
-    INCOMPATIBLE,
+    NONE,
     ROOT,
     XPOSED
 }

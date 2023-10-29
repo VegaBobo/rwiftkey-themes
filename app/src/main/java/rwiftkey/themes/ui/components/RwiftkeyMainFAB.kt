@@ -2,8 +2,6 @@ package rwiftkey.themes.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
@@ -25,7 +23,7 @@ fun RwiftkeyMainFAB(
 ) {
     Icon(
         imageVector = ImageVector.vectorResource(id = R.drawable.add),
-        contentDescription = "Add",
-        modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize),
+        contentDescription = "Add icon",
+        modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize)
     )
 }

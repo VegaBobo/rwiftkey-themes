@@ -3,29 +3,30 @@ package rwiftkey.themes.remoteservice
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
+import rwiftkey.themes.core.Constants
+import rwiftkey.themes.core.logd
 
 object RemoteServiceProvider {
-    private val tag = this.javaClass.simpleName
 
     var REMOTE_SERVICE: IRemoteService? = null
+    private fun isConnected(): Boolean = REMOTE_SERVICE != null
+
     var isRemoteLikelyConnected = false
 
     var connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            Log.i(BuildConfig.APPLICATION_ID, "onServiceConnected")
+            logd(this, "onServiceConnected()")
             REMOTE_SERVICE = IRemoteService.Stub.asInterface(service)
             REMOTE_SERVICE!!.ping()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
-            Log.i(BuildConfig.APPLICATION_ID, "onServiceDisconnected")
+            logd(this, "onServiceDisconnected()")
             REMOTE_SERVICE = null
         }
     }
@@ -40,36 +41,19 @@ object RemoteServiceProvider {
                 onConnected(service())
                 return@launch
             }
-            var timeout = 0
+            var timeout = 0L
             while (!isConnected()) {
-                timeout += 1000
-                if (timeout > 20000) {
-                    Log.e(tag, "Service unavailable.")
+                timeout += Constants.BIND_SERVICE_RETRY_DELAY_MS
+                if (timeout > Constants.BIND_SERVICE_TIMEOUT_MS) {
+                    logd(this, "Service unavailable.")
                     onFail()
                     return@launch
                 }
-                delay(1000)
-                Log.d(tag, "Service unavailable, checking again in 1s.. [${timeout / 1000}s/20s]")
+                delay(Constants.BIND_SERVICE_RETRY_DELAY_MS)
+                logd(this, "Service unavailable, checking again in 1s.. [${timeout / 1000}s/20s]")
             }
-            Log.d(tag, "IRemoteService available.")
+            logd(this, "IRemoteService available.")
             onConnected(service())
         }
-    }
-
-    // Blocking
-    fun getService(): IRemoteService {
-        var timeout = 0
-        while (!isConnected()) {
-            timeout += 1000
-            if (timeout > 20000) {
-                throw Exception("Service unavailable.")
-            }
-            Thread.sleep(1000)
-        }
-        return REMOTE_SERVICE!!
-    }
-
-    fun isConnected(): Boolean {
-        return REMOTE_SERVICE != null
     }
 }
