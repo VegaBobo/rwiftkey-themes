@@ -25,12 +25,12 @@ fun DialogKeyboardSelection(
         title = { Text(text = stringResource(id = R.string.select_keyboard)) },
         text = {
             Column {
-                for (t in availKeyboards) {
+                for (keyboard in availKeyboards) {
                     PreferenceItem(
-                        title = t.applicationName,
-                        description = t.packageName,
+                        title = keyboard.applicationName,
+                        description = keyboard.packageName,
                         icon = null,
-                        onClick = { onClick(t) }
+                        onClick = { onClick(keyboard) }
                     )
                 }
             }

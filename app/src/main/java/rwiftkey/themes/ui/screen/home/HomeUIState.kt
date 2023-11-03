@@ -38,7 +38,7 @@ data class HomeUIState(
     val isInstallationLoadingVisible: Boolean = false,
     val hasNoKeyboardsAvail: Boolean = false,
     val selectedTheme: Theme? = null,
-    val isPatchMenuVisible: Boolean = false,
+    val isThemeDetailsVisible: Boolean = false,
     val hasAlreadyLoadedPatches: Boolean = false,
     val patchCollection: MutableList<PatchCollection> = mutableStateListOf(),
     val isLoadingOverlayVisible: Boolean = false,

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun PreferenceTitle(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     title: String
 ) {
     Text(

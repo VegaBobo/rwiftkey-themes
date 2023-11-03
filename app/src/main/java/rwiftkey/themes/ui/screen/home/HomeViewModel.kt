@@ -66,14 +66,14 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun updateSelectedTheme(theme: Theme?) {
-        _uiState.update { it.copy(selectedTheme = theme, isPatchMenuVisible = false) }
+        _uiState.update { it.copy(selectedTheme = theme, isThemeDetailsVisible = false) }
     }
 
     fun setToastState(toast: HomeToast) {
         _uiState.update { it.copy(homeToast = toast) }
     }
 
-    fun onClickToggleThemes() {
+    fun onClickShowThemes() {
         if(sKeyboardManager.isRooted()){
             loadThemesRoot()
         }
@@ -81,7 +81,7 @@ open class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
     }
 
-    fun onClickOpenTheme() {
+    fun onClickOpenThemesSection() {
         viewModelScope.launch {
             if (sKeyboardManager.isRooted()) {
                 sKeyboardManager.startSKThemeAc()
@@ -174,7 +174,7 @@ open class HomeViewModel @Inject constructor(
 
                     _uiState.update {
                         it.copy(
-                            isPatchMenuVisible = false,
+                            isThemeDetailsVisible = false,
                             homeToast = HomeToast.PATCHED_SUCCESS,
                             selectedTheme = null
                         )
@@ -200,8 +200,8 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickPatchTheme() {
-        val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
-        _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
+        val newPatchMenuValue = !_uiState.value.isThemeDetailsVisible
+        _uiState.update { it.copy(isThemeDetailsVisible = newPatchMenuValue) }
 
         if (!uiState.value.hasAlreadyLoadedPatches && hasConnection(app)) {
             _uiState.update { it.copy(isLoadingOverlayVisible = true) }
@@ -275,7 +275,7 @@ open class HomeViewModel @Inject constructor(
                 override fun onFinishModifyTheme() {
                     _uiState.update {
                         it.copy(
-                            isPatchMenuVisible = false,
+                            isThemeDetailsVisible = false,
                             homeToast = HomeToast.PATCHED_SUCCESS,
                             isLoadingOverlayVisible = false,
                             selectedTheme = null

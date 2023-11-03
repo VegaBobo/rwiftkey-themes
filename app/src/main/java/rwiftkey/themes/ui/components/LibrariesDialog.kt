@@ -1,4 +1,4 @@
-package rwiftkey.themes.ui.screen.about
+package rwiftkey.themes.ui.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 import rwiftkey.themes.R
-import rwiftkey.themes.ui.components.PreferenceItem
 
 @Composable
 fun LibrariesDialog(

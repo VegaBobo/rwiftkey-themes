@@ -56,4 +56,5 @@
     <string name="working">Working, please wait…</string>
     <string name="load_keyboard_themes">Load installed themes</string>
     <string name="no_themes">No themes installed</string>
+    <string name="no_patches_avail">No patches available</string>
 </resources>

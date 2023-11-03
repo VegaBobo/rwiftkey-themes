@@ -1,4 +1,4 @@
-package rwiftkey.themes.ui.screen.home
+package rwiftkey.themes.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,9 +23,10 @@ import rwiftkey.themes.R
 
 @Composable
 fun ContinueWithXposedContainer(
+    modifier: Modifier = Modifier,
     onClickContinue: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
