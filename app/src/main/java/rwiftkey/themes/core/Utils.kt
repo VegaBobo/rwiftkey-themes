@@ -30,21 +30,21 @@ import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-fun loge(clazz: Any?, vararg args: String) {
+fun loge(clazz: Any?, vararg args: Any?) {
     Log.e(
         "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
         args.map { "$it " }.toString().trim()
     )
 }
 
-fun logw(clazz: Any?, vararg args: String) {
+fun logw(clazz: Any?, vararg args: Any?) {
     Log.w(
         "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
         args.map { "$it " }.toString().trim()
     )
 }
 
-fun logd(clazz: Any?, vararg args: String) {
+fun logd(clazz: Any?, vararg args: Any?) {
     Log.d(
         "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
         args.map { "$it " }.toString().trim()

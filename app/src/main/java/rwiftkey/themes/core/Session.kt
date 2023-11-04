@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import rwiftkey.themes.model.SimpleApplication
-import rwiftkey.themes.ui.screen.home.AppOperationMode
+import rwiftkey.themes.ui.screen.home.OperationMode
 
 class Session(
     private val app: Context,
@@ -15,7 +15,7 @@ class Session(
     val availKeyboards: ArrayList<SimpleApplication> = arrayListOf()
 
     // Default operation mode
-    var operationMode = AppOperationMode.NONE
+    var operationMode = OperationMode.NONE
 
     // Target keyboard app
     var targetKeyboardPackage = ""
@@ -37,9 +37,9 @@ class Session(
         }
     }
 
-    fun isRooted(): Boolean = operationMode == AppOperationMode.ROOT
+    fun isRooted(): Boolean = operationMode == OperationMode.ROOT
 
-    fun isXposed(): Boolean = operationMode == AppOperationMode.XPOSED
+    fun isXposed(): Boolean = operationMode == OperationMode.XPOSED
 
     fun hasKeyboardsAvailable(): Boolean = availKeyboards.isNotEmpty()
 

@@ -3,7 +3,7 @@
     <string name="app_name">Rwiftkey Themes</string>
     <string name="dialog_no_available_keyboard_title">Sem teclados disponíveis</string>
     <string name="please_wait">Aguarde…</string>
-    <string name="cleaned_installed_themes">Temas instalados foram removidos</string>
+    <string name="clean_success">Temas instalados foram removidos</string>
     <string name="target_keyboard">Teclado selecionado</string>
     <string name="clear_themes">Limpar temas</string>
     <string name="clean_installed_themes">Remove todos os temas instalados</string>

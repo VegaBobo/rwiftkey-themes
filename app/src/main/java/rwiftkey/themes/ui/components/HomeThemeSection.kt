@@ -18,7 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import rwiftkey.themes.R
 import rwiftkey.themes.model.Theme
-import rwiftkey.themes.ui.screen.home.ThemeCard
 
 @Composable
 fun HomeThemeSection(

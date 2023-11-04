@@ -12,7 +12,7 @@ enum class HomeToast {
     WORKING
 }
 
-enum class AppOperationMode {
+enum class OperationMode {
     NONE,
     ROOT,
     XPOSED
@@ -32,13 +32,13 @@ data class PatchCollection(
 )
 
 data class HomeUIState(
-    val operationMode: AppOperationMode = AppOperationMode.XPOSED,
+    val operationMode: OperationMode = OperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
     val keyboardThemes: MutableList<Theme> = mutableStateListOf(),
     val isInstallationLoadingVisible: Boolean = false,
     val hasNoKeyboardsAvail: Boolean = false,
     val selectedTheme: Theme? = null,
-    val isThemeDetailsVisible: Boolean = false,
+    val isPatchMenuVisible: Boolean = false,
     val hasAlreadyLoadedPatches: Boolean = false,
     val patchCollection: MutableList<PatchCollection> = mutableStateListOf(),
     val isLoadingOverlayVisible: Boolean = false,

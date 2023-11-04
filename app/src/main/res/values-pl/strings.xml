@@ -21,7 +21,7 @@
     <!-- Preferences Activity -->
     <string name="title_activity_preferences">Preferencje</string>
     <string name="please_wait">Prosze zaczekać</string>
-    <string name="cleaned_installed_themes">Zainstalowane motywy zostały wyczyszczone!</string>
+    <string name="clean_success">Zainstalowane motywy zostały wyczyszczone!</string>
     <string name="target_keyboard">Wybrana klawiatura</string>
     <string name="clear_themes">Wyczyść motywy</string>
     <string name="clean_installed_themes">Wyczyść wszystkie zainstalowane motywy</string>

@@ -1,4 +1,4 @@
-package rwiftkey.themes.ui.screen.home
+package rwiftkey.themes.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon

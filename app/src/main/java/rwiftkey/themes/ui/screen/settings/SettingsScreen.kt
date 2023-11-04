@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +27,7 @@ import rwiftkey.themes.ui.components.PreferenceItem
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onAboutClick: () -> Unit,
@@ -43,7 +45,7 @@ fun SettingsScreen(
                         .show()
 
                 SettingToast.THEMES_CLEANED ->
-                    Toast.makeText(ctx, ctx.getString(R.string.cleaned_installed_themes), Toast.LENGTH_SHORT)
+                    Toast.makeText(ctx, ctx.getString(R.string.clean_success), Toast.LENGTH_SHORT)
                         .show()
 
                 else -> {}
