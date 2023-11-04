@@ -218,7 +218,7 @@ open class HomeViewModel @Inject constructor(
 
     private var hasSelfCallbacksInitialized = false
 
-    fun initializeSelfServiceCallbacks() {
+    fun initializeSelfServiceCallbacks(onReady: () -> Unit) {
         if (hasSelfCallbacksInitialized) return
         RemoteServiceProvider.run {
             registerHomeCallbacks(object : IHomeCallbacks.Stub() {
@@ -278,6 +278,7 @@ open class HomeViewModel @Inject constructor(
                 }
             })
             hasSelfCallbacksInitialized = true
+            onReady()
         }
     }
 

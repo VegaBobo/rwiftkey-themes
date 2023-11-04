@@ -104,15 +104,18 @@ fun HomepageScreen(
             ContinueWithXposedContainer(
                 modifier = Modifier.padding(insets),
                 onClickContinue = {
-                    val remoteAppIntent = Intent()
-                    remoteAppIntent.setClassName(
-                        homeVm.session.targetKeyboardPackage,
-                        "com.touchtype.LauncherActivity"
+                    homeVm.initializeSelfServiceCallbacks(
+                        onReady = {
+                            val remoteAppIntent = Intent()
+                            remoteAppIntent.setClassName(
+                                homeVm.session.targetKeyboardPackage,
+                                "com.touchtype.LauncherActivity"
+                            )
+                            remoteAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            remoteAppIntent.putExtra(IntentAction.BIND, true)
+                            ctx.startActivity(remoteAppIntent)
+                        }
                     )
-                    remoteAppIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    remoteAppIntent.putExtra(IntentAction.BIND, true)
-                    ctx.startActivity(remoteAppIntent)
-                    homeVm.initializeSelfServiceCallbacks()
                 }
             )
         }
@@ -122,9 +125,10 @@ fun HomepageScreen(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     HomeAppBar(
+                        isBackButtonVisible = uiState.isHomeThemesVisible,
+                        scrollBehavior = if (uiState.isHomeThemesVisible) scrollBehavior else null,
                         onClickSettings = { onClickSettings() },
-                        onClickBackButton = { homeVm.onClickShowThemes() },
-                        scrollBehavior = if (uiState.isHomeThemesVisible) scrollBehavior else null
+                        onClickBackButton = { homeVm.onClickShowThemes() }
                     )
                 },
                 content = { paddingValues ->

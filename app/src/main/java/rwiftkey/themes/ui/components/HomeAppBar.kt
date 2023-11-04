@@ -16,9 +16,10 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeAppBar(
-    onClickSettings: () -> Unit,
-    onClickBackButton: (() -> Unit)? = null,
+    isBackButtonVisible: Boolean = false,
     scrollBehavior: TopAppBarScrollBehavior? = null,
+    onClickSettings: () -> Unit,
+    onClickBackButton: (() -> Unit?)? = null
 ) {
     RwiftkeyAppBar(
         showSettings = true,
@@ -26,7 +27,7 @@ fun HomeAppBar(
         scrollBehavior = scrollBehavior,
         navContent = {
             AnimatedVisibility(
-                visible = onClickBackButton != null,
+                visible = isBackButtonVisible,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {

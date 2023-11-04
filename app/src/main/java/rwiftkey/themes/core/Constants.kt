@@ -10,5 +10,5 @@ object Constants {
     const val ADDONS_URL =
         "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
     const val FILE_PROVIDER = BuildConfig.APPLICATION_ID + ".Provider"
-    const val REMOTE_SERVICE = BuildConfig.APPLICATION_ID + ".RemoteService"
+    const val REMOTE_SERVICE = BuildConfig.APPLICATION_ID + ".REMOTE_SERVICE"
 }

@@ -3,6 +3,9 @@ package rwiftkey.themes.core
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rwiftkey.themes.model.SimpleApplication
 import rwiftkey.themes.ui.screen.home.OperationMode
 
@@ -47,6 +50,9 @@ class Session(
 
     init {
         loadAvailableKeyboards()
+        CoroutineScope(Dispatchers.IO).launch {
+            updateTargetKeyboardPackage()
+        }
     }
 
     suspend fun updateTargetKeyboardPackage() {
