@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("deprecation")
 public class ContextImpl extends Context {
     @Override
     public AssetManager getAssets() {

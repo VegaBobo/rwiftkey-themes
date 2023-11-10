@@ -12,12 +12,12 @@ plugins {
 
 android {
     namespace = "rwiftkey.themes"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "rwiftkey.themes"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
@@ -70,11 +70,9 @@ dependencies {
     implementation(AndroidX.dataStore.preferences)
 
     implementation(Google.Android.Material)
-    implementation("androidx.compose.animation:animation:1.4.3")
+    implementation(AndroidX.compose.animation)
 
-    // TODO : Remove these dependency once we upgrade to Android Studio Dolphin b/228889042
-    // These dependencies are currently necessary to render Compose previews
-    debugImplementation("androidx.customview:customview-poolingcontainer:_")
+    debugImplementation(AndroidX.customView.poolingContainer)
     debugImplementation(AndroidX.lifecycle.viewModelCompose)
     debugImplementation(AndroidX.savedState.ktx)
 
