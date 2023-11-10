@@ -78,14 +78,14 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickShowThemes() {
-        // Xposed operation mode doesn't require theme loading
-        // it receives themes from remote app when service is bound.
-        if (session.isRooted()) {
-            loadThemesRoot()
-        }
-
         val newHomeThemesVisibility = !uiState.value.isHomeThemesVisible
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
+
+        // Xposed operation mode doesn't require theme loading
+        // it receives themes from remote app when service is bound.
+        if (session.isRooted() && newHomeThemesVisibility) {
+            loadThemesRoot()
+        }
     }
 
     fun onClickOpenThemesSection() {
