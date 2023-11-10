@@ -60,8 +60,6 @@ fun HomepageScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(barState)
 
     LaunchedEffect(Unit) {
-        // TODO handle rootless coming installation
-        // or maybe discard it, since we need to bound service first
         val intent = ctx.findActivity().intent
         val data = intent?.data
         if (data != null)

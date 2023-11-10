@@ -47,6 +47,8 @@ open class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
+    var pendingInstallation: Uri = Uri.EMPTY
+
     init {
         // Check if user has at least a available keyboard app installed.
         val hasAvailKeyboards = session.hasKeyboardsAvailable()
@@ -111,14 +113,15 @@ open class HomeViewModel @Inject constructor(
                     OperationMode.XPOSED ->
                         installThemeXposed(uri, targetPackage)
 
-                    else -> {}
+                    else ->
+                        pendingInstallation = uri
                 }
+                onFinish()
             } catch (e: Exception) {
                 loge(this, "Error trying to install theme:", e.stackTraceToString())
                 setToastState(HomeToast.INSTALLATION_FAILED)
             }
             _uiState.update { it.copy(isInstallationLoadingVisible = false) }
-            onFinish()
         }
     }
 
@@ -229,6 +232,9 @@ open class HomeViewModel @Inject constructor(
                     RemoteServiceProvider.isRemoteLikelyConnected = true
                     session.operationMode = OperationMode.XPOSED
                     _uiState.update { it.copy(operationMode = session.operationMode) }
+                    if (pendingInstallation != Uri.EMPTY)
+                        installThemeXposed(pendingInstallation, session.targetKeyboardPackage)
+                    pendingInstallation = Uri.EMPTY
                 }
 
                 override fun onReceiveThemes(themes: List<Theme>?) {
