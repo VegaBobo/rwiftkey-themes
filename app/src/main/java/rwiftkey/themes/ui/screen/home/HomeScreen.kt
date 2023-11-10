@@ -121,7 +121,9 @@ fun HomepageScreen(
 
         OperationMode.ROOT, OperationMode.XPOSED -> {
             Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier
+                    .padding(insets)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     HomeAppBar(
                         isBackButtonVisible = uiState.isHomeThemesVisible,
