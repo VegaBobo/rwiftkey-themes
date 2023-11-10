@@ -33,70 +33,90 @@ class XposedInit : IXposedHookLoadPackage {
     var bundleFromStartup: Bundle? = null
 
     fun bindService(hookedActivity: Activity, lpparam: XC_LoadPackage.LoadPackageParam) {
-        var REMOTE_SERVICE: IRemoteService?
-
+        var REMOTE_SERVICE: IRemoteService? = null
         var serviceConnection: ServiceConnection? = null
+
+        fun safeRemoteAction(action: IRemoteService. () -> Unit) {
+            try {
+                if (REMOTE_SERVICE == null) return
+                action(REMOTE_SERVICE!!)
+            } catch (e: Exception) {
+                // try unbinding existing conn
+                try {
+                    if (serviceConnection != null)
+                        hookedActivity.applicationContext.unbindService(serviceConnection!!)
+                } catch (e: Exception) {
+                    // fail silently
+                }
+                REMOTE_SERVICE = null
+            }
+        }
 
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) {
                 REMOTE_SERVICE = IRemoteService.Stub.asInterface(service) ?: return
 
-                REMOTE_SERVICE!!.registerRemoteCallbacks(
-                    object : IRemoteServiceCallbacks.Stub() {
-                        override fun onThemesRequest() {
-                            val themes =
-                                try {
-                                    Operations.retrieveThemes(lpparam.packageName)
-                                } catch (e: Exception) {
-                                    emptyList()
-                                }
-                            REMOTE_SERVICE!!.sendThemesToSelf(themes)
-                        }
-
-                        override fun onInstallThemeRequest(uri: Uri) {
-                            try {
-                                Operations.installTheme(
-                                    hookedActivity,
-                                    lpparam.packageName,
-                                    uri
-                                )
-                                REMOTE_SERVICE!!.onInstallThemeFromUriResult(true)
-                            } catch (e: Exception) {
-                                REMOTE_SERVICE!!.onInstallThemeFromUriResult(false)
+                safeRemoteAction {
+                    registerRemoteCallbacks(
+                        object : IRemoteServiceCallbacks.Stub() {
+                            override fun onThemesRequest() {
+                                val themes =
+                                    try {
+                                        Operations.retrieveThemes(lpparam.packageName)
+                                    } catch (e: Exception) {
+                                        emptyList()
+                                    }
+                                sendThemesToSelf(themes)
                             }
-                            exitProcess(0)
-                        }
 
-                        override fun onRequestCleanup() {
-                            Operations.cleanUp(lpparam.packageName)
-                            REMOTE_SERVICE!!.onRequestCleanupFinish()
-                            exitProcess(0)
-                        }
+                            override fun onInstallThemeRequest(uri: Uri) {
+                                try {
+                                    Operations.installTheme(
+                                        hookedActivity,
+                                        lpparam.packageName,
+                                        uri
+                                    )
+                                    onInstallThemeFromUriResult(true)
+                                } catch (e: Exception) {
+                                    onInstallThemeFromUriResult(false)
+                                }
+                                exitProcess(0)
+                            }
 
-                        override fun onRequestModifyTheme(themeId: String, uri: Uri) {
-                            Operations.modifyThemeRootless(
-                                lpparam.packageName,
-                                themeId,
-                                uri,
-                                hookedActivity.applicationContext
-                            )
-                            REMOTE_SERVICE!!.onFinishModifyTheme()
-                            exitProcess(0)
-                        }
+                            override fun onRequestCleanup() {
+                                Operations.cleanUp(lpparam.packageName)
+                                onRequestCleanupFinish()
+                                exitProcess(0)
+                            }
 
-                        override fun onRequestThemeDelete(name: String) {
-                            Operations.deleteTheme(lpparam.packageName, name)
-                            REMOTE_SERVICE!!.onFinishDeleteTheme()
-                            exitProcess(0)
-                        }
+                            override fun onRequestModifyTheme(themeId: String, uri: Uri) {
+                                Operations.modifyThemeRootless(
+                                    lpparam.packageName,
+                                    themeId,
+                                    uri,
+                                    hookedActivity.applicationContext
+                                )
+                                onFinishModifyTheme()
+                                exitProcess(0)
+                            }
 
-                        override fun onRequestUnbind() {
-                            hookedActivity.applicationContext.unbindService(serviceConnection!!)
+                            override fun onRequestThemeDelete(name: String) {
+                                Operations.deleteTheme(lpparam.packageName, name)
+                                onFinishDeleteTheme()
+                                exitProcess(0)
+                            }
+
+                            override fun onRequestUnbind() {
+                                hookedActivity.applicationContext.unbindService(serviceConnection!!)
+                            }
                         }
-                    }
-                )
-                REMOTE_SERVICE!!.ping()
-                REMOTE_SERVICE!!.onRemoteServiceStarted()
+                    )
+                }
+
+                safeRemoteAction {
+                    ping()
+                    onRemoteServiceStarted()
+                }
                 hookedActivity.finish()
             }
 

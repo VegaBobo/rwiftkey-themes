@@ -36,7 +36,7 @@ class RemoteService : Service() {
             }
 
             // Secure wrapper for self to remote operations.
-            fun remoteCallbackOperation(action: IRemoteServiceCallbacks.() -> Unit) {
+            fun remoteCallbackAction(action: IRemoteServiceCallbacks.() -> Unit) {
                 var ticks = 0
                 while (remoteCallback == null) {
                     logd(this, "remoteCallback is unavailable, waiting bind...")
@@ -54,17 +54,33 @@ class RemoteService : Service() {
                 } catch (e: DeadObjectException) {
                     loge("remoteCallback is dead, trying to rebind...")
                     callSelfToRebind()
-                    remoteCallbackOperation(action)
+                    remoteCallbackAction(action)
+                }
+            }
+
+            // Secure wrapper for oncoming actions
+            fun selfCallbackAction(action: IHomeCallbacks. () -> Unit) {
+                if (selfCallback == null) return
+                try {
+                    action(selfCallback!!)
+                } catch (e: Exception) {
+                    // ignore
+                }
+            }
+
+            fun settingsCallbackAction(action: ISettingsCallbacks. () -> Unit) {
+                if (settingsCallback == null) return
+                try {
+                    action(settingsCallback!!)
+                } catch (e: Exception) {
+                    // ignore
                 }
             }
 
             // When remote tells our app that a rebind is required.
             fun callSelfToRebind() {
-                remoteCallback = null
-                if (selfCallback != null) {
-                    selfCallback!!.onRemoteRequestRebind()
-                } else {
-                    throw Exception("remoteCallback is not available")
+                selfCallbackAction {
+                    onRemoteRequestRebind()
                 }
             }
 
@@ -75,7 +91,7 @@ class RemoteService : Service() {
                 remoteCallback = callback
 
                 // load installed themes when callback is registered.
-                remoteCallbackOperation { onThemesRequest() }
+                remoteCallbackAction { onThemesRequest() }
             }
 
             override fun removeRemoteCallbacks() {
@@ -85,41 +101,41 @@ class RemoteService : Service() {
 
             override fun sendThemesToSelf(themes: List<Theme>?) {
                 logd(this, "sendThemesToSelf()", themes.toString())
-                selfCallback!!.onReceiveThemes(themes)
+                selfCallbackAction { onReceiveThemes(themes) }
             }
 
             override fun onRemoteServiceStarted() {
                 logd(this, "onRemoteServiceStarted()")
-                selfCallback!!.onRemoteBoundService()
+                selfCallbackAction { onRemoteBoundService() }
             }
 
             override fun onInstallThemeFromUriResult(hasInstalled: Boolean) {
                 logd(this, "onInstallThemeFromUriResult()")
-                selfCallback!!.onInstallThemeResult(hasInstalled)
+                selfCallbackAction { onInstallThemeResult(hasInstalled) }
 
                 remoteCallback = null
-                selfCallback!!.onRemoteRequestRebind()
+                selfCallbackAction { onRemoteRequestRebind() }
             }
 
             override fun onFinishModifyTheme() {
                 logd(this, "onFinishModifyTheme()")
-                selfCallback!!.onFinishModifyTheme()
+                selfCallbackAction { onFinishModifyTheme() }
 
                 remoteCallback = null
-                selfCallback!!.onRemoteRequestRebind()
+                selfCallbackAction { onRemoteRequestRebind() }
             }
 
             override fun onFinishDeleteTheme() {
                 logd(this, "onFinishDeleteTheme()")
-                selfCallback!!.onFinishDeleteTheme()
+                selfCallbackAction { onFinishDeleteTheme() }
 
                 remoteCallback = null
-                selfCallback!!.onRemoteRequestRebind()
+                selfCallbackAction { onRemoteRequestRebind() }
             }
 
             override fun requestUnbind() {
                 logd(this, "requestUnbind()")
-                remoteCallbackOperation { onRequestUnbind() }
+                remoteCallbackAction { onRequestUnbind() }
             }
 
             // CALLED BY HOME
@@ -136,17 +152,17 @@ class RemoteService : Service() {
 
             override fun requestInstallThemeFromUri(uri: Uri?) {
                 logd(this, "requestInstallThemeFromUri()")
-                remoteCallbackOperation { onInstallThemeRequest(uri) }
+                remoteCallbackAction { onInstallThemeRequest(uri) }
             }
 
             override fun requestModifyTheme(themeId: String?, uri: Uri?) {
                 logd(this, "requestModifyTheme()")
-                remoteCallbackOperation { onRequestModifyTheme(themeId, uri) }
+                remoteCallbackAction { onRequestModifyTheme(themeId, uri) }
             }
 
             override fun requestDeleteTheme(themeId: String) {
                 logd(this, "requestDeleteTheme()")
-                remoteCallbackOperation { onRequestThemeDelete(themeId) }
+                remoteCallbackAction { onRequestThemeDelete(themeId) }
             }
 
             // CALLED BY SETTINGS
@@ -163,15 +179,15 @@ class RemoteService : Service() {
 
             override fun requestCleanup() {
                 logd(this, "requestCleanup()")
-                remoteCallbackOperation { onRequestCleanup() }
+                remoteCallbackAction { onRequestCleanup() }
             }
 
             override fun onRequestCleanupFinish() {
                 logd(this, "onRequestCleanupFinish()")
-                settingsCallback!!.onRequestCleanupFinish()
+                settingsCallbackAction { onRequestCleanupFinish() }
 
                 remoteCallback = null
-                settingsCallback!!.onRemoteRequestRebind()
+                settingsCallbackAction { onRemoteRequestRebind() }
             }
         }
     }
