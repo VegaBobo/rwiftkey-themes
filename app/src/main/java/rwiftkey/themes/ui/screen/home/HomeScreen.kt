@@ -62,9 +62,10 @@ fun HomepageScreen(
     LaunchedEffect(Unit) {
         // TODO handle rootless coming installation
         // or maybe discard it, since we need to bound service first
-        val data = ctx.findActivity().intent?.data
+        val intent = ctx.findActivity().intent
+        val data = intent?.data
         if (data != null)
-            homeVm.onFileSelected(data)
+            homeVm.onFileSelected(data) { intent.data = null }
 
         snapshotFlow { uiState.homeToast }.collectLatest {
             when (it) {

@@ -99,7 +99,7 @@ open class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onFileSelected(uri: Uri) {
+    fun onFileSelected(uri: Uri, onFinish: () -> Unit = {}) {
         _uiState.update { it.copy(isInstallationLoadingVisible = true) }
         viewModelScope.launch(Dispatchers.IO) {
             val targetPackage = session.targetKeyboardPackage
@@ -118,6 +118,7 @@ open class HomeViewModel @Inject constructor(
                 setToastState(HomeToast.INSTALLATION_FAILED)
             }
             _uiState.update { it.copy(isInstallationLoadingVisible = false) }
+            onFinish()
         }
     }
 
