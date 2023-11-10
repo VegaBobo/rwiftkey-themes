@@ -46,11 +46,6 @@ fun HomepageScreen(
     onClickSettings: () -> Unit,
     homeVm: HomeViewModel = hiltViewModel()
 ) {
-    val insets = WindowInsets
-        .systemBars
-        .only(WindowInsetsSides.Vertical)
-        .asPaddingValues()
-
     val uiState by homeVm.uiState.collectAsState()
     val ctx = LocalContext.current
 
@@ -101,7 +96,6 @@ fun HomepageScreen(
     when (uiState.operationMode) {
         OperationMode.NONE -> {
             ContinueWithXposedContainer(
-                modifier = Modifier.padding(insets),
                 onClickContinue = {
                     homeVm.initializeSelfServiceCallbacks(
                         onReady = {
@@ -122,7 +116,6 @@ fun HomepageScreen(
         OperationMode.ROOT, OperationMode.XPOSED -> {
             Scaffold(
                 modifier = Modifier
-                    .padding(insets)
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
                     HomeAppBar(

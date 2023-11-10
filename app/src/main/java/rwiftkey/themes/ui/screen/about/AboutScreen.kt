@@ -35,11 +35,9 @@ fun AboutScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val uiState by aboutViewModel.uiState.collectAsState()
-    val insets = WindowInsets.systemBars.only(WindowInsetsSides.Vertical).asPaddingValues()
 
     @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
-        modifier = Modifier.padding(insets),
         topBar = {
             LargeTopAppBar(
                 title = {

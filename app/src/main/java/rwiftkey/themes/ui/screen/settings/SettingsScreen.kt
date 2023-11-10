@@ -35,7 +35,6 @@ fun SettingsScreen(
 ) {
     val uiState by settingsViewModel.uiState.collectAsState()
     val ctx = LocalContext.current
-    val insets = WindowInsets.systemBars.only(WindowInsetsSides.Vertical).asPaddingValues()
 
     LaunchedEffect(Unit) {
         snapshotFlow { uiState.settingToast }.collectLatest {
@@ -64,7 +63,6 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(insets)
     ) {
         RwiftkeyAppBar(
             showSettings = false, title = stringResource(id = R.string.title_activity_preferences)
