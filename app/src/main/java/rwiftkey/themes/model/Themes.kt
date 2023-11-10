@@ -6,7 +6,7 @@ import com.beust.klaxon.Json
 import kotlinx.parcelize.Parcelize
 
 data class Themes(
-    val themes: List<Theme>
+    val themes: List<Theme> = emptyList()
 )
 
 @Parcelize

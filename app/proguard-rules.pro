@@ -32,3 +32,13 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+# Klaxon
+-keep public class kotlin.reflect.jvm.internal.impl.** { public *; }
+-keep class com.beust.klaxon.** { *; }
+-keep interface com.beust.klaxon.** { *; }
+-keep class kotlin.Metadata { *; }
+
+# app
+-keep class rwiftkey.themes.model.** { *; }
+-keep class rwiftkey.themes.xposed.** { *; }
