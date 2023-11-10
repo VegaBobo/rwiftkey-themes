@@ -147,7 +147,7 @@ object Operations {
     }
 
     fun getThumbnailFromThemeId(targetPackage: String, themeId: String): Bitmap? {
-        val customThemesFolderJson = themeListCustomJsonPath(targetPackage)
+        val customThemesFolderJson = customThemeFolderPath(targetPackage)
         val thumbnailAbs = "$customThemesFolderJson/$themeId/default/xhdpi/thumbnail.png"
         val thumbnailFile = File(thumbnailAbs)
 
