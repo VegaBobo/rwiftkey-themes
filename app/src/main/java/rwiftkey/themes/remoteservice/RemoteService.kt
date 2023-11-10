@@ -79,8 +79,11 @@ class RemoteService : Service() {
 
             // When remote tells our app that a rebind is required.
             fun callSelfToRebind() {
-                selfCallbackAction {
-                    onRemoteRequestRebind()
+                remoteCallback = null
+                if (selfCallback != null) {
+                    selfCallbackAction { onRemoteRequestRebind() }
+                } else {
+                    throw Exception("remoteCallback is not available")
                 }
             }
 
