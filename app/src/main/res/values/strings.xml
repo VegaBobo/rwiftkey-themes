@@ -27,7 +27,7 @@
     <!-- Preferences Activity -->
     <string name="title_activity_preferences">Preferences</string>
     <string name="please_wait">Please wait…</string>
-    <string name="cleaned_installed_themes">Installed themes have been cleaned!</string>
+    <string name="clean_success">Installed themes have been cleaned!</string>
     <string name="target_keyboard">Target keyboard</string>
     <string name="clear_themes">Clear themes</string>
     <string name="clean_installed_themes">Clean all installed themes</string>
@@ -56,4 +56,8 @@
     <string name="working">Working, please wait…</string>
     <string name="load_keyboard_themes">Load installed themes</string>
     <string name="no_themes">No themes installed</string>
+    <string name="no_patches_avail">No patches available</string>
+    <string name="untitled">Untitled</string>
+    <string name="patch_theme">Patch theme</string>
+    <string name="remove_theme">Remove theme</string>
 </resources>

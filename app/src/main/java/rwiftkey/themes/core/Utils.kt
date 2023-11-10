@@ -30,6 +30,26 @@ import java.security.MessageDigest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
+fun loge(clazz: Any?, vararg args: Any?) {
+    Log.e(
+        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        args.map { "$it " }.toString().trim()
+    )
+}
+
+fun logw(clazz: Any?, vararg args: Any?) {
+    Log.w(
+        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        args.map { "$it " }.toString().trim()
+    )
+}
+
+fun logd(clazz: Any?, vararg args: Any?) {
+    Log.d(
+        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        args.map { "$it " }.toString().trim()
+    )
+}
 
 fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int = 0): PackageInfo =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

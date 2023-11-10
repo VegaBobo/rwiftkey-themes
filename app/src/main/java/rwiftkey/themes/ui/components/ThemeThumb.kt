@@ -11,20 +11,20 @@ import rwiftkey.themes.R
 @Composable
 fun ThemeThumb(
     modifier: Modifier = Modifier,
-    thumbnail: ImageBitmap? = null,
+    thumbnail: ImageBitmap? = null
 ) {
     if (thumbnail != null)
         Image(
             contentScale = ContentScale.Crop,
             modifier = modifier,
             bitmap = thumbnail,
-            contentDescription = ""
+            contentDescription = "Theme thumbnail"
         )
     else
         Image(
             contentScale = ContentScale.Crop,
             modifier = modifier,
             painter = painterResource(id = R.drawable.palette),
-            contentDescription = null
+            contentDescription = "Theme thumbnail"
         )
 }

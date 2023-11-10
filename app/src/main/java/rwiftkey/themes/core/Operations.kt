@@ -14,18 +14,17 @@ import java.nio.charset.Charset
 
 object Operations {
 
-    fun installTheme(
-        ctx: Context,
-        targetPackage: String,
-        themeUri: Uri
-    ) {
+    private fun customThemeFolderPath(packageName: String) =
+        "/data/data/$packageName/files/custom_themes"
+
+    private fun themeListCustomJsonPath(packageName: String) =
+        "${customThemeFolderPath(packageName)}/themelist_custom.json"
+
+    fun installTheme(ctx: Context, targetPackage: String, themeUri: Uri) {
         installTheme(ctx, targetPackage, null, themeUri)
     }
 
-    fun installTheme(
-        targetPackage: String,
-        themePath: String
-    ) {
+    fun installTheme(targetPackage: String, themePath: String) {
         installTheme(null, targetPackage, themePath, null)
     }
 
@@ -35,8 +34,8 @@ object Operations {
         themePath: String? = null,
         themeUri: Uri? = null
     ) {
-        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
-        val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
+        val customThemesFolderPath = customThemeFolderPath(targetPackage)
+        val customThemesFolderJson = themeListCustomJsonPath(targetPackage)
 
         val wipFolderPath = "$customThemesFolderPath/wip"
         val wipFolderJsonPath = "$wipFolderPath/themelist_custom.json"
@@ -66,7 +65,7 @@ object Operations {
     }
 
     fun cleanUp(targetPackage: String) {
-        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
+        val customThemesFolderPath = customThemeFolderPath(targetPackage)
         val customThemesFile = File(customThemesFolderPath)
         if (!customThemesFile.exists())
             return
@@ -82,8 +81,10 @@ object Operations {
         zipFile: File? = null,
         ctx: Context? = null,
     ) {
+        val customThemesFolderPath = customThemeFolderPath(targetPackage)
+
         val workingThemeDir =
-            File("/data/data/$targetPackage/files/custom_themes/$themeId")
+            File("$customThemesFolderPath/$themeId")
 
         if (zipFileUri != null && ctx != null)
             unzip(ctx, zipFileUri, workingThemeDir)
@@ -91,7 +92,7 @@ object Operations {
             unzip(zipFile!!, workingThemeDir)
 
         val styleJson =
-            File("/data/data/$targetPackage/files/custom_themes/$themeId/style.json")
+            File("$customThemesFolderPath/$themeId/style.json")
 
         val formattedJson = JSONObject(styleJson.readText()).toString(2).replace("\\", "")
 
@@ -100,8 +101,7 @@ object Operations {
         formattedJson.lines().forEach { line ->
             newContents += if (line.contains("sha1") && lastLine.contains("path")) {
                 val extractedPath = lastLine.split("\"")[3]
-                val filePathFromPath =
-                    "/data/data/$targetPackage/files/custom_themes/$themeId/$extractedPath"
+                val filePathFromPath = "$customThemesFolderPath/$themeId/$extractedPath"
                 val fileFromPath = File(filePathFromPath)
                 val newSha1 = fileFromPath.calculateSHA1()
 
@@ -134,8 +134,7 @@ object Operations {
     }
 
     fun retrieveThemes(targetPackage: String): List<Theme> {
-        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
-        val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
+        val customThemesFolderJson = themeListCustomJsonPath(targetPackage)
 
         val themesJsonString = filePathToString(customThemesFolderJson)
         val installedThemes = jsonToThemeObject(themesJsonString)
@@ -148,8 +147,8 @@ object Operations {
     }
 
     fun getThumbnailFromThemeId(targetPackage: String, themeId: String): Bitmap? {
-        val thumbnailAbs =
-            "/data/data/$targetPackage/files/custom_themes/$themeId/default/xhdpi/thumbnail.png"
+        val customThemesFolderJson = customThemeFolderPath(targetPackage)
+        val thumbnailAbs = "$customThemesFolderJson/$themeId/default/xhdpi/thumbnail.png"
         val thumbnailFile = File(thumbnailAbs)
 
         if (!thumbnailFile.exists()) return null
@@ -160,8 +159,8 @@ object Operations {
     }
 
     fun deleteTheme(targetPackage: String, themeId: String) {
-        val customThemesFolderPath = "/data/data/$targetPackage/files/custom_themes"
-        val customThemesFolderJson = "$customThemesFolderPath/themelist_custom.json"
+        val customThemesFolderPath = customThemeFolderPath(targetPackage)
+        val customThemesFolderJson = themeListCustomJsonPath(targetPackage)
 
         val themesJsonString = filePathToString(customThemesFolderJson)
         val themes: ArrayList<Theme> = ArrayList()

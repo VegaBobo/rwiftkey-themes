@@ -16,17 +16,14 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.IRemoteServiceCallbacks
+import rwiftkey.themes.core.Constants
 import rwiftkey.themes.core.Operations
-import rwiftkey.themes.core.unzip
-import java.io.File
 import kotlin.system.exitProcess
-
 
 object IntentAction {
     const val OPEN_THEME_SECTION = "openThemesSection"
     const val BIND = "bind"
 }
-
 
 class XposedInit : IXposedHookLoadPackage {
 
@@ -65,7 +62,6 @@ class XposedInit : IXposedHookLoadPackage {
                                 )
                                 REMOTE_SERVICE!!.onInstallThemeFromUriResult(true)
                             } catch (e: Exception) {
-                                // Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
                                 REMOTE_SERVICE!!.onInstallThemeFromUriResult(false)
                             }
                             exitProcess(0)
@@ -78,7 +74,12 @@ class XposedInit : IXposedHookLoadPackage {
                         }
 
                         override fun onRequestModifyTheme(themeId: String, uri: Uri) {
-                            Operations.modifyThemeRootless(lpparam.packageName, themeId, uri, hookedActivity.applicationContext)
+                            Operations.modifyThemeRootless(
+                                lpparam.packageName,
+                                themeId,
+                                uri,
+                                hookedActivity.applicationContext
+                            )
                             REMOTE_SERVICE!!.onFinishModifyTheme()
                             exitProcess(0)
                         }
@@ -104,7 +105,7 @@ class XposedInit : IXposedHookLoadPackage {
             }
         }
 
-        val intent = Intent("${BuildConfig.APPLICATION_ID}.REMOTESERVICE")
+        val intent = Intent(Constants.REMOTE_SERVICE)
         intent.setPackage(BuildConfig.APPLICATION_ID)
         val hookedAppCtx = hookedActivity.applicationContext
         hookedAppCtx.bindService(intent, serviceConnection, BIND_AUTO_CREATE)

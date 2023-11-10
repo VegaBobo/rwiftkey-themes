@@ -12,8 +12,8 @@ enum class HomeToast {
     WORKING
 }
 
-enum class AppOperationMode {
-    INCOMPATIBLE,
+enum class OperationMode {
+    NONE,
     ROOT,
     XPOSED
 }
@@ -32,7 +32,7 @@ data class PatchCollection(
 )
 
 data class HomeUIState(
-    val operationMode: AppOperationMode = AppOperationMode.XPOSED,
+    val operationMode: OperationMode = OperationMode.XPOSED,
     val homeToast: HomeToast = HomeToast.NONE,
     val keyboardThemes: MutableList<Theme> = mutableStateListOf(),
     val isInstallationLoadingVisible: Boolean = false,

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import rwiftkey.themes.R
+import rwiftkey.themes.ui.components.EasterEggContainer
+import rwiftkey.themes.ui.components.LibrariesDialog
 import rwiftkey.themes.ui.components.PreferenceItem
 import rwiftkey.themes.ui.components.PreferenceTitle
 
@@ -34,6 +37,7 @@ fun AboutScreen(
     val uiState by aboutViewModel.uiState.collectAsState()
     val insets = WindowInsets.systemBars.only(WindowInsetsSides.Vertical).asPaddingValues()
 
+    @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
         modifier = Modifier.padding(insets),
         topBar = {

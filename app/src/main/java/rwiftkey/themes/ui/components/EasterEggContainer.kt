@@ -1,4 +1,4 @@
-package rwiftkey.themes.ui.screen.about
+package rwiftkey.themes.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,12 +20,13 @@ import rwiftkey.themes.R
 
 @Composable
 fun EasterEggContainer(
+    modifier: Modifier = Modifier,
     isEasterEggVisible: Boolean = false,
     onIncreaseEasterEggAction: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
     ) {
         if (isEasterEggVisible) {

@@ -20,25 +20,13 @@ import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IRemoteService
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.core.AppPreferences
-import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.Session
 import javax.inject.Singleton
-
-object AppConstants {
-    const val PREFERENCES = "preferences"
-}
+import rwiftkey.themes.core.Constants
 
 @InstallIn(SingletonComponent::class)
 @Module
 class Modules {
-
-    @Singleton
-    @Provides
-    fun provideKeyboardManager(
-        @ApplicationContext appContext: Context,
-        dataStore: DataStore<Preferences>
-    ): SKeyboardManager {
-        return SKeyboardManager(appContext, dataStore)
-    }
 
     @Singleton
     @Provides
@@ -48,7 +36,7 @@ class Modules {
                 produceNewData = { emptyPreferences() },
             ),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.preferencesDataStoreFile(AppConstants.PREFERENCES) }
+            produceFile = { appContext.preferencesDataStoreFile(Constants.PREFERENCES) }
         )
     }
 
@@ -60,11 +48,19 @@ class Modules {
 
     @Singleton
     @Provides
+    fun provideSession(
+        @ApplicationContext appContext: Context,
+        dataStore: DataStore<Preferences>
+    ): Session {
+        return Session(appContext, dataStore)
+    }
+
+    @Singleton
+    @Provides
     fun provideSelfService(@ApplicationContext appContext: Context): IRemoteService? {
-        val intent = Intent("${BuildConfig.APPLICATION_ID}.REMOTESERVICE")
+        val intent = Intent(Constants.REMOTE_SERVICE_INTENT)
         intent.setPackage(BuildConfig.APPLICATION_ID)
         appContext.bindService(intent, RemoteServiceProvider.connection, Context.BIND_AUTO_CREATE)
         return RemoteServiceProvider.REMOTE_SERVICE
     }
-
 }

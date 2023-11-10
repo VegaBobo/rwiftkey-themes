@@ -1,79 +1,66 @@
 package rwiftkey.themes.core
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import rwiftkey.themes.BuildConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rwiftkey.themes.model.SimpleApplication
-import rwiftkey.themes.ui.screen.home.AppOperationMode
+import rwiftkey.themes.ui.screen.home.OperationMode
 
-class SKeyboardManager(
-    private val ctx: Context,
+class Session(
+    private val app: Context,
     dataStore: DataStore<Preferences>
 ) : AppPreferences(dataStore) {
 
-    // SKeyboard apps installed on phone
+    // Keyboard apps installed on phone
     val availKeyboards: ArrayList<SimpleApplication> = arrayListOf()
 
-    private val targetPackages = arrayListOf(
+    // Default operation mode
+    var operationMode = OperationMode.NONE
+
+    // Target keyboard app
+    var targetKeyboardPackage = ""
+
+    private val possibleKeyboards = arrayListOf(
         SimpleApplication("Swiftkey", "com.touchtype.swiftkey"),
         SimpleApplication("Swiftkey Beta", "com.touchtype.swiftkey.beta"),
     )
 
     private fun loadAvailableKeyboards() {
-        for (tp in targetPackages) {
+        for (kb in possibleKeyboards) {
             try {
-                ctx.packageManager.getPackageInfoCompat(tp.packageName, 0)
-                availKeyboards.add(tp)
-                if (BuildConfig.DEBUG)
-                    Log.i("obtainSwiftKeyInstallation", tp.packageName)
-            } catch (_: Exception) {
+                app.packageManager.getPackageInfoCompat(kb.packageName, 0)
+                availKeyboards.add(kb)
+                logd("loadAvailableKeyboards(): ${kb.packageName}")
+            } catch (e: Exception) {
+                logw(e.stackTraceToString())
             }
         }
     }
 
-    var operationMode = AppOperationMode.XPOSED
-    fun updateOperationMode(newOperationMode: AppOperationMode) {
-        operationMode = newOperationMode
-    }
+    fun isRooted(): Boolean = operationMode == OperationMode.ROOT
 
-    fun isRooted(): Boolean {
-        return operationMode == AppOperationMode.ROOT
-    }
+    fun isXposed(): Boolean = operationMode == OperationMode.XPOSED
 
-    fun isXposed(): Boolean {
-        return operationMode == AppOperationMode.XPOSED
-    }
+    fun hasKeyboardsAvailable(): Boolean = availKeyboards.isNotEmpty()
+
+    private fun hasNoKeyboardsAvailable(): Boolean = availKeyboards.isEmpty()
 
     init {
         loadAvailableKeyboards()
+        CoroutineScope(Dispatchers.IO).launch {
+            updateTargetKeyboardPackage()
+        }
     }
 
-    suspend fun startSKThemeAc() {
-        shellStartSKActivity(getPackage())
-    }
-
-    fun hasKeyboardsAvailable(): Boolean {
-        return availKeyboards.isNotEmpty()
-    }
-
-    fun hasNoKeyboardsAvailable(): Boolean {
-        return availKeyboards.isEmpty()
-    }
-
-    suspend fun getPackage(): String {
+    suspend fun updateTargetKeyboardPackage() {
         val app = obtainTargetKeyboard()
-        return app.packageName
-    }
-
-    suspend fun getName(): String {
-        val app = obtainTargetKeyboard()
-        return app.applicationName
+        targetKeyboardPackage = app.packageName
     }
 
     suspend fun obtainTargetKeyboard(): SimpleApplication {
-
         // if user has no available keyboards, return empty SimpleApplication
         if (hasNoKeyboardsAvailable()) return SimpleApplication()
 
@@ -96,5 +83,4 @@ class SKeyboardManager(
         setTargetKeyboard(targetKeyboard)
         return targetKeyboard
     }
-
 }

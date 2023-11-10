@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun PreferenceItem(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     icon: ImageVector? = null,
@@ -25,7 +26,7 @@ fun PreferenceItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(
@@ -39,7 +40,7 @@ fun PreferenceItem(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.padding(end = 16.dp),
+                modifier = Modifier.padding(end = 16.dp)
             )
         }
         Column {

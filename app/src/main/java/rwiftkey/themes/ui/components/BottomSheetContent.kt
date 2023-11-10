@@ -21,18 +21,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-
 @Composable
 fun BottomSheetContent(
+    modifier: Modifier = Modifier,
     title: String,
     icon: ImageVector? = null,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(12.dp)
-            .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)),
+            .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
     ) {
         Surface(
             color = MaterialTheme.colorScheme.onBackground,
@@ -54,14 +54,14 @@ fun BottomSheetContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
-                    .padding(12.dp),
+                    .padding(12.dp)
             )
         Text(
             color = MaterialTheme.colorScheme.onBackground,
             text = title,
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(12.dp))
         content()

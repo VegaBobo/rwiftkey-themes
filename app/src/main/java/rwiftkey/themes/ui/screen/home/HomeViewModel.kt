@@ -3,7 +3,6 @@ package rwiftkey.themes.ui.screen.home
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
@@ -19,10 +18,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.BuildConfig
 import rwiftkey.themes.IHomeCallbacks
-import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.Constants
+import rwiftkey.themes.core.Session
 import rwiftkey.themes.core.copyFile
 import rwiftkey.themes.core.downloadFile
 import rwiftkey.themes.core.hasConnection
+import rwiftkey.themes.core.logd
+import rwiftkey.themes.core.loge
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.shellStartSKActivity
 import rwiftkey.themes.core.startSKActivity
@@ -39,29 +41,31 @@ import javax.inject.Inject
 @HiltViewModel
 open class HomeViewModel @Inject constructor(
     val app: Application,
-    val sKeyboardManager: SKeyboardManager
+    val session: Session
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
+    var pendingInstallation: Uri = Uri.EMPTY
+
     init {
         // Check if user has at least a available keyboard app installed.
-        val hasAvailKeyboards = sKeyboardManager.hasKeyboardsAvailable()
+        val hasAvailKeyboards = session.hasKeyboardsAvailable()
         _uiState.update { it.copy(hasNoKeyboardsAvail = !hasAvailKeyboards) }
 
         // Check if root is available and granted.
         viewModelScope.launch(Dispatchers.IO) {
             if (Shell.getShell().isRoot) {
-                _uiState.update { it.copy(operationMode = AppOperationMode.ROOT) }
-                sKeyboardManager.operationMode = AppOperationMode.ROOT
+                _uiState.update { it.copy(operationMode = OperationMode.ROOT) }
+                session.operationMode = OperationMode.ROOT
                 return@launch
             }
 
             // If root is not available, says it is incompatible
             // from incompatible, user can setup Xposed operation mode.
-            _uiState.update { it.copy(operationMode = AppOperationMode.INCOMPATIBLE) }
-            sKeyboardManager.operationMode = AppOperationMode.INCOMPATIBLE
+            _uiState.update { it.copy(operationMode = OperationMode.NONE) }
+            session.operationMode = OperationMode.NONE
         }
     }
 
@@ -73,54 +77,59 @@ open class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(homeToast = toast) }
     }
 
-    fun onClickToggleThemes() {
-        if(sKeyboardManager.isRooted()){
+    fun onClickShowThemes() {
+        // Xposed operation mode doesn't require theme loading
+        // it receives themes from remote app when service is bound.
+        if (session.isRooted()) {
             loadThemesRoot()
         }
+
         val newHomeThemesVisibility = !uiState.value.isHomeThemesVisible
         _uiState.update { it.copy(isHomeThemesVisible = newHomeThemesVisibility) }
     }
 
-    fun onClickOpenTheme() {
-        viewModelScope.launch {
-            if (sKeyboardManager.isRooted()) {
-                sKeyboardManager.startSKThemeAc()
-            }
-            if (sKeyboardManager.isXposed()) {
-                app.startSKActivity(sKeyboardManager.getPackage(), IntentAction.OPEN_THEME_SECTION)
-            }
+    fun onClickOpenThemesSection() {
+        val targetKeyboard = session.targetKeyboardPackage
+        when (session.operationMode) {
+            OperationMode.ROOT ->
+                shellStartSKActivity(targetKeyboard)
+
+            OperationMode.XPOSED ->
+                app.startSKActivity(targetKeyboard, IntentAction.OPEN_THEME_SECTION)
+
+            else -> {}
         }
     }
 
-    fun onFileSelected(uri: Uri) {
+    fun onFileSelected(uri: Uri, onFinish: () -> Unit = {}) {
         _uiState.update { it.copy(isInstallationLoadingVisible = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            val targetPackage = sKeyboardManager.getPackage()
+            val targetPackage = session.targetKeyboardPackage
             try {
-                if (sKeyboardManager.isRooted()) {
-                    installThemeRoot(uri, targetPackage)
+                when (session.operationMode) {
+                    OperationMode.ROOT ->
+                        installThemeRoot(uri, targetPackage)
+
+                    OperationMode.XPOSED ->
+                        installThemeXposed(uri, targetPackage)
+
+                    else ->
+                        pendingInstallation = uri
                 }
-                if (sKeyboardManager.isXposed()) {
-                    installThemeXposed(uri, targetPackage)
-                }
+                onFinish()
             } catch (e: Exception) {
-                Log.e(
-                    BuildConfig.APPLICATION_ID,
-                    "Error trying to install theme: \n" + e.stackTraceToString()
-                )
+                loge(this, "Error trying to install theme:", e.stackTraceToString())
                 setToastState(HomeToast.INSTALLATION_FAILED)
             }
             _uiState.update { it.copy(isInstallationLoadingVisible = false) }
         }
     }
 
-    fun loadAddonsFromUrl() {
-        val addons =
-            "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
+    private fun loadAddonsFromUrl() {
         val remoteJson = try {
-            URL(addons).readText()
+            URL(Constants.ADDONS_URL).readText()
         } catch (e: Exception) {
-            Log.e(BuildConfig.APPLICATION_ID, "loadAddonsFromUrl(): ${e.stackTraceToString()}")
+            loge(this, "loadAddonsFromUrl()", e.stackTraceToString())
             null
         }
 
@@ -150,13 +159,14 @@ open class HomeViewModel @Inject constructor(
     fun onClickDeleteTheme() {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         val selectedTheme = _uiState.value.selectedTheme?.id ?: return
+        when (session.operationMode) {
+            OperationMode.ROOT ->
+                deleteThemeRoot(selectedTheme)
 
-        if (sKeyboardManager.isRooted()) {
-            deleteThemeRoot(selectedTheme)
-        }
+            OperationMode.XPOSED ->
+                RemoteServiceProvider.run { requestDeleteTheme(selectedTheme) }
 
-        if (sKeyboardManager.isXposed()) {
-            RemoteServiceProvider.run { requestDeleteTheme(selectedTheme) }
+            else -> {}
         }
     }
 
@@ -168,38 +178,19 @@ open class HomeViewModel @Inject constructor(
             if (addonFile.exists()) addonFile.delete()
             downloadFile(themePatch.url, addonFile.absolutePath)
 
-            if (sKeyboardManager.isRooted()) {
-                PrivilegedProvider.run {
-                    modifyTheme(sKeyboardManager.getPackage(), targetTheme, addonFile.absolutePath)
+            when (session.operationMode) {
+                OperationMode.ROOT ->
+                    applyPatchRoot(targetTheme, addonFile.absolutePath)
 
-                    _uiState.update {
-                        it.copy(
-                            isPatchMenuVisible = false,
-                            homeToast = HomeToast.PATCHED_SUCCESS,
-                            selectedTheme = null
-                        )
-                    }
-                    loadThemesRoot()
-                }
-            }
+                OperationMode.XPOSED ->
+                    applyPatchXposed(targetTheme, addonFile)
 
-            if (sKeyboardManager.isXposed()) {
-                RemoteServiceProvider.run {
-                    val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
-                    val addonFileUri = FileProvider.getUriForFile(app, ourProvider, addonFile)
-                    val targetPkg = sKeyboardManager.getPackage()
-                    app.grantUriPermission(
-                        targetPkg,
-                        addonFileUri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                    requestModifyTheme(targetTheme, addonFileUri)
-                }
+                else -> {}
             }
         }
     }
 
-    fun onClickPatchTheme() {
+    fun onClickLoadPatches() {
         val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
         _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
 
@@ -219,8 +210,7 @@ open class HomeViewModel @Inject constructor(
         app.copyFile(remoteFile!!.uri, localFile!!.uri) ?: return null
 
         val copiedFile = File(app.filesDir.path + "/theme.zip")
-        val ourProvider = BuildConfig.APPLICATION_ID + ".provider"
-        val copiedFileUri = FileProvider.getUriForFile(app, ourProvider, copiedFile)
+        val copiedFileUri = FileProvider.getUriForFile(app, Constants.FILE_PROVIDER, copiedFile)
 
         app.grantUriPermission(targetPackage, copiedFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         return Pair(copiedFileUri, app.filesDir.path + "/theme.zip")
@@ -230,9 +220,9 @@ open class HomeViewModel @Inject constructor(
     // Xposed operations
     //
 
-    var hasSelfCallbacksInitialized = false
+    private var hasSelfCallbacksInitialized = false
 
-    fun initializeSelfServiceCallbacks() {
+    fun initializeSelfServiceCallbacks(onReady: () -> Unit) {
         if (hasSelfCallbacksInitialized) return
         RemoteServiceProvider.run {
             registerHomeCallbacks(object : IHomeCallbacks.Stub() {
@@ -240,23 +230,28 @@ open class HomeViewModel @Inject constructor(
                     // Remote has bound to our service, since it happened
                     // we are sure Xposed operation mode is working
                     RemoteServiceProvider.isRemoteLikelyConnected = true
-                    sKeyboardManager.operationMode = AppOperationMode.XPOSED
-                    _uiState.update { it.copy(operationMode = sKeyboardManager.operationMode) }
+                    session.operationMode = OperationMode.XPOSED
+                    _uiState.update { it.copy(operationMode = session.operationMode) }
+                    if (pendingInstallation != Uri.EMPTY)
+                        installThemeXposed(pendingInstallation, session.targetKeyboardPackage)
+                    pendingInstallation = Uri.EMPTY
                 }
 
                 override fun onReceiveThemes(themes: List<Theme>?) {
-                    Log.d(BuildConfig.APPLICATION_ID, "HomeViewModel.onReceiveThemes(): $themes")
+                    logd(this, "onReceiveThemes()", themes)
                     if (themes == null) return
                     _uiState.value.keyboardThemes.clear()
                     _uiState.value.keyboardThemes.addAll(themes)
                 }
 
                 override fun onInstallThemeResult(hasInstalled: Boolean) {
+                    val result = if (hasInstalled)
+                        HomeToast.INSTALLATION_FINISHED
+                    else
+                        HomeToast.INSTALLATION_FAILED
+
                     _uiState.update {
-                        it.copy(
-                            homeToast = if (hasInstalled) HomeToast.INSTALLATION_FINISHED else HomeToast.INSTALLATION_FAILED,
-                            isLoadingOverlayVisible = false
-                        )
+                        it.copy(homeToast = result, isLoadingOverlayVisible = false)
                     }
                 }
 
@@ -266,7 +261,7 @@ open class HomeViewModel @Inject constructor(
                 override fun onRemoteRequestRebind() {
                     viewModelScope.launch {
                         requestRemoteBinding(
-                            targetPackageName = sKeyboardManager.getPackage(),
+                            targetPackageName = session.targetKeyboardPackage,
                             app = app
                         )
                     }
@@ -290,6 +285,20 @@ open class HomeViewModel @Inject constructor(
                 }
             })
             hasSelfCallbacksInitialized = true
+            onReady()
+        }
+    }
+
+    private fun applyPatchXposed(targetThemeId: String, addonFile: File) {
+        RemoteServiceProvider.run {
+            val addonFileUri = FileProvider.getUriForFile(app, Constants.FILE_PROVIDER, addonFile)
+            val targetPkg = session.targetKeyboardPackage
+            app.grantUriPermission(
+                targetPkg,
+                addonFileUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            requestModifyTheme(targetThemeId, addonFileUri)
         }
     }
 
@@ -305,24 +314,44 @@ open class HomeViewModel @Inject constructor(
     // Root
     //
 
-    fun deleteThemeRoot(selectedTheme: String) {
+    private fun applyPatchRoot(targetThemeId: String, addonZipFileAbs: String) {
         PrivilegedProvider.run {
-            val pkg = sKeyboardManager.getPackage()
+            modifyTheme(session.targetKeyboardPackage, targetThemeId, addonZipFileAbs)
+
+            _uiState.update {
+                it.copy(
+                    isPatchMenuVisible = false,
+                    homeToast = HomeToast.PATCHED_SUCCESS,
+                    selectedTheme = null
+                )
+            }
+            loadThemesRoot()
+        }
+    }
+
+    private fun deleteThemeRoot(selectedTheme: String) {
+        PrivilegedProvider.run {
+            val pkg = session.targetKeyboardPackage
             deleteTheme(pkg, selectedTheme)
             updateSelectedTheme(null)
             loadThemesRoot()
             forceStopPackage(pkg)
             _uiState.update { it.copy(isLoadingOverlayVisible = false) }
-            shellStartSKActivity(sKeyboardManager.getPackage(), true)
+            shellStartSKActivity(session.targetKeyboardPackage, true)
         }
     }
 
-    fun loadThemesRoot() {
+    private fun loadThemesRoot() {
         _uiState.update { it.copy(isLoadingOverlayVisible = true) }
         PrivilegedProvider.run {
             val keyboardThemes =
-                getKeyboardThemes(sKeyboardManager.getPackage()).sortedBy { it.name }
-            _uiState.update { it.copy(keyboardThemes = keyboardThemes.toMutableList(), isLoadingOverlayVisible = false) }
+                getKeyboardThemes(session.targetKeyboardPackage).sortedBy { it.name }
+            _uiState.update {
+                it.copy(
+                    keyboardThemes = keyboardThemes.toMutableList(),
+                    isLoadingOverlayVisible = false
+                )
+            }
         }
     }
 
@@ -337,7 +366,7 @@ open class HomeViewModel @Inject constructor(
             forceStopPackage(targetPackage)
             _uiState.update { it.copy(isLoadingOverlayVisible = false) }
             setToastState(HomeToast.INSTALLATION_FINISHED)
-            shellStartSKActivity(sKeyboardManager.getPackage(), true)
+            shellStartSKActivity(session.targetKeyboardPackage, true)
         }
     }
 

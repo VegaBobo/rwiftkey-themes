@@ -67,7 +67,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="${applicationId}.Provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -80,7 +80,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="${applicationId}.REMOTESERVICE"/>
+                <action android:name="${applicationId}.REMOTE_SERVICE"/>
             </intent-filter>
         </service>
 

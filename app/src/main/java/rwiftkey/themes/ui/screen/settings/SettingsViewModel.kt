@@ -10,18 +10,20 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rwiftkey.themes.ISettingsCallbacks
-import rwiftkey.themes.core.SKeyboardManager
+import rwiftkey.themes.core.Session
+import rwiftkey.themes.core.logd
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.shellStartSKActivity
 import rwiftkey.themes.model.SimpleApplication
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
+import rwiftkey.themes.ui.screen.home.OperationMode
 import javax.inject.Inject
 
 @HiltViewModel
 open class SettingsViewModel @Inject constructor(
     val app: Application,
-    private val sKeyboardManager: SKeyboardManager
+    private val session: Session
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUIState())
@@ -29,13 +31,18 @@ open class SettingsViewModel @Inject constructor(
 
     private fun setupInitialUiState() {
         viewModelScope.launch {
-            _uiState.update { it.copy(selectedKeyboard = sKeyboardManager.obtainTargetKeyboard()) }
-            _uiState.update { it.copy(availableKeyboards = sKeyboardManager.availKeyboards) }
+            _uiState.update { it.copy(selectedKeyboard = session.obtainTargetKeyboard()) }
+            _uiState.update { it.copy(availableKeyboards = session.availKeyboards) }
         }
     }
 
     init {
         setupInitialUiState()
+        if (session.isXposed())
+            registerRemoteCallbacks()
+    }
+
+    private fun registerRemoteCallbacks() {
         RemoteServiceProvider.run {
             registerSettingsCallbacks(object : ISettingsCallbacks.Stub() {
                 override fun onRequestCleanupFinish() {
@@ -45,7 +52,7 @@ open class SettingsViewModel @Inject constructor(
                 override fun onRemoteRequestRebind() {
                     viewModelScope.launch {
                         requestRemoteBinding(
-                            targetPackageName = sKeyboardManager.getPackage(),
+                            targetPackageName = session.targetKeyboardPackage,
                             app = app,
                             shouldOpenThemes = true
                         )
@@ -61,29 +68,33 @@ open class SettingsViewModel @Inject constructor(
     }
 
     fun onClickKeyboardSelection(target: SimpleApplication) {
+        logd(this, "onClickKeyboardSelection()", target)
         viewModelScope.launch {
             _uiState.update { it.copy(selectedKeyboard = target) }
-            sKeyboardManager.setTargetKeyboard(target)
+            session.setTargetKeyboard(target)
         }
         onToggleDialog()
     }
 
-    fun onClickClean() {
-        viewModelScope.launch {
-            if (sKeyboardManager.isRooted()) {
-                val targetKeyboard = sKeyboardManager.getPackage()
-                PrivilegedProvider.run {
-                    cleanThemes(targetKeyboard)
-                    _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
-                    forceStopPackage(targetKeyboard)
-                    shellStartSKActivity(sKeyboardManager.getPackage(), true)
-                }
-                return@launch
-            }
+    private fun cleanThemesRoot() {
+        val targetKeyboard = session.targetKeyboardPackage
+        PrivilegedProvider.run {
+            cleanThemes(targetKeyboard)
+            _uiState.update { it.copy(settingToast = SettingToast.THEMES_CLEANED) }
+            forceStopPackage(targetKeyboard)
+            shellStartSKActivity(session.targetKeyboardPackage, true)
+        }
+    }
 
-            RemoteServiceProvider.run {
-                requestCleanup()
-            }
+    fun onClickClean() {
+        when (session.operationMode) {
+            OperationMode.ROOT ->
+                cleanThemesRoot()
+
+            OperationMode.XPOSED ->
+                RemoteServiceProvider.run { requestCleanup() }
+
+            else -> {}
         }
     }
 
