@@ -96,29 +96,18 @@ fun shellStartSKActivity(targetPackage: String, goBack: Boolean = false) {
     }
 }
 
-// todo IntentAction.THEME_FILE_URI isn't used anymore
 fun Context.startSKActivity(
     targetPackage: String,
-    uri: Uri?,
     vararg actions: String
 ) {
     val i = Intent()
     i.setClassName(targetPackage, "com.touchtype.LauncherActivity")
     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    if (uri != null)
-        i.putExtra("IntentAction.THEME_FILE_URI", uri)
 
     for (action in actions)
         i.putExtra(action, true)
 
     this.startActivity(i)
-}
-
-fun Context.startSKActivity(
-    targetPackage: String,
-    vararg actions: String
-) {
-    startSKActivity(targetPackage, null, *actions)
 }
 
 fun unzip(filePath: String, output: String) {
@@ -202,17 +191,6 @@ fun mergeJsonThemes(originalJson: String, themesToBeAppended: String): String {
     themes.addAll(jsonToThemeObject(jsonToBeAppendedAsString))
 
     return Klaxon().toJsonString(Themes(themes.distinctBy { it.id }))
-}
-
-fun fileContentToString(filePath: String): String {
-    return try {
-        val bufferedReader: BufferedReader =
-            File(filePath).bufferedReader()
-        bufferedReader.use { it.readText() }
-    } catch (e: Exception) {
-        Log.e(BuildConfig.APPLICATION_ID, "Cannot filepath to String: \n${e.stackTraceToString()}")
-        ""
-    }
 }
 
 fun downloadFile(url: String, fileName: String) {

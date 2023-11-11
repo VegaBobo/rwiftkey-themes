@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import rwiftkey.themes.ui.components.ThemeThumb
 
 @Composable
 fun ThemeCard(
