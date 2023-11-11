@@ -122,24 +122,25 @@ fun HomepageScreen(
                 },
                 content = { paddingValues ->
                     Box(
-                        modifier = Modifier
-                            .padding(paddingValues)
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         if (uiState.isHomeThemesVisible) {
                             HomeThemeSection(
+                                modifier = Modifier.padding(top = paddingValues.calculateTopPadding()),
                                 keyboardThemes = uiState.keyboardThemes,
                                 onClickTheme = { homeVm.updateSelectedTheme(it) }
                             )
                         } else {
-                            HomeScreenCenterContainer(
-                                onClickOpenThemes = { homeVm.onClickOpenThemesSection() },
-                                onClickShowThemes = { homeVm.onClickShowThemes() }
-                            )
-                            HomeScreenBottomFAB(
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                onFileSelected = { homeVm.onFileSelected(it) }
-                            )
+                            Box(modifier = Modifier.padding(paddingValues)) {
+                                HomeScreenCenterContainer(
+                                    onClickOpenThemes = { homeVm.onClickOpenThemesSection() },
+                                    onClickShowThemes = { homeVm.onClickShowThemes() }
+                                )
+                                HomeScreenBottomFAB(
+                                    modifier = Modifier.align(Alignment.BottomCenter),
+                                    onFileSelected = { homeVm.onFileSelected(it) }
+                                )
+                            }
                         }
                     }
                 }

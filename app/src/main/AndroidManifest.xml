@@ -19,14 +19,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Rwiftkey.V2"
+        android:theme="@style/Theme.Rwiftkey"
         tools:targetApi="31">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Rwiftkey.V2">
+            android:theme="@style/Theme.Rwiftkey">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -80,7 +80,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="${applicationId}.REMOTE_SERVICE"/>
+                <action android:name="${applicationId}.REMOTE_SERVICE" />
             </intent-filter>
         </service>
 

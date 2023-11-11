@@ -3,8 +3,8 @@ package rwiftkey.themes
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ipc.RootService
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     var remoteService: IRemoteService? = null
         @Inject set

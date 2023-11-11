@@ -21,11 +21,12 @@ import rwiftkey.themes.model.Theme
 
 @Composable
 fun HomeThemeSection(
+    modifier: Modifier = Modifier,
     keyboardThemes: MutableList<Theme> = mutableStateListOf(),
     onClickTheme: (Theme) -> Unit
 ) {
     if (keyboardThemes.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = modifier.fillMaxSize()) {
             Text(
                 text = stringResource(id = R.string.no_themes),
                 textAlign = TextAlign.Center,
@@ -34,6 +35,7 @@ fun HomeThemeSection(
         }
     } else {
         LazyVerticalGrid(
+            modifier = modifier,
             columns = GridCells.Fixed(2),
         ) {
             items(keyboardThemes.size) {

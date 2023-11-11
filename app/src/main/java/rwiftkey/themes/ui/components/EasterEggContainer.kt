@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ fun EasterEggContainer(
     ) {
         if (isEasterEggVisible) {
             AsyncImage(
+                modifier = Modifier.size(200.dp),
                 model = ContextCompat.getDrawable(LocalContext.current, R.drawable.easter_egg),
                 contentDescription = null
             )

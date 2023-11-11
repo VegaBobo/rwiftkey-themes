@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Rwiftkey" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowSplashScreenBackground">@android:color/system_neutral1_50</item>
+    <style name="Theme.Rwiftkey" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_bg</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>
