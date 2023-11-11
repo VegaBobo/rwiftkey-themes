@@ -31,22 +31,25 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 fun loge(clazz: Any?, vararg args: Any?) {
+    if (!BuildConfig.DEBUG) return
     Log.e(
-        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        clazz?.javaClass?.simpleName ?: "?",
         args.map { "$it " }.toString().trim()
     )
 }
 
 fun logw(clazz: Any?, vararg args: Any?) {
+    if (!BuildConfig.DEBUG) return
     Log.w(
-        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        clazz?.javaClass?.simpleName ?: "?",
         args.map { "$it " }.toString().trim()
     )
 }
 
 fun logd(clazz: Any?, vararg args: Any?) {
+    if (!BuildConfig.DEBUG) return
     Log.d(
-        "${BuildConfig.APPLICATION_ID} - ${clazz?.javaClass?.simpleName ?: "?"}",
+        clazz?.javaClass?.simpleName ?: "?",
         args.map { "$it " }.toString().trim()
     )
 }
