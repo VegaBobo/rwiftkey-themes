@@ -1,9 +1,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="960"
+    android:viewportHeight="960">
   <path
-      android:fillColor="@color/icon_color"
-      android:pathData="M7.3,20.5Q6.55,20.5 6.025,19.975Q5.5,19.45 5.5,18.7V6H4.5V4.5H9V3.625H15V4.5H19.5V6H18.5V18.7Q18.5,19.45 17.975,19.975Q17.45,20.5 16.7,20.5ZM17,6H7V18.7Q7,18.8 7.1,18.9Q7.2,19 7.3,19H16.7Q16.8,19 16.9,18.9Q17,18.8 17,18.7ZM9.4,17H10.9V8H9.4ZM13.1,17H14.6V8H13.1ZM7,6V18.7Q7,18.825 7,18.913Q7,19 7,19Q7,19 7,18.913Q7,18.825 7,18.7Z"/>
+      android:fillColor="#FF000000"
+      android:pathData="M292.31,820q-29.92,0 -51.12,-21.19 -21.19,-21.19 -21.19,-51.12L220,240h-40v-60L360,180v-35.38h240v35.38h180L780,240h-40v507.69q0,30.31 -21,51.31t-51.31,21L292.31,820ZM680,240L280,240v507.69q0,5.39 3.46,8.85 3.46,3.46 8.85,3.46h375.38q4.62,0 8.46,-3.85 3.85,-3.85 3.85,-8.46L680,240ZM376.15,680h60v-360h-60v360ZM523.85,680h60v-360h-60v360ZM280,240v520,-520Z"/>
 </vector>
