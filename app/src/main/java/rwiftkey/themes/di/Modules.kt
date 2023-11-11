@@ -58,7 +58,7 @@ class Modules {
     @Singleton
     @Provides
     fun provideSelfService(@ApplicationContext appContext: Context): IRemoteService? {
-        val intent = Intent(Constants.REMOTE_SERVICE_INTENT)
+        val intent = Intent(Constants.REMOTE_SERVICE)
         intent.setPackage(BuildConfig.APPLICATION_ID)
         appContext.bindService(intent, RemoteServiceProvider.connection, Context.BIND_AUTO_CREATE)
         return RemoteServiceProvider.REMOTE_SERVICE
