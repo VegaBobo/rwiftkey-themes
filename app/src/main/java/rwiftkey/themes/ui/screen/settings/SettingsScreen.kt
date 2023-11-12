@@ -26,6 +26,7 @@ import rwiftkey.themes.ui.components.RwiftkeyAppBar
 @Composable
 fun SettingsScreen(
     onAboutClick: () -> Unit,
+    navigateUp: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by settingsViewModel.uiState.collectAsState()
@@ -52,7 +53,12 @@ fun SettingsScreen(
         DialogKeyboardSelection(
             availKeyboards = uiState.availableKeyboards,
             onDismissRequest = { settingsViewModel.onToggleDialog() },
-            onClick = { settingsViewModel.onClickKeyboardSelection(it) },
+            onClick = {
+                settingsViewModel.onClickKeyboardSelection(
+                    target = it,
+                    onChangeXposedTarget = { navigateUp() }
+                )
+            },
         )
 
     Column(

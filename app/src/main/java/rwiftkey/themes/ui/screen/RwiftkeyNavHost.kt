@@ -34,7 +34,8 @@ fun RwiftkeyNavHost(
         }
         composable(Destinations.Settings) {
             SettingsScreen(
-                onAboutClick = { navController.navigate(Destinations.About) }
+                onAboutClick = { navController.navigate(Destinations.About) },
+                navigateUp = { navController.navigateUp() }
             )
         }
         composable(Destinations.About) {
