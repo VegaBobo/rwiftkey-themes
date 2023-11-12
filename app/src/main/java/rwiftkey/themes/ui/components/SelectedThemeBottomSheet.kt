@@ -8,12 +8,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import rwiftkey.themes.R
-import rwiftkey.themes.core.hasConnection
 import rwiftkey.themes.ui.screen.home.PatchCollection
 import rwiftkey.themes.ui.screen.home.ThemePatch
 
@@ -22,13 +20,13 @@ fun SelectedThemeBottomSheet(
     title: String = stringResource(R.string.untitled),
     thumbnail: ImageBitmap? = null,
     isPatchMenuVisible: Boolean = false,
+    isPatchesVisible: Boolean = false,
     patchCollection: MutableList<PatchCollection> = arrayListOf(),
     onClickLoadPatches: () -> Unit,
     onClickApplyPatch: (ThemePatch) -> Unit,
     onClickDeleteTheme: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val ctx = LocalContext.current
     CustomBottomSheet(
         title = title,
         onDismiss = { onDismiss() }
@@ -40,13 +38,13 @@ fun SelectedThemeBottomSheet(
             thumbnail = thumbnail
         )
         Spacer(modifier = Modifier.padding(4.dp))
-        if (hasConnection(ctx)) {
+        if (isPatchMenuVisible) {
             SimpleListButton(
                 icon = ImageVector.vectorResource(id = R.drawable.extension),
                 text = stringResource(R.string.patch_theme),
                 onClick = { onClickLoadPatches() }
             )
-            if (isPatchMenuVisible) {
+            if (isPatchesVisible) {
                 PatchMenu(
                     patchCollection = patchCollection,
                     onClickApply = { onClickApplyPatch(it) }

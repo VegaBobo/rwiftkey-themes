@@ -9,5 +9,7 @@ object Constants {
     const val BIND_SERVICE_TIMEOUT_MS = 20000L
     const val ADDONS_URL =
         "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/addons/addons.json"
+    const val FEATURE_FLAGS_URL =
+        "https://raw.githubusercontent.com/VegaBobo/rwiftkey-themes/master/extras/feature_flags.json"
     const val FILE_PROVIDER = BuildConfig.APPLICATION_ID + ".Provider"
 }

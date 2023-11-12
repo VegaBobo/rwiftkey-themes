@@ -159,6 +159,7 @@ fun HomepageScreen(
             title = uiState.selectedTheme?.name ?: stringResource(R.string.untitled),
             thumbnail = uiState.selectedTheme?.thumbnail?.asImageBitmap(),
             isPatchMenuVisible = uiState.isPatchMenuVisible,
+            isPatchesVisible = uiState.isPatchesVisible,
             patchCollection = uiState.patchCollection,
             onClickLoadPatches = { homeVm.onClickLoadPatches() },
             onClickApplyPatch = { homeVm.onClickApplyPatch(it) },

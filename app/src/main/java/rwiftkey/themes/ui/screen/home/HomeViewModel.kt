@@ -28,6 +28,7 @@ import rwiftkey.themes.core.loge
 import rwiftkey.themes.core.requestRemoteBinding
 import rwiftkey.themes.core.shellStartSKActivity
 import rwiftkey.themes.core.startSKActivity
+import rwiftkey.themes.model.FeatureFlags
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.remoteservice.RemoteServiceProvider
 import rwiftkey.themes.rootservice.PrivilegedProvider
@@ -73,10 +74,37 @@ open class HomeViewModel @Inject constructor(
             }
             session.operationMode = OperationMode.NONE
         }
+
+        // Handle server-side features flags
+        viewModelScope.launch(Dispatchers.IO) {
+            if (hasConnection(app)) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val remoteJson = try {
+                        URL(Constants.FEATURE_FLAGS_URL).readText()
+                    } catch (e: Exception) {
+                        loge(this, "init", e.stackTraceToString())
+                        null
+                    }
+
+                    if (remoteJson != null) {
+                        val klaxon = Klaxon()
+                        val serverSideFeatures = klaxon.parse<FeatureFlags>(remoteJson)
+                        val isAddonFeatureAvail = serverSideFeatures?.enable_addons_feature ?: false
+                        _uiState.update { it.copy(isPatchMenuVisible = isAddonFeatureAvail) }
+                    }
+                }
+            }
+
+            if (Shell.getShell().isRoot) {
+                _uiState.update { it.copy(operationMode = OperationMode.ROOT) }
+                session.operationMode = OperationMode.ROOT
+                return@launch
+            }
+        }
     }
 
     fun updateSelectedTheme(theme: Theme?) {
-        _uiState.update { it.copy(selectedTheme = theme, isPatchMenuVisible = false) }
+        _uiState.update { it.copy(selectedTheme = theme, isPatchesVisible = false) }
     }
 
     fun setToastState(toast: HomeToast) {
@@ -218,8 +246,8 @@ open class HomeViewModel @Inject constructor(
     }
 
     fun onClickLoadPatches() {
-        val newPatchMenuValue = !_uiState.value.isPatchMenuVisible
-        _uiState.update { it.copy(isPatchMenuVisible = newPatchMenuValue) }
+        val newPatchMenuValue = !_uiState.value.isPatchesVisible
+        _uiState.update { it.copy(isPatchesVisible = newPatchMenuValue) }
 
         if (!uiState.value.hasAlreadyLoadedPatches && hasConnection(app)) {
             _uiState.update { it.copy(isLoadingOverlayVisible = true) }
@@ -300,7 +328,7 @@ open class HomeViewModel @Inject constructor(
                 override fun onFinishModifyTheme() {
                     _uiState.update {
                         it.copy(
-                            isPatchMenuVisible = false,
+                            isPatchesVisible = false,
                             homeToast = HomeToast.PATCHED_SUCCESS,
                             isLoadingOverlayVisible = false,
                             selectedTheme = null
@@ -350,7 +378,7 @@ open class HomeViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    isPatchMenuVisible = false,
+                    isPatchesVisible = false,
                     homeToast = HomeToast.PATCHED_SUCCESS,
                     selectedTheme = null
                 )
