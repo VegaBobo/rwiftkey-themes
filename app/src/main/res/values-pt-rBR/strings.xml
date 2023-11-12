@@ -9,6 +9,9 @@
     <string name="clean_installed_themes">Remove todos os temas instalados</string>
     <string name="select_keyboard">Selecionar um teclado</string>
     <string name="dialog_no_available_keyboard_desc">Não foi detectado nenhum app do SwiftKey, por favor instale-o antes de usar o aplicativo</string>
+    <string name="proceed_without_root_title">Proceder sem root?</string>
+    <string name="proceed_without_root_desc">Você pode utilizar o Rwiftkey Themes sem root, com a ajuda do LSPatch (implementação do Xposed que não requer de root), antes de continuar, você precisa instalar o LSPatch e patchear o teclado desejado.</string>
+    <string name="mcontinue">Continuar</string>
     <string name="dialog_close">Fechar app</string>
     <string name="theme_installed">Tema instalado</string>
     <string name="open_theme_section">Abrir seção de temas</string>
@@ -31,4 +34,17 @@
     <string name="close">Fechar</string>
     <string name="dialog_no_root_title">Root indisponível</string>
     <string name="dialog_no_root_desc">Esse aplicativo requer root para funcionar</string>
+    <string name="installing_theme">Instalando tema, aguarde...</string>
+    <string name="success">Sucesso!</string>
+    <string name="failed">Falha, tente novamente</string>
+    <string name="working">Aguarde...</string>
+    <string name="load_keyboard_themes">Carregar temas instalados</string>
+    <string name="no_themes">Sem temas instalados</string>
+    <string name="no_patches_avail">Sem patches disponíveis</string>
+    <string name="untitled">Sem título</string>
+    <string name="patch_theme">Patchear tema</string>
+    <string name="remove_theme">Remover tema</string>
+    <string name="continue_desc">Apenas continue se você tiver o LSPatch instalado, já fez o patch do teclado desejado e ativou o Rwiftkey no escopo de módulos, caso contrário, você vai ficar travado nessa tela.</string>
+    <string name="not_working">Não funciona?</string>
+    <string name="not_working_desc">Tente forçar a parada do aplicativo patcheado e reinicie este aplicativo.</string>
 </resources>

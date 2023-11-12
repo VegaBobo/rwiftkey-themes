@@ -50,6 +50,8 @@ fun HomepageScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(barState)
 
     LaunchedEffect(Unit) {
+        if (uiState.operationMode != homeVm.session.operationMode)
+            homeVm.updateStateOperationMode(homeVm.session.operationMode)
         val intent = ctx.findActivity().intent
         val data = intent?.data
         if (data != null)
@@ -91,6 +93,9 @@ fun HomepageScreen(
     when (uiState.operationMode) {
         OperationMode.NONE -> {
             ContinueWithXposedContainer(
+                availableKeyboards = homeVm.session.availKeyboards,
+                targetKeyboard = uiState.targetKeyboardName,
+                onClickChangeTargetKeyboard = { homeVm.onClickChangeTargetKeyboard() },
                 onClickContinue = {
                     homeVm.initializeSelfServiceCallbacks(
                         onReady = {

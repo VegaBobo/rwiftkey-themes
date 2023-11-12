@@ -1,9 +1,11 @@
 package rwiftkey.themes.ui.screen.settings
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -72,6 +74,9 @@ open class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(selectedKeyboard = target) }
             session.setTargetKeyboard(target)
+            session.updateTargetKeyboardPackage()
+            if(session.isXposed())
+                session.operationMode = OperationMode.NONE
         }
         onToggleDialog()
     }

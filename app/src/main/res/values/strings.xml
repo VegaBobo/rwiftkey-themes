@@ -10,7 +10,7 @@
 
     <!-- Dialog when there is no SwiftKey app installed -->
     <string name="dialog_no_available_keyboard_title">No available keyboards</string>
-    <string name="dialog_no_available_keyboard_desc">No SwiftKey app detected, please install before use this application</string>
+    <string name="dialog_no_available_keyboard_desc">No SwiftKey app detected, please install before using this application</string>
 
     <!-- Dialog when user is running app without root -->
     <string name="dialog_no_root_title">Root unavailable</string>
@@ -20,7 +20,9 @@
     <string name="proceed_without_root_title">Proceed without root?</string>
     <string name="proceed_without_root_desc">You can still use Rwiftkey Themes without root, with the help of LSPatch (rootless Xposed implementation), you must install LSPatch and patch desired keyboard before proceed.</string>
     <string name="mcontinue">Continue</string>
-    <string name="continue_desc">Only continue if you have installed LSPatch, have already patched desired Swiftkey and enabled Rwiftkey on module scope, otherwise, you will stuck in this screen.</string>
+    <string name="continue_desc">Only continue if you have installed LSPatch, have already patched desired Keyboard and enabled Rwiftkey on module scope, otherwise, you will stuck in this screen.</string>
+    <string name="not_working">Not working?</string>
+    <string name="not_working_desc">Try manually force close patched keyboard and restart this app.</string>
 
     <string name="dialog_close">Close app</string>
 
@@ -28,6 +30,7 @@
     <string name="title_activity_preferences">Preferences</string>
     <string name="please_wait">Please wait…</string>
     <string name="clean_success">Installed themes have been cleaned!</string>
+    <string name="app_restart">Changing target keyboard, app will restart</string>
     <string name="target_keyboard">Target keyboard</string>
     <string name="clear_themes">Clear themes</string>
     <string name="clean_installed_themes">Clean all installed themes</string>

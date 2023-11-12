@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,16 +22,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import rwiftkey.themes.R
+import rwiftkey.themes.model.SimpleApplication
 
 @Composable
 fun ContinueWithXposedContainer(
     modifier: Modifier = Modifier,
-    onClickContinue: () -> Unit
+    targetKeyboard: String,
+    availableKeyboards: List<SimpleApplication>,
+    onClickContinue: () -> Unit,
+    onClickChangeTargetKeyboard: () -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
+                .verticalScroll(rememberScrollState())
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -56,11 +63,23 @@ fun ContinueWithXposedContainer(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.padding(2.dp))
+            if (availableKeyboards.size > 1) {
+                TextButton(onClick = { onClickChangeTargetKeyboard() }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = targetKeyboard)
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.refresh),
+                            contentDescription = "Refresh icon",
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
+            }
             TextButton(onClick = { onClickContinue() }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(id = R.string.mcontinue))
                     Icon(
-                        imageVector =  ImageVector.vectorResource(id = R.drawable.arrow_forward),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.arrow_forward),
                         contentDescription = "Forward arrow",
                         modifier = Modifier.padding(4.dp)
                     )
@@ -69,6 +88,17 @@ fun ContinueWithXposedContainer(
             Spacer(modifier = Modifier.padding(2.dp))
             Text(
                 text = stringResource(id = R.string.continue_desc),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                modifier = Modifier.padding(4.dp),
+                fontWeight = FontWeight.Medium,
+                text = stringResource(id = R.string.not_working),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = stringResource(id = R.string.not_working_desc),
                 textAlign = TextAlign.Center
             )
         }

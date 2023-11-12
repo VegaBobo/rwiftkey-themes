@@ -42,5 +42,6 @@ data class HomeUIState(
     val hasAlreadyLoadedPatches: Boolean = false,
     val patchCollection: MutableList<PatchCollection> = mutableStateListOf(),
     val isLoadingOverlayVisible: Boolean = false,
-    val isHomeThemesVisible: Boolean = false
+    val isHomeThemesVisible: Boolean = false,
+    val targetKeyboardName: String = ""
 )

@@ -22,6 +22,7 @@ class Session(
 
     // Target keyboard app
     var targetKeyboardPackage = ""
+    var targetKeyboardName = ""
 
     private val possibleKeyboards = arrayListOf(
         SimpleApplication("Swiftkey", "com.touchtype.swiftkey"),
@@ -58,6 +59,7 @@ class Session(
     suspend fun updateTargetKeyboardPackage() {
         val app = obtainTargetKeyboard()
         targetKeyboardPackage = app.packageName
+        targetKeyboardName = app.applicationName
     }
 
     suspend fun obtainTargetKeyboard(): SimpleApplication {

@@ -2,13 +2,7 @@ package rwiftkey.themes.ui.screen.settings
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,11 +15,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import rwiftkey.themes.R
 import rwiftkey.themes.ui.components.DialogKeyboardSelection
 import rwiftkey.themes.ui.components.PreferenceItem
 import rwiftkey.themes.ui.components.RwiftkeyAppBar
-import kotlinx.coroutines.flow.collectLatest
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

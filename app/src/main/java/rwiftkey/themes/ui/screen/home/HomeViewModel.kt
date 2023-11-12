@@ -64,7 +64,13 @@ open class HomeViewModel @Inject constructor(
 
             // If root is not available, says it is incompatible
             // from incompatible, user can setup Xposed operation mode.
-            _uiState.update { it.copy(operationMode = OperationMode.NONE) }
+            session.updateTargetKeyboardPackage()
+            _uiState.update {
+                it.copy(
+                    operationMode = OperationMode.NONE,
+                    targetKeyboardName = session.targetKeyboardName
+                )
+            }
             session.operationMode = OperationMode.NONE
         }
     }
@@ -75,6 +81,22 @@ open class HomeViewModel @Inject constructor(
 
     fun setToastState(toast: HomeToast) {
         _uiState.update { it.copy(homeToast = toast) }
+    }
+
+    fun updateStateOperationMode(om: OperationMode) {
+        _uiState.update { it.copy(operationMode = om) }
+    }
+
+    fun onClickChangeTargetKeyboard() {
+        for (kb in session.availKeyboards) {
+            if (kb.packageName == session.targetKeyboardPackage) continue
+            viewModelScope.launch(Dispatchers.IO) {
+                session.setTargetKeyboard(kb)
+                session.updateTargetKeyboardPackage()
+                _uiState.update { it.copy(targetKeyboardName = kb.applicationName) }
+            }
+            return
+        }
     }
 
     fun onClickShowThemes() {
@@ -223,7 +245,10 @@ open class HomeViewModel @Inject constructor(
     private var hasSelfCallbacksInitialized = false
 
     fun initializeSelfServiceCallbacks(onReady: () -> Unit) {
-        if (hasSelfCallbacksInitialized) return
+        if (hasSelfCallbacksInitialized) {
+            onReady()
+            return
+        }
         RemoteServiceProvider.run {
             registerHomeCallbacks(object : IHomeCallbacks.Stub() {
                 override fun onRemoteBoundService() {
