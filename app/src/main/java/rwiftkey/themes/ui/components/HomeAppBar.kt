@@ -23,7 +23,7 @@ fun HomeAppBar(
     onClickBackButton: (() -> Unit?)? = null
 ) {
     RwiftkeyAppBar(
-        showSettings = true,
+        showSettings = !isBackButtonVisible,
         onSettingsClick = { onClickSettings() },
         scrollBehavior = scrollBehavior,
         navContent = {
