@@ -74,11 +74,13 @@ open class SettingsViewModel @Inject constructor(
         logd(this, "onClickKeyboardSelection()", target)
         viewModelScope.launch {
             _uiState.update { it.copy(selectedKeyboard = target) }
-            session.setTargetKeyboard(target)
-            session.updateTargetKeyboardPackage()
-            if (session.isXposed()) {
-                session.operationMode = OperationMode.NONE
-                onChangeXposedTarget()
+            if (session.targetKeyboardPackage != target.packageName) {
+                session.setTargetKeyboard(target)
+                session.updateTargetKeyboardPackage()
+                if (session.isXposed()) {
+                    session.operationMode = OperationMode.NONE
+                    onChangeXposedTarget()
+                }
             }
         }
         onToggleDialog()
