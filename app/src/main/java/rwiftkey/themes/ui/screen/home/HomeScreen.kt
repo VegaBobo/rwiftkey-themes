@@ -51,7 +51,7 @@ fun HomepageScreen(
 
     LaunchedEffect(Unit) {
         if (uiState.operationMode != homeVm.session.operationMode)
-            homeVm.updateStateOperationMode(homeVm.session.operationMode)
+            homeVm.updateStateOperationMode()
         val intent = ctx.findActivity().intent
         val data = intent?.data
         if (data != null)

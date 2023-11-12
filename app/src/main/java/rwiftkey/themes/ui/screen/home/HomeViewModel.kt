@@ -83,8 +83,13 @@ open class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(homeToast = toast) }
     }
 
-    fun updateStateOperationMode(om: OperationMode) {
-        _uiState.update { it.copy(operationMode = om) }
+    fun updateStateOperationMode() {
+        _uiState.update {
+            it.copy(
+                operationMode = session.operationMode,
+                targetKeyboardName = session.targetKeyboardName
+            )
+        }
     }
 
     fun onClickChangeTargetKeyboard() {
