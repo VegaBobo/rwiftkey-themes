@@ -9,6 +9,7 @@ import com.beust.klaxon.Klaxon
 import org.json.JSONObject
 import rwiftkey.themes.model.Theme
 import rwiftkey.themes.model.Themes
+import rwiftkey.themes.xposed.IntentAction
 import java.io.File
 import java.nio.charset.Charset
 
@@ -39,6 +40,16 @@ object Operations {
 
         val wipFolderPath = "$customThemesFolderPath/wip"
         val wipFolderJsonPath = "$wipFolderPath/themelist_custom.json"
+
+        val json = File(customThemesFolderJson)
+        if (!json.exists()) {
+            if (ctx == null) {
+                shellStartSKActivity(targetPackage, true)
+            } else {
+                ctx.startSKActivity(targetPackage, IntentAction.OPEN_THEME_SECTION)
+                Thread.sleep(1000)
+            }
+        }
 
         val targetDir = File(wipFolderPath)
         if (!targetDir.exists())
